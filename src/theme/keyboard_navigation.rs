@@ -74,9 +74,9 @@ fn handle_keyboard_activation(
     buttons: Query<(), With<Button>>,
     windows: Query<Entity, With<Window>>,
 ) {
-    if keyboard.just_pressed(KeyCode::Enter) || keyboard.just_pressed(KeyCode::Space) {
-        if let Some(focused_entity) = input_focus.0 {
-            if buttons.contains(focused_entity) {
+    if (keyboard.just_pressed(KeyCode::Enter) || keyboard.just_pressed(KeyCode::Space))
+        && let Some(focused_entity) = input_focus.0
+            && buttons.contains(focused_entity) {
                 // Get the primary window
                 let Some(window_entity) = windows.iter().next() else {
                     warn!("No window found, cannot activate button");
@@ -115,8 +115,6 @@ fn handle_keyboard_activation(
                     )
                 });
             }
-        }
-    }
 }
 
 fn apply_focus_visual(
