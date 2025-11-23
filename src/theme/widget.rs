@@ -7,7 +7,9 @@ use bevy::{
     prelude::*,
 };
 
-use crate::theme::{interaction::InteractionPalette, palette::*};
+use crate::theme::{
+    interaction::InteractionPalette, keyboard_navigation::Focusable, palette::*,
+};
 
 /// A root UI node that fills the window and centers its content.
 pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
@@ -108,27 +110,27 @@ where
         Name::new("Button"),
         Node::default(),
         Children::spawn(SpawnWith(|parent: &mut ChildSpawner| {
-            parent
-                .spawn((
-                    Name::new("Button Inner"),
-                    Button,
-                    BackgroundColor(BUTTON_BACKGROUND),
-                    InteractionPalette {
-                        none: BUTTON_BACKGROUND,
-                        hovered: BUTTON_HOVERED_BACKGROUND,
-                        pressed: BUTTON_PRESSED_BACKGROUND,
-                    },
-                    children![(
-                        Name::new("Button Text"),
-                        Text(text),
-                        TextFont::from_font_size(40.0),
-                        TextColor(BUTTON_TEXT),
-                        // Don't bubble picking events from the text up to the button.
-                        Pickable::IGNORE,
-                    )],
-                ))
-                .insert(button_bundle)
-                .observe(action);
+            let mut entity = parent.spawn((
+                Name::new("Button Inner"),
+                Button,
+                BackgroundColor(BUTTON_BACKGROUND),
+                InteractionPalette {
+                    none: BUTTON_BACKGROUND,
+                    hovered: BUTTON_HOVERED_BACKGROUND,
+                    pressed: BUTTON_PRESSED_BACKGROUND,
+                },
+                Focusable,
+                children![(
+                    Name::new("Button Text"),
+                    Text(text),
+                    TextFont::from_font_size(40.0),
+                    TextColor(BUTTON_TEXT),
+                    // Don't bubble picking events from the text up to the button.
+                    Pickable::IGNORE,
+                )],
+            ));
+            entity.insert(button_bundle);
+            entity.observe(action);
         })),
     )
 }

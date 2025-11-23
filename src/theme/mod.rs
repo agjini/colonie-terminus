@@ -4,6 +4,7 @@
 #![allow(dead_code)]
 
 pub mod interaction;
+pub mod keyboard_navigation;
 pub mod palette;
 pub mod widget;
 
@@ -15,5 +16,5 @@ pub mod prelude {
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins(interaction::plugin);
+    app.add_plugins((interaction::plugin, keyboard_navigation::plugin));
 }
