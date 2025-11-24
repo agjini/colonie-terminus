@@ -42,8 +42,9 @@ fn setup_navigation_for_new_buttons(
     // Clear previous navigation map
     nav_map.clear();
 
-    // Create vertical looping navigation (North/South)
+    // Create vertical and horizontal looping navigation
     nav_map.add_looping_edges(&buttons, CompassOctant::South);
+    nav_map.add_looping_edges(&buttons, CompassOctant::East);
 
     // Always set focus on first button when new buttons are added
     input_focus.set(buttons[0]);
@@ -58,6 +59,10 @@ fn handle_keyboard_navigation(
         Some(CompassOctant::North)
     } else if keyboard.just_pressed(KeyCode::ArrowDown) || keyboard.just_pressed(KeyCode::KeyS) {
         Some(CompassOctant::South)
+    } else if keyboard.just_pressed(KeyCode::ArrowLeft) || keyboard.just_pressed(KeyCode::KeyA) {
+        Some(CompassOctant::West)
+    } else if keyboard.just_pressed(KeyCode::ArrowRight) || keyboard.just_pressed(KeyCode::KeyD) {
+        Some(CompassOctant::East)
     } else {
         None
     };
