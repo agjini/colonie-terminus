@@ -1,16 +1,19 @@
 use bevy::prelude::*;
 
-/// #ddd369
-pub const LABEL_TEXT: Color = Color::srgb(0.867, 0.827, 0.412);
+/// #E3A858 (Ocre Brûlé)
+pub const LABEL_TEXT: Color = Color::srgb(0.890, 0.660, 0.345);
 
-/// #fcfbcc
-pub const HEADER_TEXT: Color = Color::srgb(0.988, 0.984, 0.800);
+/// #FFC27F (Jaune-Orange Clair)
+pub const HEADER_TEXT: Color = Color::srgb(1.000, 0.760, 0.498);
 
-/// #ececec
-pub const BUTTON_TEXT: Color = Color::srgb(0.925, 0.925, 0.925);
-/// #4666bf
-pub const BUTTON_BACKGROUND: Color = Color::srgb(0.275, 0.400, 0.750);
-/// #6299d1
-pub const BUTTON_HOVERED_BACKGROUND: Color = Color::srgb(0.384, 0.600, 0.820);
-/// #3d4999
-pub const BUTTON_PRESSED_BACKGROUND: Color = Color::srgb(0.239, 0.286, 0.600);
+/// #DCD8C8 (Poussière Grise/Beige)
+pub const BUTTON_TEXT: Color = Color::srgb(0.863, 0.847, 0.784);
+
+/// #33231F (Brun Profond)
+pub const BUTTON_BACKGROUND: Color = Color::srgb(0.200, 0.137, 0.122);
+
+/// #593E34 (Brun-Rouille Foncé)
+pub const BUTTON_HOVERED_BACKGROUND: Color = Color::srgb(0.349, 0.243, 0.204);
+
+/// #23120E (Noir d'Ombre)
+pub const BUTTON_PRESSED_BACKGROUND: Color = Color::srgb(0.137, 0.071, 0.055);

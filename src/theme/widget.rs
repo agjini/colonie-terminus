@@ -35,7 +35,10 @@ pub fn header(text: impl Into<String>) -> impl Bundle {
     (
         Name::new("Header"),
         Text(text.into()),
-        TextFont::from_font_size(40.0),
+        TextFont {
+            font_size: 48.0,
+            ..default()
+        },
         TextColor(HEADER_TEXT),
     )
 }

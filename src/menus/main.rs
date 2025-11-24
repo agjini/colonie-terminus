@@ -2,17 +2,48 @@
 
 use bevy::prelude::*;
 
+use crate::asset_tracking::LoadResource;
+use crate::audio::music;
 use crate::{asset_tracking::ResourceHandles, menus::Menu, screens::Screen, theme::widget};
 
-pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Menu::Main), spawn_main_menu);
+#[derive(Resource, Asset, Clone, Reflect)]
+#[reflect(Resource)]
+struct MenuAssets {
+    #[dependency]
+    pub(crate) music: Handle<AudioSource>,
+    #[dependency]
+    pub(crate) background: Handle<Image>,
 }
 
-fn spawn_main_menu(mut commands: Commands) {
+impl FromWorld for MenuAssets {
+    fn from_world(world: &mut World) -> Self {
+        let assets = world.resource::<AssetServer>();
+        Self {
+            music: assets.load("audio/music/splash_screen.ogg"),
+            background: assets.load("images/menu_background.png"),
+        }
+    }
+}
+
+fn start_menu_music(mut commands: Commands, menu_assets: Res<MenuAssets>) {
+    commands.spawn((
+        Name::new("Menu Music"),
+        DespawnOnEnter(Screen::Gameplay),
+        music(menu_assets.music.clone()),
+    ));
+}
+
+pub(super) fn plugin(app: &mut App) {
+    app.add_systems(OnEnter(Menu::Main), (spawn_main_menu, start_menu_music));
+    app.load_resource::<MenuAssets>();
+}
+
+fn spawn_main_menu(mut commands: Commands, menu_assets: Res<MenuAssets>) {
     commands.spawn((
         widget::ui_root("Main Menu"),
         GlobalZIndex(2),
         DespawnOnExit(Menu::Main),
+        ImageNode::new(menu_assets.background.clone()),
         #[cfg(not(target_family = "wasm"))]
         children![
             widget::button("Play", enter_loading_or_gameplay_screen),

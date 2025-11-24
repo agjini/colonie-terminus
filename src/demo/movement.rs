@@ -1,44 +1,53 @@
-//! Handle player input and translate it into movement through a character
-//! controller. A character controller is the collection of systems that govern
-//! the movement of characters.
+//! Gestion des entrées du joueur et traduction en mouvement via un contrôleur de personnage.
 //!
-//! In our case, the character controller has the following logic:
-//! - Set [`MovementController`] intent based on directional keyboard input.
-//!   This is done in the `player` module, as it is specific to the player
-//!   character.
-//! - Apply movement based on [`MovementController`] intent and maximum speed.
-//! - Wrap the character within the window.
+//! Un contrôleur de personnage est l'ensemble des systèmes qui régissent le mouvement des personnages.
 //!
-//! Note that the implementation used here is limited for demonstration
-//! purposes. If you want to move the player in a smoother way,
-//! consider using a [fixed timestep](https://github.com/bevyengine/bevy/blob/main/examples/movement/physics_in_fixed_timestep.rs).
-
+//! Dans notre cas, le contrôleur de personnage a la logique suivante :
+//! - Définir l'intention de [`MovementController`] basée sur les entrées directionnelles du clavier.
+//!   Ceci est fait dans le module `player`, car c'est spécifique au personnage joueur.
+//! - Appliquer le mouvement basé sur l'intention de [`MovementController`] et la vitesse maximale.
+//! - Appliquer la rotation du système de visée basée sur [`AimDirection`].
 use avian2d::prelude::LinearVelocity;
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::prelude::*;
 
+use crate::demo::player::{AimDirection, AimRig, Player};
 use crate::{AppSystems, PausableSystems};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        (apply_movement, apply_screen_wrap)
+        (apply_movement, apply_aim_direction)
             .chain()
             .in_set(AppSystems::Update)
             .in_set(PausableSystems),
     );
 }
 
-/// These are the movement parameters for our character controller.
-/// For now, this is only used for a single player, but it could power NPCs or
-/// other players as well.
+/// Paramètres de mouvement pour le contrôleur de personnage.
+///
+/// Pour l'instant, utilisé uniquement pour un seul joueur, mais pourrait également
+/// contrôler des PNJ ou d'autres joueurs.
+///
+/// # Exemple
+///
+/// ```rust
+/// let controller = MovementController {
+///     intent: Vec2::new(1.0, 0.0), // Se déplace vers la droite
+///     max_speed: 500.0,
+/// };
+/// ```
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct MovementController {
-    /// The direction the character wants to move in.
+    /// La direction dans laquelle le personnage veut se déplacer.
+    ///
+    /// Vecteur normalisé ou nul représentant l'intention de mouvement.
     pub intent: Vec2,
 
-    /// Maximum speed in world units per second.
-    /// 1 world unit = 1 pixel when using the default 2D camera and no physics engine.
+    /// Vitesse maximale en unités du monde par seconde.
+    ///
+    /// 1 unité du monde = 1 pixel lors de l'utilisation de la caméra 2D par défaut
+    /// et sans moteur physique.
     pub max_speed: f32,
 }
 
@@ -59,19 +68,14 @@ fn apply_movement(mut movement_query: Query<(&MovementController, &mut LinearVel
     }
 }
 
-#[derive(Component, Reflect)]
-#[reflect(Component)]
-pub struct ScreenWrap;
-
-fn apply_screen_wrap(
-    window: Single<&Window, With<PrimaryWindow>>,
-    mut wrap_query: Query<&mut Transform, With<ScreenWrap>>,
+fn apply_aim_direction(
+    aim_direction: Single<(&AimDirection, &Children), With<Player>>,
+    mut aim_rig_query: Query<&mut Transform, With<AimRig>>,
 ) {
-    let size = window.size() + 256.0;
-    let half_size = size / 2.0;
-    for mut transform in &mut wrap_query {
-        let position = transform.translation.xy();
-        let wrapped = (position + half_size).rem_euclid(size) - half_size;
-        transform.translation = wrapped.extend(transform.translation.z);
+    let (aim_direction, children) = aim_direction.into_inner();
+    for &child in children {
+        if let Ok(mut rig_transform) = aim_rig_query.get_mut(child) {
+            rig_transform.rotation = Quat::from_rotation_z(aim_direction.0);
+        }
     }
 }

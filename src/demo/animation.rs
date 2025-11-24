@@ -9,9 +9,9 @@ use rand::prelude::*;
 use std::time::Duration;
 
 use crate::{
-    AppSystems, PausableSystems,
-    audio::sound_effect,
-    demo::{movement::MovementController, player::PlayerAssets},
+    audio::sound_effect, demo::{movement::MovementController, player::PlayerAssets},
+    AppSystems,
+    PausableSystems,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -131,9 +131,9 @@ impl PlayerAnimation {
         }
     }
 
-    pub fn new() -> Self {
-        Self::idling()
-    }
+    // pub fn new() -> Self {
+    //     Self::idling()
+    // }
 
     /// Update animation timers.
     pub fn update_timer(&mut self, delta: Duration) {
