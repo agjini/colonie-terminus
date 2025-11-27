@@ -81,6 +81,13 @@ Comment augmente ses indicateurs ? Sur le temps ou l'XP ou les deux ?
 - Dégats
 
 # Définition des armes
+- Nom
+- Sprite
+- Dégats
+- Projectiles
+- Cadences
+- définition de tous les niveau de l'arme
+- comment définir le rayon d'action ?
 
 # Définition des passifs
 
