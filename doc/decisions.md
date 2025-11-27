@@ -1,4 +1,4 @@
-# Questions/Décisions :
+# Décisions :
 - [x] On choisit l'exploration spatiale car on aime bien le style dépouillé, situation désespérée. On pense que ce thème simple est adapté à notre gameplay et reste à notre portée en terme de faisabilité.
 - [x] Le personnage peut utiliser un mélange de technologie et de magie. Magie/Tech
 - [x] les ennemis en mourrant, tombent du loot
@@ -66,30 +66,13 @@ Comment augmente ses indicateurs ? Sur le temps ou l'XP ou les deux ?
 - Comment je vois quels passifs j'ai
 - Player 32x32
 
-# Définition du perso:
-- Nom
-- Sprite
-- Taille 32x32
-- Vie initiale
-- Dégats initiaux
+# Définitions des items
 
-# Définition des ennemis
-- Nom
-- Sprite
-- Taille
-- Vie
-- Dégats
-
-# Définition des armes
-- Nom
-- Sprite
-- Dégats
-- Projectiles
-- Cadences
-- définition de tous les niveau de l'arme
-- comment définir le rayon d'action ?
-
-# Définition des passifs
+Voir les fichiers dédiés :
+- [Personnages](personnages.md)
+- [Ennemis](ennemis.md)
+- [Armes](armes.md)
+- [Passifs](passifs.md)
 
 # Sauvegarde du jeu
 Comment ça se passe ?
