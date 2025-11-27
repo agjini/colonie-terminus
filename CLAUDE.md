@@ -425,3 +425,4 @@ If map confusing → Improve minimap or visual feedback
 **Focus**: Help the team finish the game by avoiding distractions and scope creep. Maximum constraints to stay on track.
 
 **Reference**: The only valid GDD is doc/GDD.md
+- Supprime les commentaires. Un code clair ce suffit à lui même

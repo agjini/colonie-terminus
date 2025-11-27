@@ -77,10 +77,11 @@ const RIGHT: [KeyCode; 2] = [KeyCode::KeyD, KeyCode::ArrowRight];
 
 fn record_player_directional_input(
     input: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
     mut controller_query: Query<&mut MovementController, With<Player>>,
 ) {
-    // Collect directional input.
     let mut intent = Vec2::ZERO;
+
     if input.any_pressed(UP) {
         intent.y += 1.0;
     }
@@ -94,11 +95,22 @@ fn record_player_directional_input(
         intent.x += 1.0;
     }
 
-    // Normalize intent so that diagonal movement is the same speed as horizontal / vertical.
-    // This should be omitted if the input comes from an analog stick instead.
-    let intent = intent.normalize_or_zero();
+    if let Some(gamepad) = gamepads.iter().next() {
+        let left_stick_x = gamepad.left_stick().x;
+        let left_stick_y = gamepad.left_stick().y;
 
-    // Apply movement intent to controllers.
+        const DEADZONE: f32 = 0.2;
+        if left_stick_x.abs() > DEADZONE || left_stick_y.abs() > DEADZONE {
+            intent = Vec2::new(left_stick_x, left_stick_y);
+        }
+    }
+
+    let intent = if intent.length() > 1.0 {
+        intent.normalize()
+    } else {
+        intent
+    };
+
     for mut controller in &mut controller_query {
         controller.intent = intent;
     }

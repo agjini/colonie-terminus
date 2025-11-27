@@ -10,6 +10,7 @@ use crate::theme::interaction::InteractionPalette;
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((InputDispatchPlugin, DirectionalNavigationPlugin));
     app.insert_resource(InputFocusVisible(true));
+    app.insert_resource(StickNavigationCooldown::default());
     app.add_systems(Update, setup_navigation_for_new_buttons);
     app.add_systems(
         PreUpdate,
@@ -21,6 +22,19 @@ pub(super) fn plugin(app: &mut App) {
 /// Component to mark buttons that can be focused with keyboard navigation
 #[derive(Component)]
 pub struct Focusable;
+
+#[derive(Resource)]
+struct StickNavigationCooldown {
+    timer: Timer,
+}
+
+impl Default for StickNavigationCooldown {
+    fn default() -> Self {
+        Self {
+            timer: Timer::from_seconds(0.2, TimerMode::Once),
+        }
+    }
+}
 
 fn setup_navigation_for_new_buttons(
     new_buttons: Query<Entity, (Added<Focusable>, With<Button>)>,
@@ -52,49 +66,93 @@ fn setup_navigation_for_new_buttons(
 
 fn handle_keyboard_navigation(
     keyboard: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
+    time: Res<Time>,
+    mut cooldown: ResMut<StickNavigationCooldown>,
     mut directional_navigation: bevy_input_focus::directional_navigation::DirectionalNavigation,
 ) {
-    let direction = if keyboard.just_pressed(KeyCode::ArrowUp) || keyboard.just_pressed(KeyCode::KeyW)
-    {
-        Some(CompassOctant::North)
+    cooldown.timer.tick(time.delta());
+
+    let mut direction = None;
+    let mut from_stick = false;
+
+    if keyboard.just_pressed(KeyCode::ArrowUp) || keyboard.just_pressed(KeyCode::KeyW) {
+        direction = Some(CompassOctant::North);
     } else if keyboard.just_pressed(KeyCode::ArrowDown) || keyboard.just_pressed(KeyCode::KeyS) {
-        Some(CompassOctant::South)
+        direction = Some(CompassOctant::South);
     } else if keyboard.just_pressed(KeyCode::ArrowLeft) || keyboard.just_pressed(KeyCode::KeyA) {
-        Some(CompassOctant::West)
+        direction = Some(CompassOctant::West);
     } else if keyboard.just_pressed(KeyCode::ArrowRight) || keyboard.just_pressed(KeyCode::KeyD) {
-        Some(CompassOctant::East)
-    } else {
-        None
-    };
+        direction = Some(CompassOctant::East);
+    }
+
+    if let Some(gamepad) = gamepads.iter().next() {
+        if gamepad.just_pressed(GamepadButton::DPadUp) {
+            direction = Some(CompassOctant::North);
+        } else if gamepad.just_pressed(GamepadButton::DPadDown) {
+            direction = Some(CompassOctant::South);
+        } else if gamepad.just_pressed(GamepadButton::DPadLeft) {
+            direction = Some(CompassOctant::West);
+        } else if gamepad.just_pressed(GamepadButton::DPadRight) {
+            direction = Some(CompassOctant::East);
+        }
+
+        if cooldown.timer.is_finished() {
+            let left_stick = gamepad.left_stick();
+            const STICK_THRESHOLD: f32 = 0.5;
+            if left_stick.y > STICK_THRESHOLD && direction.is_none() {
+                direction = Some(CompassOctant::North);
+                from_stick = true;
+            } else if left_stick.y < -STICK_THRESHOLD && direction.is_none() {
+                direction = Some(CompassOctant::South);
+                from_stick = true;
+            } else if left_stick.x < -STICK_THRESHOLD && direction.is_none() {
+                direction = Some(CompassOctant::West);
+                from_stick = true;
+            } else if left_stick.x > STICK_THRESHOLD && direction.is_none() {
+                direction = Some(CompassOctant::East);
+                from_stick = true;
+            }
+        }
+    }
 
     if let Some(direction) = direction {
         let _ = directional_navigation.navigate(direction);
+        if from_stick {
+            cooldown.timer.reset();
+        }
     }
 }
 
 fn handle_keyboard_activation(
     keyboard: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
     input_focus: Res<InputFocus>,
     mut commands: Commands,
     buttons: Query<(), With<Button>>,
     windows: Query<Entity, With<Window>>,
 ) {
-    if (keyboard.just_pressed(KeyCode::Enter) || keyboard.just_pressed(KeyCode::Space))
+    let mut should_activate = keyboard.just_pressed(KeyCode::Enter) || keyboard.just_pressed(KeyCode::Space);
+
+    if let Some(gamepad) = gamepads.iter().next() {
+        if gamepad.just_pressed(GamepadButton::South) {
+            should_activate = true;
+        }
+    }
+
+    if should_activate
         && let Some(focused_entity) = input_focus.0
             && buttons.contains(focused_entity) {
-                // Get the primary window
                 let Some(window_entity) = windows.iter().next() else {
                     warn!("No window found, cannot activate button");
                     return;
                 };
 
-                // Normalize the window reference
                 let Some(normalized_window) = bevy::window::WindowRef::Primary.normalize(Some(window_entity)) else {
                     warn!("Failed to normalize window reference");
                     return;
                 };
 
-                // Trigger a Pointer<Click> event
                 use bevy::picking::events::{Click, Pointer};
                 use bevy::picking::pointer::{PointerId, PointerButton};
                 use bevy::picking::backend::HitData;
