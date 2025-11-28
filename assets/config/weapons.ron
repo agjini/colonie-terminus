@@ -1,0 +1,365 @@
+{
+    "blaster": (
+        name: "Blaster",
+        levels: [
+            (
+                level: 1,
+                stats: (
+                    damage: 15.0,
+                    energy_cost: 10.0,
+                    fire_rate: 5.0,
+                ),
+                attack: Projectile(
+                    sprite: "projectile_blue.png",
+                    speed: 600.0,
+                    lifetime: 2.0,
+                    trajectories: [
+                        (angle_offset: 0.0),
+                    ],
+                    on_hit: None,
+                ),
+            ),
+            (
+                level: 2,
+                stats: (
+                    damage: 20.0,
+                    energy_cost: 12.0,
+                    fire_rate: 5.0,
+                ),
+                attack: Projectile(
+                    sprite: "projectile_blue.png",
+                    speed: 600.0,
+                    lifetime: 2.0,
+                    trajectories: [
+                        (angle_offset: -0.15),
+                        (angle_offset: 0.15),
+                    ],
+                    on_hit: None,
+                ),
+            ),
+            (
+                level: 3,
+                stats: (
+                    damage: 25.0,
+                    energy_cost: 15.0,
+                    fire_rate: 6.0,
+                ),
+                attack: Projectile(
+                    sprite: "projectile_blue_large.png",
+                    speed: 650.0,
+                    lifetime: 2.5,
+                    trajectories: [
+                        (angle_offset: -0.3),
+                        (angle_offset: 0.0),
+                        (angle_offset: 0.3),
+                    ],
+                    on_hit: Some(Explosion(
+                        radius: 50.0,
+                        damage: 10.0,
+                    )),
+                ),
+            ),
+        ],
+    ),
+
+    "plasma_launcher": (
+        name: "Plasma Launcher",
+        levels: [
+            (
+                level: 1,
+                stats: (
+                    damage: 50.0,
+                    energy_cost: 30.0,
+                    fire_rate: 2.0,
+                ),
+                attack: Projectile(
+                    sprite: "projectile_red.png",
+                    speed: 400.0,
+                    lifetime: 3.0,
+                    trajectories: [
+                        (angle_offset: 0.0),
+                    ],
+                    on_hit: Some(Explosion(
+                        radius: 80.0,
+                        damage: 50.0,
+                    )),
+                ),
+            ),
+            (
+                level: 2,
+                stats: (
+                    damage: 70.0,
+                    energy_cost: 30.0,
+                    fire_rate: 2.5,
+                ),
+                attack: Projectile(
+                    sprite: "projectile_red.png",
+                    speed: 400.0,
+                    lifetime: 3.0,
+                    trajectories: [
+                        (angle_offset: 0.0),
+                    ],
+                    on_hit: Some(Explosion(
+                        radius: 120.0,
+                        damage: 70.0,
+                    )),
+                ),
+            ),
+            (
+                level: 3,
+                stats: (
+                    damage: 90.0,
+                    energy_cost: 28.0,
+                    fire_rate: 3.0,
+                ),
+                attack: Projectile(
+                    sprite: "projectile_red_large.png",
+                    speed: 450.0,
+                    lifetime: 3.5,
+                    trajectories: [
+                        (angle_offset: 0.0),
+                    ],
+                    on_hit: Some(Explosion(
+                        radius: 150.0,
+                        damage: 90.0,
+                    )),
+                ),
+            ),
+        ],
+    ),
+
+    "magic_orb": (
+        name: "Magic Orb",
+        levels: [
+            (
+                level: 1,
+                stats: (
+                    damage: 20.0,
+                    energy_cost: 5.0,
+                    fire_rate: 0.0,
+                ),
+                attack: Orbital(
+                    sprite: "orb_blue.png",
+                    count: 1,
+                    damage: 20.0,
+                    orbit_pattern: Circle(
+                        radius: 100.0,
+                        rotation_speed: 2.0,
+                        clockwise: true,
+                    ),
+                ),
+            ),
+            (
+                level: 2,
+                stats: (
+                    damage: 25.0,
+                    energy_cost: 5.0,
+                    fire_rate: 0.0,
+                ),
+                attack: Orbital(
+                    sprite: "orb_blue.png",
+                    count: 2,
+                    damage: 25.0,
+                    orbit_pattern: Circle(
+                        radius: 120.0,
+                        rotation_speed: 3.0,
+                        clockwise: true,
+                    ),
+                ),
+            ),
+            (
+                level: 3,
+                stats: (
+                    damage: 30.0,
+                    energy_cost: 5.0,
+                    fire_rate: 0.0,
+                ),
+                attack: Orbital(
+                    sprite: "orb_purple.png",
+                    count: 4,
+                    damage: 30.0,
+                    orbit_pattern: Spiral(
+                        min_radius: 80.0,
+                        max_radius: 150.0,
+                        rotation_speed: 4.0,
+                        expansion_speed: 1.0,
+                    ),
+                ),
+            ),
+        ],
+    ),
+
+    "shield": (
+        name: "Shield",
+        levels: [
+            (
+                level: 1,
+                stats: (
+                    damage: 15.0,
+                    energy_cost: 3.0,
+                    fire_rate: 0.0,
+                ),
+                attack: Orbital(
+                    sprite: "shield_segment.png",
+                    count: 3,
+                    damage: 15.0,
+                    orbit_pattern: Circle(
+                        radius: 80.0,
+                        rotation_speed: 5.0,
+                        clockwise: false,
+                    ),
+                ),
+            ),
+            (
+                level: 2,
+                stats: (
+                    damage: 20.0,
+                    energy_cost: 3.0,
+                    fire_rate: 0.0,
+                ),
+                attack: Orbital(
+                    sprite: "shield_segment.png",
+                    count: 5,
+                    damage: 20.0,
+                    orbit_pattern: Circle(
+                        radius: 90.0,
+                        rotation_speed: 6.0,
+                        clockwise: false,
+                    ),
+                ),
+            ),
+            (
+                level: 3,
+                stats: (
+                    damage: 25.0,
+                    energy_cost: 3.0,
+                    fire_rate: 0.0,
+                ),
+                attack: Orbital(
+                    sprite: "shield_large.png",
+                    count: 8,
+                    damage: 25.0,
+                    orbit_pattern: Circle(
+                        radius: 100.0,
+                        rotation_speed: 7.0,
+                        clockwise: false,
+                    ),
+                ),
+            ),
+        ],
+    ),
+
+    "tri_shot": (
+        name: "Tri-Shot",
+        levels: [
+            (
+                level: 1,
+                stats: (
+                    damage: 12.0,
+                    energy_cost: 15.0,
+                    fire_rate: 3.0,
+                ),
+                attack: Projectile(
+                    sprite: "projectile_green.png",
+                    speed: 500.0,
+                    lifetime: 2.5,
+                    trajectories: [
+                        (angle_offset: -0.3),
+                        (angle_offset: 0.0),
+                        (angle_offset: 0.3),
+                    ],
+                    on_hit: None,
+                ),
+            ),
+            (
+                level: 2,
+                stats: (
+                    damage: 15.0,
+                    energy_cost: 18.0,
+                    fire_rate: 3.5,
+                ),
+                attack: Projectile(
+                    sprite: "projectile_green.png",
+                    speed: 520.0,
+                    lifetime: 2.5,
+                    trajectories: [
+                        (angle_offset: -0.5),
+                        (angle_offset: -0.25),
+                        (angle_offset: 0.0),
+                        (angle_offset: 0.25),
+                        (angle_offset: 0.5),
+                    ],
+                    on_hit: None,
+                ),
+            ),
+            (
+                level: 3,
+                stats: (
+                    damage: 18.0,
+                    energy_cost: 20.0,
+                    fire_rate: 4.0,
+                ),
+                attack: Projectile(
+                    sprite: "projectile_green.png",
+                    speed: 550.0,
+                    lifetime: 3.0,
+                    trajectories: [
+                        (angle_offset: -0.6),
+                        (angle_offset: -0.4),
+                        (angle_offset: -0.2),
+                        (angle_offset: 0.0),
+                        (angle_offset: 0.2),
+                        (angle_offset: 0.4),
+                        (angle_offset: 0.6),
+                    ],
+                    on_hit: Some(Pierce(max_targets: 2)),
+                ),
+            ),
+        ],
+    ),
+
+    "laser_beam": (
+        name: "Laser Beam",
+        levels: [
+            (
+                level: 1,
+                stats: (
+                    damage: 30.0,
+                    energy_cost: 20.0,
+                    fire_rate: 1.0,
+                ),
+                attack: Aoe(
+                    sprite: "laser_line.png",
+                    radius: 500.0,
+                    duration: 0.3,
+                ),
+            ),
+            (
+                level: 2,
+                stats: (
+                    damage: 45.0,
+                    energy_cost: 20.0,
+                    fire_rate: 1.2,
+                ),
+                attack: Aoe(
+                    sprite: "laser_line_wide.png",
+                    radius: 600.0,
+                    duration: 0.4,
+                ),
+            ),
+            (
+                level: 3,
+                stats: (
+                    damage: 60.0,
+                    energy_cost: 18.0,
+                    fire_rate: 1.5,
+                ),
+                attack: Aoe(
+                    sprite: "laser_line_ultra.png",
+                    radius: 800.0,
+                    duration: 0.5,
+                ),
+            ),
+        ],
+    ),
+}
