@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Key constraints to enforce:**
 
 - ❌ NO custom asset creation (geometric shapes or free assets only)
-- ❌ NO features outside MVP scope (see GDD.md)
+- ❌ NO features outside MVP scope
 - ❌ NO complex animations, shaders, or polish during MVP
 - ❌ NO over-engineering (KISS principle)
 - ✅ Clean, minimal, well-structured code is MANDATORY
