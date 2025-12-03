@@ -25,10 +25,25 @@ Intéractions :
 - [x] indicateur de la direction de la visée : une prévisualisation de la zone d'effet de l'arme actuelle
 - [x] De préférence les armes soint en tir auto (pour éviter l'effet pianotage)
 - [x] Possibilité d'avoir des actifs comme une grenade (par exemple) que l'on déclenche manuellement et qui se balance
-  dans la direction de la visée
+  dans la direction de la visée.
+- [x] pas de notion d'actif consomamble (pour éviter la gestion de stock et le travail associé)
 
-- [ ] comment on explique la boucle de : j'arrive sur une planète, je me fait exfiltrer puis je recommence ? Au niveau
-  de la narration
+# Histoire/Narration
+
+Comment on explique la boucle de : j'arrive sur une planète, je me fait exfiltrer puis je recommence ? Au niveau de la
+narration
+
+Propositions:
+
+- On peut imaginer jouer avec plusieurs explications du pourquoi:
+    - C'est le seul pilote disponible mais en fait il a eu brevet en trichant : il est nul
+    - Son équipe le déteste et l'envoie toujours en mission en sabotant son vaisseau
+    - Un artefact a capturé son empreinte mentale et le force à revenir sans cesse sur la planète et revrivre le même
+      crash
+    - ...
+- Et distiller dans la narration des indices sur la vraie raison mais aussi des fausses pistes
+
+Quelle est la vraie raison ?
 
 # Structure du jeu
 
@@ -60,6 +75,15 @@ Intéractions :
 10. Si je me fait exfilter : je gagne de l'argent.
 11. Si je meurs : je perds tout mon argent.
 
+# Exploration/Events aléatoires :
+
+- [x] 2 minute avant l'exfiltration, je vois sur la minimap l'endroit où elle va arriver. Je dois me rendre à cet
+  endroit pour être exfilté au bon moment sinon je loupe l'exfiltration : fin immédiate.
+- [x] Au fur et à mesure la zone d'exfiltration se précise en un point.
+- [] On veut bien un event aléatoire de crash de vaisseau et qui me permette de voler son arme me permettant de changer
+  d'arme dans un slot.
+- [] Un boss pop
+
 Sur quels paramètres on gère le rythme des ennemis :
 
 - nb d'ennemis par secondes
@@ -69,10 +93,9 @@ Sur quels paramètres on gère le rythme des ennemis :
 
 # Questions ??
 
-- [ ] Comment on explique la boucle de : j'arrive sur une planète, je me fait exfiltrer puis je recommence ? Au niveau
-  de la narration
-- Si j'ai mes 2 slots utilisés, je gagne de l'XP que se passe-t-il ? Vu que mes slots sont remplis ? Qu'est-ce qu'on me
-  propose comme amélioration ?
+- Si j'ai mes 2 slots utilisés, je gagne de l'XP que se passe-t-il ? Vu que mes slots sont remplis et définitifs ?
+  Qu'est-ce qu'on me propose comme amélioration ?
+- Fusion d'arme pour libérer un slot ?
 - [ ] Est-ce qu'on garde les events aléatoires : un autre vaisseau se crash (loot). Si oui pourquoi ? Ce serai une
   récompense immediate qui apparait à un point de la carte. Cela pousserai à l'exploration
 - [ ] Est-ce que l'exfiltration marche dès que le temps est écoulé ?
