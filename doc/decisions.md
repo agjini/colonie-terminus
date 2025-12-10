@@ -54,11 +54,12 @@ Quelle est la vraie raison ?
 - le premier slot est rempli avec l'arme de départ
 - le deuxième slot est vide
 - pas de slots de passifs.
+- 5 types d'ennemis (CAC, Distance, Mage, Boss, Téléporteur.....)
 
 - [x] Quand on passe un LEVEL : on propose un actif ou une amélioration d'actif (que j'ai déjà) mais en complet RANDOM (
   côté casino qui donne envie de toujours voir après). On propose 3 choix random. Je peux dire que ça m'interesse pas et
   je pers la moitié de mon XP sans rien prendre. Permet de garder un slot vide.
-- [x] Slot définitif (pour ne pas épuiser les armes ça parait plus réalisable)
+- [x] Slot pas définitif
 
 # Boucle de jeu (pas meta):
 
@@ -87,14 +88,12 @@ Quelle est la vraie raison ?
 Sur quels paramètres on gère le rythme des ennemis :
 
 - nb d'ennemis par secondes
-- dans quelles directions
+- localisation du pop de l'énnemi : pop random en dehors de l'écran.
 - quel types d'ennemis
   Comment augmente ses indicateurs ? Sur le temps ou l'XP ou les deux ?
 
 # Questions ??
 
-- Si j'ai mes 2 slots utilisés, je gagne de l'XP que se passe-t-il ? Vu que mes slots sont remplis et définitifs ?
-  Qu'est-ce qu'on me propose comme amélioration ?
 - Fusion d'arme pour libérer un slot ?
 - [ ] Est-ce qu'on garde les events aléatoires : un autre vaisseau se crash (loot). Si oui pourquoi ? Ce serai une
   récompense immediate qui apparait à un point de la carte. Cela pousserai à l'exploration
