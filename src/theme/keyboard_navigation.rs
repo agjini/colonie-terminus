@@ -1,11 +1,15 @@
+use bevy::camera::NormalizedRenderTarget;
 use bevy::math::CompassOctant;
+use bevy::picking::backend::HitData;
+use bevy::picking::pointer::{Location, PointerId};
 use bevy::prelude::*;
 use bevy_input_focus::directional_navigation::{
-    DirectionalNavigationMap, DirectionalNavigationPlugin,
+    DirectionalNavigation, DirectionalNavigationMap, DirectionalNavigationPlugin,
 };
 use bevy_input_focus::{InputDispatchPlugin, InputFocus, InputFocusVisible};
+use std::time::Duration;
 
-use crate::theme::interaction::InteractionPalette;
+use crate::theme::widget::highlight_focused_element;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((InputDispatchPlugin, DirectionalNavigationPlugin));
@@ -16,7 +20,7 @@ pub(super) fn plugin(app: &mut App) {
         PreUpdate,
         (handle_keyboard_navigation, handle_keyboard_activation).chain(),
     );
-    app.add_systems(Update, apply_focus_visual);
+    app.add_systems(Update, highlight_focused_element);
 }
 
 /// Component to mark buttons that can be focused with keyboard navigation
@@ -69,7 +73,7 @@ fn handle_keyboard_navigation(
     gamepads: Query<&Gamepad>,
     time: Res<Time>,
     mut cooldown: ResMut<StickNavigationCooldown>,
-    mut directional_navigation: bevy_input_focus::directional_navigation::DirectionalNavigation,
+    mut directional_navigation: DirectionalNavigation,
 ) {
     cooldown.timer.tick(time.delta());
 
@@ -125,84 +129,47 @@ fn handle_keyboard_navigation(
 }
 
 fn handle_keyboard_activation(
+    mut commands: Commands,
     keyboard: Res<ButtonInput<KeyCode>>,
     gamepads: Query<&Gamepad>,
     input_focus: Res<InputFocus>,
-    mut commands: Commands,
-    buttons: Query<(), With<Button>>,
-    windows: Query<Entity, With<Window>>,
 ) {
-    let mut should_activate = keyboard.just_pressed(KeyCode::Enter) || keyboard.just_pressed(KeyCode::Space);
+    let mut should_activate =
+        keyboard.just_pressed(KeyCode::Enter) || keyboard.just_pressed(KeyCode::Space);
 
-    if let Some(gamepad) = gamepads.iter().next() {
-        if gamepad.just_pressed(GamepadButton::South) {
-            should_activate = true;
-        }
+    if let Some(gamepad) = gamepads.iter().next()
+        && gamepad.just_pressed(GamepadButton::South)
+    {
+        should_activate = true;
     }
 
-    if should_activate
-        && let Some(focused_entity) = input_focus.0
-            && buttons.contains(focused_entity) {
-                let Some(window_entity) = windows.iter().next() else {
-                    warn!("No window found, cannot activate button");
-                    return;
-                };
-
-                let Some(normalized_window) = bevy::window::WindowRef::Primary.normalize(Some(window_entity)) else {
-                    warn!("Failed to normalize window reference");
-                    return;
-                };
-
-                use bevy::picking::events::{Click, Pointer};
-                use bevy::picking::pointer::{PointerId, PointerButton};
-                use bevy::picking::backend::HitData;
-
-                commands.entity(focused_entity).trigger(|entity| {
-                    Pointer::new(
-                        PointerId::Mouse,
-                        bevy::picking::pointer::Location {
-                            target: normalized_window.into(),
-                            position: Vec2::ZERO,
-                        },
-                        Click {
-                            button: PointerButton::Primary,
-                            hit: HitData {
-                                camera: Entity::PLACEHOLDER,
-                                depth: 0.0,
-                                position: None,
-                                normal: None,
-                            },
-                            duration: std::time::Duration::from_millis(0),
-                        },
-                        entity,
-                    )
-                });
-            }
-}
-
-fn apply_focus_visual(
-    input_focus: Res<InputFocus>,
-    input_focus_visible: Res<InputFocusVisible>,
-    mut query: Query<(
-        Entity,
-        &InteractionPalette,
-        &Interaction,
-        &mut BackgroundColor,
-    ), With<Button>>,
-) {
-    for (entity, palette, interaction, mut background) in query.iter_mut() {
-        if input_focus.0 == Some(entity) && input_focus_visible.0 && *interaction == Interaction::None
-        {
-            // Focused button uses hovered style
-            *background = palette.hovered.into();
-        } else {
-            // Non-focused buttons use normal interaction palette
-            *background = match interaction {
-                Interaction::None => palette.none,
-                Interaction::Hovered => palette.hovered,
-                Interaction::Pressed => palette.pressed,
-            }
-            .into();
-        }
+    if !should_activate {
+        return;
     }
+
+    let Some(focused_entity) = input_focus.0 else {
+        return;
+    };
+
+    commands.trigger(Pointer::<Click> {
+        entity: focused_entity,
+        pointer_id: PointerId::Mouse,
+        pointer_location: Location {
+            target: NormalizedRenderTarget::None {
+                width: 0,
+                height: 0,
+            },
+            position: Vec2::ZERO,
+        },
+        event: Click {
+            button: PointerButton::Primary,
+            hit: HitData {
+                camera: Entity::PLACEHOLDER,
+                depth: 0.0,
+                position: None,
+                normal: None,
+            },
+            duration: Duration::from_secs_f32(0.1),
+        },
+    })
 }

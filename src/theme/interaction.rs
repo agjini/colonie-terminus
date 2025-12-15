@@ -1,18 +1,14 @@
-use bevy::prelude::*;
-
 use crate::{asset_tracking::LoadResource, audio::sound_effect};
+use bevy::prelude::*;
+use bevy_input_focus::InputFocus;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, apply_interaction_palette);
-
     app.load_resource::<InteractionAssets>();
-    app.add_observer(play_on_hover_sound_effect);
+    app.add_systems(Update, play_on_focus_sound_effect);
     app.add_observer(play_on_click_sound_effect);
 }
 
-/// Palette for widget interactions. Add this to an entity that supports
-/// [`Interaction`]s, such as a button, to change its [`BackgroundColor`] based
-/// on the current interaction state.
 #[derive(Component, Debug, Reflect)]
 #[reflect(Component)]
 pub struct InteractionPalette {
@@ -56,17 +52,25 @@ impl FromWorld for InteractionAssets {
     }
 }
 
-fn play_on_hover_sound_effect(
-    trigger: On<Pointer<Over>>,
+fn play_on_focus_sound_effect(
+    res: Res<InputFocus>,
     mut commands: Commands,
     interaction_assets: Option<Res<InteractionAssets>>,
     interaction_query: Query<(), With<Interaction>>,
 ) {
+    if !res.is_changed() {
+        return;
+    }
+
+    let Some(input_focus) = res.0 else {
+        return;
+    };
+
     let Some(interaction_assets) = interaction_assets else {
         return;
     };
 
-    if interaction_query.contains(trigger.entity) {
+    if interaction_query.contains(input_focus.entity()) {
         commands.spawn(sound_effect(interaction_assets.hover.clone()));
     }
 }
