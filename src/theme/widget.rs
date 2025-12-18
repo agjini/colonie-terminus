@@ -1,13 +1,11 @@
-//! Helper functions for creating common widgets.
-
 use std::borrow::Cow;
 
 use crate::theme::{interaction::InteractionPalette, keyboard_navigation::Focusable, palette::*};
+use bevy::input_focus::{InputFocus, InputFocusVisible};
 use bevy::{
     ecs::{spawn::SpawnWith, system::IntoObserverSystem},
     prelude::*,
 };
-use bevy_input_focus::{InputFocus, InputFocusVisible};
 
 pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
     (

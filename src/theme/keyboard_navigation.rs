@@ -1,12 +1,12 @@
 use bevy::camera::NormalizedRenderTarget;
+use bevy::input_focus::directional_navigation::{
+    DirectionalNavigation, DirectionalNavigationMap, DirectionalNavigationPlugin,
+};
+use bevy::input_focus::{InputDispatchPlugin, InputFocus, InputFocusVisible};
 use bevy::math::CompassOctant;
 use bevy::picking::backend::HitData;
 use bevy::picking::pointer::{Location, PointerId};
 use bevy::prelude::*;
-use bevy_input_focus::directional_navigation::{
-    DirectionalNavigation, DirectionalNavigationMap, DirectionalNavigationPlugin,
-};
-use bevy_input_focus::{InputDispatchPlugin, InputFocus, InputFocusVisible};
 use std::time::Duration;
 
 use crate::theme::widget::highlight_focused_element;
