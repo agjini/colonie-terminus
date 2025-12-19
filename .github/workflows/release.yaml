@@ -332,7 +332,6 @@ jobs:
           file: tmp/app/${{ env.package }}
           asset_name: ${{ env.package }}
           release_name: ${{ env.version }}
-          tag: ${{ env.version }}
           overwrite: true
 
   # Deploy to itch.io.
