@@ -1,32 +1,40 @@
-//! A high-level way to load collections of asset handles as resources.
-
-use std::collections::VecDeque;
-
+use bevy::asset::AssetPath;
 use bevy::prelude::*;
+use ron_asset_manager::RonAssetPlugin;
+use ron_asset_manager::prelude::RonAsset;
+use std::collections::VecDeque;
+use std::fmt::Debug;
 
 pub(super) fn plugin(app: &mut App) {
-    app.init_resource::<ResourceHandles>();
-    app.add_systems(PreUpdate, load_resource_assets);
+    app.init_resource::<ResourceHandles>()
+        .add_systems(PreUpdate, load_resource_assets);
 }
 
 pub trait LoadResource {
     /// This will load the [`Resource`] as an [`Asset`]. When all of its asset dependencies
     /// have been loaded, it will be inserted as a resource. This ensures that the resource only
     /// exists when the assets are ready.
-    fn load_resource<T: Resource + Asset + Clone + FromWorld>(&mut self) -> &mut Self;
+    fn load_resource<'a, T: Resource + Asset + RonAsset + Debug + Clone>(
+        &mut self,
+        ron_file: impl Into<AssetPath<'a>>,
+    ) -> &mut Self;
 }
 
 impl LoadResource for App {
-    fn load_resource<T: Resource + Asset + Clone + FromWorld>(&mut self) -> &mut Self {
-        self.init_asset::<T>();
+    fn load_resource<'a, T: Resource + Asset + RonAsset + Debug + Clone>(
+        &mut self,
+        ron_file: impl Into<AssetPath<'a>>,
+    ) -> &mut Self {
+        self.add_plugins(RonAssetPlugin::<T>::default());
         let world = self.world_mut();
-        let value = T::from_world(world);
         let assets = world.resource::<AssetServer>();
-        let handle = assets.add(value);
+
+        let value = assets.load::<T>(ron_file);
+
         let mut handles = world.resource_mut::<ResourceHandles>();
         handles
             .waiting
-            .push_back((handle.untyped(), |world, handle| {
+            .push_back((value.untyped(), |world, handle| {
                 let assets = world.resource::<Assets<T>>();
                 if let Some(value) = assets.get(handle.id().typed::<T>()) {
                     world.insert_resource(value.clone());
@@ -59,7 +67,7 @@ fn load_resource_assets(world: &mut World) {
         world.resource_scope(|world, assets: Mut<AssetServer>| {
             for _ in 0..resource_handles.waiting.len() {
                 let (handle, insert_fn) = resource_handles.waiting.pop_front().unwrap();
-                if assets.is_loaded_with_dependencies(&handle) {
+                if assets.is_loaded(&handle) {
                     insert_fn(world, &handle);
                     resource_handles.finished.push(handle);
                 } else {

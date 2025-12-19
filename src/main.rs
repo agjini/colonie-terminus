@@ -6,7 +6,6 @@
 mod asset_tracking;
 mod audio;
 mod gameplay;
-mod level;
 mod menus;
 mod screens;
 mod theme;
@@ -44,7 +43,8 @@ impl Plugin for AppPlugin {
                     }
                     .into(),
                     ..default()
-                }),
+                })
+                .set(ImagePlugin::default_nearest()),
             asset_tracking::plugin,
             audio::plugin,
             gameplay::plugin,

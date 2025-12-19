@@ -1,10 +1,13 @@
 use crate::{asset_tracking::LoadResource, audio::sound_effect};
 use bevy::input_focus::InputFocus;
 use bevy::prelude::*;
+use ron_asset_manager::Shandle;
+use ron_asset_manager::prelude::RonAsset;
+use serde::Deserialize;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, apply_interaction_palette);
-    app.load_resource::<InteractionAssets>();
+    app.load_resource::<InteractionAssets>("interaction.ron");
     app.add_systems(Update, play_on_focus_sound_effect);
     app.add_observer(play_on_click_sound_effect);
 }
@@ -33,23 +36,12 @@ fn apply_interaction_palette(
     }
 }
 
-#[derive(Resource, Asset, Clone, Reflect)]
-#[reflect(Resource)]
+#[derive(Resource, Asset, TypePath, RonAsset, Deserialize, Debug, Clone)]
 struct InteractionAssets {
-    #[dependency]
-    hover: Handle<AudioSource>,
-    #[dependency]
-    click: Handle<AudioSource>,
-}
-
-impl FromWorld for InteractionAssets {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            hover: assets.load("audio/sound_effects/button_hover.ogg"),
-            click: assets.load("audio/sound_effects/button_click.ogg"),
-        }
-    }
+    #[asset]
+    hover: Shandle<AudioSource>,
+    #[asset]
+    click: Shandle<AudioSource>,
 }
 
 fn play_on_focus_sound_effect(
@@ -71,7 +63,7 @@ fn play_on_focus_sound_effect(
     };
 
     if interaction_query.contains(input_focus.entity()) {
-        commands.spawn(sound_effect(interaction_assets.hover.clone()));
+        commands.spawn(sound_effect(interaction_assets.hover.handle.clone()));
     }
 }
 
@@ -86,6 +78,6 @@ fn play_on_click_sound_effect(
     };
 
     if interaction_query.contains(trigger.entity) {
-        commands.spawn(sound_effect(interaction_assets.click.clone()));
+        commands.spawn(sound_effect(interaction_assets.click.handle.clone()));
     }
 }

@@ -1,7 +1,9 @@
-use bevy::{ecs::spawn::SpawnIter, prelude::*};
-
 use crate::utils::escape_just_pressed;
 use crate::{asset_tracking::LoadResource, audio::music, menus::Menu, theme::prelude::*};
+use bevy::{ecs::spawn::SpawnIter, prelude::*};
+use ron_asset_manager::Shandle;
+use ron_asset_manager::prelude::RonAsset;
+use serde::Deserialize;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Credits), spawn_credits_menu);
@@ -10,45 +12,26 @@ pub(super) fn plugin(app: &mut App) {
         go_back.run_if(in_state(Menu::Credits).and(escape_just_pressed)),
     );
 
-    app.load_resource::<CreditsAssets>();
+    app.load_resource::<CreditsAssets>("credits.ron");
     app.add_systems(OnEnter(Menu::Credits), start_credits_music);
 }
 
-fn spawn_credits_menu(mut commands: Commands) {
+fn spawn_credits_menu(mut commands: Commands, assets: Res<CreditsAssets>) {
     commands.spawn((
         widget::ui_root("Credits Menu"),
         GlobalZIndex(2),
         DespawnOnExit(Menu::Credits),
         children![
             widget::header("Created by"),
-            created_by(),
+            grid(assets.created_by.clone()),
             widget::header("Assets"),
-            assets(),
+            grid(assets.assets_by.clone()),
             widget::button("Back", go_back_on_click),
         ],
     ));
 }
 
-fn created_by() -> impl Bundle {
-    grid(vec![
-        ["Joe Shmoe", "Implemented alligator wrestling AI"],
-        ["Jane Doe", "Made the music for the alien invasion"],
-    ])
-}
-
-fn assets() -> impl Bundle {
-    grid(vec![
-        ["Ducky sprite", "CC0 by Caz Creates Games"],
-        ["Button SFX", "CC0 by Jaszunio15"],
-        ["Music", "CC BY 3.0 by Kevin MacLeod"],
-        [
-            "Bevy logo",
-            "All rights reserved by the Bevy Foundation, permission granted for splash screen use when unmodified",
-        ],
-    ])
-}
-
-fn grid(content: Vec<[&'static str; 2]>) -> impl Bundle {
+fn grid(content: Vec<(String, String)>) -> impl Bundle {
     (
         Name::new("Grid"),
         Node {
@@ -58,21 +41,24 @@ fn grid(content: Vec<[&'static str; 2]>) -> impl Bundle {
             grid_template_columns: RepeatedGridTrack::px(2, 400.0),
             ..default()
         },
-        Children::spawn(SpawnIter(content.into_iter().flatten().enumerate().map(
-            |(i, text)| {
+        Children::spawn(SpawnIter(content.into_iter().flat_map(|(left, right)| {
+            [
                 (
-                    widget::label(text),
+                    widget::label(left),
                     Node {
-                        justify_self: if i.is_multiple_of(2) {
-                            JustifySelf::End
-                        } else {
-                            JustifySelf::Start
-                        },
+                        justify_self: JustifySelf::End,
                         ..default()
                     },
-                )
-            },
-        ))),
+                ),
+                (
+                    widget::label(right),
+                    Node {
+                        justify_self: JustifySelf::Start,
+                        ..default()
+                    },
+                ),
+            ]
+        }))),
     )
 }
 
@@ -84,26 +70,18 @@ fn go_back(mut next_menu: ResMut<NextState<Menu>>) {
     next_menu.set(Menu::Main);
 }
 
-#[derive(Resource, Asset, Clone, Reflect)]
-#[reflect(Resource)]
+#[derive(Resource, TypePath, Asset, RonAsset, Deserialize, Debug, Clone)]
 struct CreditsAssets {
-    #[dependency]
-    music: Handle<AudioSource>,
+    #[asset]
+    music: Shandle<AudioSource>,
+    created_by: Vec<(String, String)>,
+    assets_by: Vec<(String, String)>,
 }
 
-impl FromWorld for CreditsAssets {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            music: assets.load("audio/music/Monkeys Spinning Monkeys.ogg"),
-        }
-    }
-}
-
-fn start_credits_music(mut commands: Commands, credits_music: Res<CreditsAssets>) {
+fn start_credits_music(mut commands: Commands, credits_assets: Res<CreditsAssets>) {
     commands.spawn((
         Name::new("Credits Music"),
         DespawnOnExit(Menu::Credits),
-        music(credits_music.music.clone()),
+        music(credits_assets.music.handle.clone()),
     ));
 }

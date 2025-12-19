@@ -1,0 +1,13 @@
+(
+    name: "Augustine",
+    sprite: "images/ducky.png",
+    width: 32,
+    height: 32,
+    speed: 400,
+    steps: [
+        "audio/sound_effects/step1.ogg",
+        "audio/sound_effects/step2.ogg",
+        "audio/sound_effects/step3.ogg",
+        "audio/sound_effects/step4.ogg",
+    ]
+)

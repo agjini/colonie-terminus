@@ -1,5 +1,5 @@
-{
-    "blaster": (
+(
+"blaster": (
         name: "Blaster",
         levels: [
             (
@@ -362,4 +362,4 @@
             ),
         ],
     ),
-}
+)
