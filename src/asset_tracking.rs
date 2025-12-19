@@ -11,9 +11,6 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 pub trait LoadResource {
-    /// This will load the [`Resource`] as an [`Asset`]. When all of its asset dependencies
-    /// have been loaded, it will be inserted as a resource. This ensures that the resource only
-    /// exists when the assets are ready.
     fn load_resource<'a, T: Resource + Asset + RonAsset + Debug + Clone>(
         &mut self,
         ron_file: impl Into<AssetPath<'a>>,
@@ -26,6 +23,8 @@ impl LoadResource for App {
         ron_file: impl Into<AssetPath<'a>>,
     ) -> &mut Self {
         self.add_plugins(RonAssetPlugin::<T>::default());
+        self.add_systems(Update, reload_resource::<T>);
+
         let world = self.world_mut();
         let assets = world.resource::<AssetServer>();
 
@@ -76,4 +75,18 @@ fn load_resource_assets(world: &mut World) {
             }
         });
     });
+}
+
+fn reload_resource<T: Resource + Asset + Clone>(
+    mut events: MessageReader<AssetEvent<T>>,
+    assets: Res<Assets<T>>,
+    mut commands: Commands,
+) {
+    for event in events.read() {
+        if let AssetEvent::Modified { id } = event
+            && let Some(asset) = assets.get(*id)
+        {
+            commands.insert_resource(asset.clone());
+        }
+    }
 }
