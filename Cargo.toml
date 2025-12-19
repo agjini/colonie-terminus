@@ -24,12 +24,15 @@ getrandom = { version = "0.3", features = ["wasm_js"] }
 [features]
 # Default to a native dev build.
 default = ["dev_native"]
+release = [
+    "bevy/reflect_auto_register_static"
+]
 dev = [
+    "release",
     "bevy/dynamic_linking",
     "bevy/bevy_dev_tools",
     "bevy/bevy_ui_debug",
-    "bevy/track_location",
-    "bevy/reflect_auto_register_static"
+    "bevy/track_location"
 ]
 dev_native = [
     "dev",
@@ -39,13 +42,10 @@ dev_native = [
 
 [package.metadata.bevy_cli.release]
 default-features = false
-
-[package.metadata.bevy_cli.web]
-default-features = false
+features = ["release"]
 
 [package.metadata.bevy_cli.web.dev]
 features = ["dev"]
-
 
 [lints.rust]
 # Mark `bevy_lint` as a valid `cfg`, as it is set when the Bevy linter runs.

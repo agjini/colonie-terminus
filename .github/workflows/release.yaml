@@ -137,7 +137,6 @@ jobs:
             targets: wasm32-unknown-unknown
             package_ext: .zip
             runner: ubuntu-latest
-            features: bevy/reflect_auto_register_static
 
           - platform: linux
             targets: x86_64-unknown-linux-gnu
