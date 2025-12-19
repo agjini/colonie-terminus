@@ -1,7 +1,7 @@
 (
     music: "audio/music/Fluffing A Duck.ogg",
     created_by: [
-        ("Joe Shmoeqqqqq", "Implemented alligator wrestling AI"),
+        ("Joe Shmoe", "Implemented alligator wrestling AI"),
         ("Jane Doe", "Made the music for the alien invasion"),
     ],
     assets_by: [
