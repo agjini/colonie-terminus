@@ -23,7 +23,6 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, highlight_focused_element);
 }
 
-/// Component to mark buttons that can be focused with keyboard navigation
 #[derive(Component)]
 pub struct Focusable;
 
@@ -50,21 +49,17 @@ fn setup_navigation_for_new_buttons(
         return;
     }
 
-    // Collect all focusable buttons
     let buttons: Vec<Entity> = all_buttons.iter().collect();
 
     if buttons.is_empty() {
         return;
     }
 
-    // Clear previous navigation map
     nav_map.clear();
 
-    // Create vertical and horizontal looping navigation
     nav_map.add_looping_edges(&buttons, CompassOctant::South);
     nav_map.add_looping_edges(&buttons, CompassOctant::East);
 
-    // Always set focus on first button when new buttons are added
     input_focus.set(buttons[0]);
 }
 
@@ -103,7 +98,7 @@ fn handle_keyboard_navigation(
 
         if cooldown.timer.is_finished() {
             let left_stick = gamepad.left_stick();
-            const STICK_THRESHOLD: f32 = 0.5;
+            const STICK_THRESHOLD: f32 = 0.3;
             if left_stick.y > STICK_THRESHOLD && direction.is_none() {
                 direction = Some(CompassOctant::North);
                 from_stick = true;

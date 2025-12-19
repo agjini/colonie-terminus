@@ -1,14 +1,13 @@
-//! The pause menu.
+use bevy::prelude::*;
 
-use bevy::{input::common_conditions::input_just_pressed, prelude::*};
-
+use crate::utils::escape_just_pressed;
 use crate::{menus::Menu, screens::Screen, theme::widget};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Pause), spawn_pause_menu);
     app.add_systems(
         Update,
-        go_back.run_if(in_state(Menu::Pause).and(input_just_pressed(KeyCode::Escape))),
+        go_back.run_if(in_state(Menu::Pause).and(escape_just_pressed)),
     );
 }
 

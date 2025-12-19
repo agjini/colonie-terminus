@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use crate::theme::{interaction::InteractionPalette, keyboard_navigation::Focusable, palette::*};
+use crate::theme::{interaction::InteractionPalette, navigation::Focusable, palette::*};
 use bevy::input_focus::{InputFocus, InputFocusVisible};
 use bevy::{
     ecs::{spawn::SpawnWith, system::IntoObserverSystem},

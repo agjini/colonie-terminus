@@ -4,8 +4,6 @@ use avian2d::prelude::{PhysicsDebugPlugin, PhysicsGizmos};
 use bevy::{
     dev_tools::states::log_transitions, input::common_conditions::input_just_pressed, prelude::*,
 };
-use bevy_egui::EguiPlugin;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 use crate::screens::Screen;
 
@@ -17,11 +15,7 @@ struct DebugState {
 pub(super) fn plugin(app: &mut App) {
     app.init_resource::<DebugState>();
 
-    app.add_plugins((
-        EguiPlugin::default(),
-        WorldInspectorPlugin::new().run_if(|debug_state: Res<DebugState>| debug_state.enabled),
-        PhysicsDebugPlugin,
-    ));
+    app.add_plugins((PhysicsDebugPlugin,));
 
     app.insert_gizmo_config(
         PhysicsGizmos::default(),

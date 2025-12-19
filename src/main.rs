@@ -5,13 +5,15 @@
 
 mod asset_tracking;
 mod audio;
-mod character;
-#[cfg(feature = "dev")]
-mod dev_tools;
 mod gameplay;
+mod level;
 mod menus;
 mod screens;
 mod theme;
+mod utils;
+
+#[cfg(feature = "dev")]
+mod dev_tools;
 
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::Gravity;
@@ -25,8 +27,7 @@ pub struct AppPlugin;
 
 impl Plugin for AppPlugin {
     fn build(&self, app: &mut App) {
-        // Add Bevy plugins.
-        app.add_plugins(
+        app.add_plugins((
             DefaultPlugins
                 .set(AssetPlugin {
                     // Wasm builds will check for meta files (that don't exist) if this isn't set.
@@ -44,23 +45,18 @@ impl Plugin for AppPlugin {
                     .into(),
                     ..default()
                 }),
-        );
-
-        // Add other plugins.
-        app.add_plugins((
             asset_tracking::plugin,
             audio::plugin,
             gameplay::plugin,
             PhysicsPlugins::default(),
-            #[cfg(feature = "dev")]
-            dev_tools::plugin,
             menus::plugin,
             screens::plugin,
             theme::plugin,
+            #[cfg(feature = "dev")]
+            dev_tools::plugin,
         ))
         .insert_resource(Gravity::ZERO);
 
-        // Order new `AppSystems` variants by adding them here:
         app.configure_sets(
             Update,
             (
@@ -71,11 +67,9 @@ impl Plugin for AppPlugin {
                 .chain(),
         );
 
-        // Set up the `Pause` state.
         app.init_state::<Pause>();
         app.configure_sets(Update, PausableSystems.run_if(in_state(Pause(false))));
 
-        // Spawn the main camera.
         app.add_systems(Startup, spawn_camera);
     }
 }
@@ -93,11 +87,9 @@ enum AppSystems {
     Update,
 }
 
-/// Whether the game is paused.
 #[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 struct Pause(pub bool);
 
-/// A system set for systems that shouldn't run while the game is paused.
 #[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
 struct PausableSystems;
 

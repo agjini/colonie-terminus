@@ -1,5 +1,3 @@
-//! A splash screen that plays briefly at startup.
-
 use bevy::{
     image::{ImageLoaderSettings, ImageSampler},
     input::common_conditions::input_just_pressed,
@@ -9,11 +7,9 @@ use bevy::{
 use crate::{AppSystems, screens::Screen, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
-    // Spawn splash screen.
     app.insert_resource(ClearColor(SPLASH_BACKGROUND_COLOR));
     app.add_systems(OnEnter(Screen::Splash), spawn_splash_screen);
 
-    // Animate splash screen.
     app.add_systems(
         Update,
         (
@@ -23,7 +19,6 @@ pub(super) fn plugin(app: &mut App) {
             .run_if(in_state(Screen::Splash)),
     );
 
-    // Add splash timer.
     app.add_systems(OnEnter(Screen::Splash), insert_splash_timer);
     app.add_systems(OnExit(Screen::Splash), remove_splash_timer);
     app.add_systems(
@@ -35,7 +30,6 @@ pub(super) fn plugin(app: &mut App) {
             .run_if(in_state(Screen::Splash)),
     );
 
-    // Exit the splash screen early if the player hits escape.
     app.add_systems(
         Update,
         enter_title_screen
