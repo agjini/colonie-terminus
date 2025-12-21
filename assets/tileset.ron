@@ -1,0 +1,28 @@
+(
+    texture: "tiles/ground.png",
+    tile_size: 32,
+    width: 1600,
+    height: 704,
+    grounds: {
+        dirt_red: (
+            from: (9, 19),
+            to: (12, 21),
+            variants : {
+                rocks: (
+                    from: (9, 19),
+                    to: (12, 21),
+                )
+            }
+        ),
+        dirt_brown: (
+            from: (27, 18),
+            to: (30, 20),
+            variants: {
+                rocks: (
+                    from: (27, 14),
+                    to: (30, 16)
+                ),
+            }
+        ),
+    }
+)

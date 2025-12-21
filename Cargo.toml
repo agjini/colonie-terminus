@@ -7,6 +7,7 @@ edition = "2024"
 [dependencies]
 avian2d = "0.4"
 bevy = "0.17.3"
+noise = "0.9"
 rand = "0.9"
 rand_chacha = "0.9.0"
 ron_asset_manager = "0.7.0"
@@ -73,10 +74,6 @@ opt-level = 1
 # Enable a large amount of optimization in the dev profile for dependencies.
 [profile.dev.package."*"]
 opt-level = 3
-
-# Remove expensive debug assertions due to <https://github.com/bevyengine/bevy/issues/14291>
-[profile.dev.package.wgpu-types]
-debug-assertions = false
 
 [profile.release]
 # Compile the entire crate as one unit.

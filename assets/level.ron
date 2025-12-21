@@ -1,3 +1,5 @@
 (
-    music: "audio/music/Fluffing A Duck.ogg"
+    music: "audio/music/Fluffing A Duck.ogg",
+    tileset: "tileset.ron",
+    player: "player.ron"
 )
