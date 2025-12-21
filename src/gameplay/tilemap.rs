@@ -5,6 +5,10 @@ use bevy::render::render_resource::Extent3d;
 use bevy::render::render_resource::TextureDimension::D2;
 use bevy::sprite_render::{TileData, TilemapChunk, TilemapChunkTileData};
 use noise::{NoiseFn, Perlin};
+use rand::Rng;
+use rand::rngs::ThreadRng;
+use rand_chacha::ChaCha8Rng;
+use rand_chacha::rand_core::SeedableRng;
 use ron_asset_manager::{Shandle, prelude::RonAsset};
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -33,6 +37,7 @@ pub struct TilesetAssets {
     pub texture: Shandle<Image>,
     pub tile_size: u16,
     pub width: u16,
+    pub noise_scale: f64,
     pub grounds: HashMap<Ground, GroundTilesetWithVariant>,
 }
 
@@ -48,19 +53,21 @@ pub struct Tileset {
     pub to: U16Vec2,
 }
 
-#[derive(Resource, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct RandomContext {
     pub seed: u32,
     pub scale: f64,
     pub perlin: Perlin,
+    pub rng: ChaCha8Rng,
 }
 
 impl RandomContext {
-    pub fn new(seed: u32) -> Self {
+    pub fn new(seed: u32, scale: f64) -> Self {
         Self {
             seed,
-            scale: 0.8,
+            scale,
             perlin: Perlin::new(seed),
+            rng: ChaCha8Rng::seed_from_u64(seed as u64),
         }
     }
 
@@ -73,31 +80,53 @@ impl RandomContext {
         let nx = pos.x as f64 * self.scale;
         let ny = pos.y as f64 * self.scale;
 
-        let noise_x = self.perlin.get([nx, ny]); // [-1.0, 1.0]
-        let noise_y = self.perlin.get([nx + 1000.0, ny]); // décalage pour éviter corrélation
+        let noise_x = self.perlin.get([nx, ny]);
+        let noise_y = self.perlin.get([nx + 1000.0, ny]);
 
         DVec2::new(noise_x, noise_y)
     }
 
-    pub fn lerp(&self, pos: U16Vec2, from: U16Vec2, to: U16Vec2) -> U16Vec2 {
-        let noise = self.noise(pos);
-
-        U16Vec2::new(
-            self.remap_noise_to_u16(noise.x, from.x, to.x),
-            self.remap_noise_to_u16(noise.y, from.y, to.y),
-        )
+    pub fn ground_type(&self, pos: U16Vec2) -> Ground {
+        let noise_value = self.noise(pos);
+        if noise_value.x > 0.0 {
+            Ground::DirtRed
+        } else {
+            Ground::DirtBrown
+        }
     }
 
-    fn remap_noise_to_u16(&self, v: f64, min: u16, max: u16) -> u16 {
-        let t = (v + 1.0) * 0.5;
+    pub fn has_variant(&self, pos: U16Vec2) -> bool {
+        let noise_value = self
+            .perlin
+            .get([pos.x as f64 * 0.3 + 500.0, pos.y as f64 * 0.3]);
+        noise_value > 0.4
+    }
+
+    pub fn lerp(&mut self, from: U16Vec2, to: U16Vec2) -> U16Vec2 {
+        let x = self.rng.random_range(from.x..=to.x);
+        let y = self.rng.random_range(from.y..=to.y);
+
+        U16Vec2::new(x, y)
+    }
+
+    fn remap_noise_to_u16(&self, t: f64, min: u16, max: u16) -> u16 {
         min + ((max - min) as f64 * t) as u16
     }
 }
 
 impl TilesetAssets {
-    pub fn get_tile(&self, ctx: &RandomContext, pos: U16Vec2, ground: Ground) -> Option<TileData> {
+    pub fn get_tile(&self, ctx: &mut RandomContext, pos: U16Vec2) -> Option<TileData> {
+        let ground = ctx.ground_type(pos);
+        let has_rocks = ctx.has_variant(pos);
+
         self.grounds.get(&ground).map(|g| {
-            let tile = ctx.lerp(pos, g.tiles.from, g.tiles.to);
+            let tileset = if has_rocks {
+                g.variants.get(&GroundVariant::Rocks).unwrap_or(&g.tiles)
+            } else {
+                &g.tiles
+            };
+
+            let tile = ctx.lerp(tileset.from, tileset.to);
             let row = self.width / self.tile_size;
             TileData::from_tileset_index(tile.x + tile.y * row)
         })
@@ -105,14 +134,14 @@ impl TilesetAssets {
 }
 
 pub fn tilemap(seed: u32, tileset_assets: &TilesetAssets) -> impl Bundle {
-    let chunk_size = UVec2::splat(32);
+    let chunk_size = UVec2::splat(320);
     let tile_display_size = UVec2::splat(32);
 
-    let random_context = RandomContext::new(seed + 33);
+    let mut random_context = RandomContext::new(seed + 33, tileset_assets.noise_scale);
 
     let tile_data: Vec<Option<TileData>> = (0..chunk_size.x)
         .flat_map(|x| (0..chunk_size.y).map(move |y| U16Vec2::new(x as u16, y as u16)))
-        .map(|pos| tileset_assets.get_tile(&random_context, pos, Ground::DirtRed))
+        .map(|pos| tileset_assets.get_tile(&mut random_context, pos))
         .collect();
 
     (
