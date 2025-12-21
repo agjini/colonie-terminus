@@ -18,6 +18,7 @@ pub(super) fn plugin(app: &mut App) {
 pub struct LevelAssets {
     #[asset]
     pub music: Shandle<AudioSource>,
+    pub seed: Option<u32>,
 }
 
 pub fn spawn_level(
@@ -33,7 +34,7 @@ pub fn spawn_level(
         Visibility::default(),
         DespawnOnExit(Screen::Gameplay),
         children![
-            tilemap(&tileset_assets),
+            tilemap(level_assets.seed.unwrap_or(32), &tileset_assets),
             player(400.0, &player_assets, &mut texture_atlas_layouts),
             (
                 Name::new("Gameplay Music"),
