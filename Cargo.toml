@@ -8,6 +8,7 @@ edition = "2024"
 avian2d = "0.4"
 bevy = "0.17.3"
 rand = "0.9"
+rand_chacha = "0.9.0"
 ron_asset_manager = "0.7.0"
 serde = { version = "1", features = ["derive"] }
 # Compile out low-severity logs to improve performance.

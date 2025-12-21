@@ -6,18 +6,24 @@ use crate::{
 };
 use avian2d::prelude::{Collider, RigidBody};
 use bevy::prelude::*;
+use rand::{Rng, SeedableRng};
+use rand_chacha::ChaCha8Rng;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
 
 pub(super) fn plugin(app: &mut App) {
     app.load_resource::<LevelAssets>("level.ron");
+    app.add_systems(First, prepare_tileset_texture);
 }
 
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Clone, Debug)]
 pub struct LevelAssets {
     #[asset]
     pub music: Shandle<AudioSource>,
+
+    #[asset]
+    pub tileset: Shandle<Image>,
 }
 
 pub fn spawn_level(
@@ -34,6 +40,7 @@ pub fn spawn_level(
         Visibility::default(),
         DespawnOnExit(Screen::Gameplay),
         children![
+            tiles(&level_assets.tileset.handle),
             player(400.0, &player_assets, &mut texture_atlas_layouts),
             (
                 Name::new("Gameplay Music"),
@@ -87,4 +94,50 @@ fn wall(
         RigidBody::Static,
         Collider::rectangle(size.x, size.y),
     )
+}
+
+fn tiles(tileset: &Handle<Image>) -> impl Bundle {
+    // We're seeding the PRNG here to make this example deterministic for testing purposes.
+    // This isn't strictly required in practical use unless you need your app to be deterministic.
+    let mut rng = ChaCha8Rng::seed_from_u64(42);
+
+    let chunk_size = UVec2::splat(32);
+    let tile_display_size = UVec2::splat(32);
+    let tile_data: Vec<Option<TileData>> = (0..chunk_size.element_product())
+        .map(|_| rng.random_range(0..5))
+        .map(|i| {
+            if i == 0 {
+                None
+            } else {
+                Some(TileData::from_tileset_index(i - 1))
+            }
+        })
+        .collect();
+
+    (
+        TilemapChunk {
+            chunk_size,
+            tile_display_size,
+            tileset: tileset.clone(),
+            ..default()
+        },
+        TilemapChunkTileData(tile_data),
+    )
+}
+
+fn prepare_tileset_texture(
+    level_assets: Option<Res<LevelAssets>>,
+    mut images: ResMut<Assets<Image>>,
+    mut converted: Local<bool>,
+) {
+    if *converted {
+        return;
+    }
+
+    if let Some(level_assets) = level_assets {
+        if let Some(image) = images.get_mut(&level_assets.tileset.handle) {
+            image.reinterpret_stacked_2d_as_array(4);
+            *converted = true;
+        }
+    }
 }
