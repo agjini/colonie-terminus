@@ -5,7 +5,7 @@ use bevy::{
     dev_tools::states::log_transitions, input::common_conditions::input_just_pressed, prelude::*,
 };
 
-use crate::screens::Screen;
+use crate::screen::Screen;
 
 #[derive(Resource, Default)]
 struct DebugState {

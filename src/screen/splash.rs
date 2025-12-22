@@ -4,7 +4,7 @@ use bevy::{
     prelude::*,
 };
 
-use crate::{AppSystems, screens::Screen, theme::prelude::*};
+use crate::{AppSystems, screen::Screen, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     app.insert_resource(ClearColor(SPLASH_BACKGROUND_COLOR));

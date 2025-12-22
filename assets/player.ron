@@ -1,3 +1,4 @@
+/* @[crate::gameplay::player::PlayerAssets] */
 (
     name: "Augustine",
     sprite: "images/ducky.png",

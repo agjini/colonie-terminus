@@ -1,3 +1,4 @@
+/* @[crate::menu::credits::CreditsAssets] */
 (
     music: "audio/music/Monkeys Spinning Monkeys.ogg",
     created_by: [

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{asset_tracking::ResourceHandles, screens::Screen, theme::prelude::*};
+use crate::{asset_tracking::ResourceHandles, screen::Screen, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Loading), spawn_loading_screen);

@@ -3,7 +3,7 @@ use crate::gameplay::tilemap::{TilesetAssets, tilemap};
 use crate::{
     audio::music,
     gameplay::player::{PlayerAssets, player},
-    screens::Screen,
+    screen::Screen,
 };
 use bevy::prelude::*;
 use ron_asset_manager::Shandle;

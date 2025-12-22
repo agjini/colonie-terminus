@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::utils::escape_just_pressed;
-use crate::{Pause, gameplay::level::spawn_level, menus::Menu, screens::Screen};
+use crate::{Pause, gameplay::level::spawn_level, menu::Menu, screen::Screen};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay), spawn_level);

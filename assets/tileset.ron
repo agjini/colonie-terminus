@@ -1,3 +1,4 @@
+/* @[crate::gameplay::tilemap::TilesetAssets] */
 (
     texture: "tiles/ground.png",
     tile_size: 32,

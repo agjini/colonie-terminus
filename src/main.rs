@@ -6,8 +6,8 @@
 mod asset_tracking;
 mod audio;
 mod gameplay;
-mod menus;
-mod screens;
+mod menu;
+mod screen;
 mod theme;
 mod utils;
 
@@ -49,8 +49,8 @@ impl Plugin for AppPlugin {
             audio::plugin,
             gameplay::plugin,
             PhysicsPlugins::default(),
-            menus::plugin,
-            screens::plugin,
+            menu::plugin,
+            screen::plugin,
             theme::plugin,
             #[cfg(feature = "dev")]
             dev_tools::plugin,

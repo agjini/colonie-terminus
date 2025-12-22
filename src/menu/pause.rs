@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::utils::escape_just_pressed;
-use crate::{menus::Menu, screens::Screen, theme::widget};
+use crate::{menu::Menu, screen::Screen, theme::widget};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Pause), spawn_pause_menu);
