@@ -6,7 +6,6 @@ use bevy::render::render_resource::TextureDimension::D2;
 use bevy::sprite_render::{TileData, TilemapChunk, TilemapChunkTileData};
 use noise::{NoiseFn, Perlin};
 use rand::Rng;
-use rand::rngs::ThreadRng;
 use rand_chacha::ChaCha8Rng;
 use rand_chacha::rand_core::SeedableRng;
 use ron_asset_manager::{Shandle, prelude::RonAsset};
@@ -55,7 +54,6 @@ pub struct Tileset {
 
 #[derive(Clone, Debug)]
 pub struct RandomContext {
-    pub seed: u32,
     pub scale: f64,
     pub perlin: Perlin,
     pub rng: ChaCha8Rng,
@@ -64,13 +62,13 @@ pub struct RandomContext {
 impl RandomContext {
     pub fn new(seed: u32, scale: f64) -> Self {
         Self {
-            seed,
             scale,
             perlin: Perlin::new(seed),
             rng: ChaCha8Rng::seed_from_u64(seed as u64),
         }
     }
 
+    #[allow(dead_code)]
     pub fn either<T>(&self, pos: U16Vec2, left: T, right: T) -> T {
         let val = self.noise(pos);
         if val.x > 0.5 { left } else { right }
@@ -107,10 +105,6 @@ impl RandomContext {
         let y = self.rng.random_range(from.y..=to.y);
 
         U16Vec2::new(x, y)
-    }
-
-    fn remap_noise_to_u16(&self, t: f64, min: u16, max: u16) -> u16 {
-        min + ((max - min) as f64 * t) as u16
     }
 }
 
@@ -172,7 +166,7 @@ fn prepare_tileset_texture(
             let tiles_x = source_image.width() / tile_size;
             let tiles_y = source_image.height() / tile_size;
 
-            let total_tiles = (tiles_x * tiles_y);
+            let total_tiles = tiles_x * tiles_y;
 
             let source_data = source_image.data.as_ref().unwrap();
             let mut tile_data = Vec::new();
