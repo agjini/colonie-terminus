@@ -4,7 +4,7 @@
     tile_size: 32,
     width: 1600,
     height: 704,
-    noise_scale: 0.05,
+    noise_scale: 0.025,
     grounds: {
         dirt_red: (
             tiles : (
@@ -13,8 +13,8 @@
             ),
             variants : {
                 rocks: (
-                    from: (9, 19),
-                    to: (12, 21),
+                    from: (9, 15),
+                    to: (12, 17),
                 )
             }
         ),
