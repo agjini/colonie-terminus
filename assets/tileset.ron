@@ -1,32 +1,32 @@
 /* @[crate::gameplay::tilemap::TilesetAssets] */
 (
-    texture: "tiles/ground.png",
+    texture: "tiles/magic/mainlevbuild.png",
     tile_size: 32,
-    width: 1600,
-    height: 704,
+    width: 1760,
+    height: 1024,
     noise_scale: 0.025,
     grounds: {
         dirt_red: (
             tiles : (
-                from: (9, 19),
-                to: (12, 21),
+                from: (12, 16),
+                to: (17, 20),
             ),
             variants : {
                 rocks: (
-                    from: (9, 15),
-                    to: (12, 17),
+                    from: (21, 17),
+                    to: (24, 19),
                 )
             }
         ),
         dirt_brown: (
             tiles : (
-                from: (27, 18),
-                to: (30, 20),
+                from: (20, 0),
+                to: (25, 4),
             ),
             variants: {
                 rocks: (
-                    from: (27, 14),
-                    to: (30, 16)
+                    from: (26, 6),
+                    to: (29, 8)
                 ),
             }
         ),
