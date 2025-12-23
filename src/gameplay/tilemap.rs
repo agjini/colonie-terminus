@@ -129,7 +129,7 @@ impl TilesetAssets {
 
 pub fn tilemap(seed: u32, tileset_assets: &TilesetAssets) -> impl Bundle {
     let chunk_size = UVec2::splat(320);
-    let tile_display_size = UVec2::splat(32);
+    let tile_display_size = UVec2::splat(tileset_assets.tile_size as u32);
 
     let mut random_context = RandomContext::new(seed + 33, tileset_assets.noise_scale);
 

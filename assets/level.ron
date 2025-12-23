@@ -1,7 +1,5 @@
 /* @[crate::gameplay::level::LevelAssets] */
 (
     music: "audio/music/Fluffing A Duck.ogg",
-    tileset: "tileset.ron",
-    player: "player.ron",
     seed: Some(34),
 )
