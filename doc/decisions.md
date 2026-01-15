@@ -76,6 +76,15 @@ Quelle est la vraie raison ?
 10. Si je me fait exfilter : je gagne de l'argent.
 11. Si je meurs : je perds tout mon argent.
 
+# Difficulté du run
+
+- [x] Un type d'ennemi a des stats fixes :
+  - santé
+  - dégat
+  - frequence d'apparition de base
+  - vitesse
+  - nombre de crédits qu'on gagne quand on le tue
+
 # Exploration/Events aléatoires :
 
 - [x] 2 minute avant l'exfiltration, je vois sur la minimap l'endroit où elle va arriver. Je dois me rendre à cet
