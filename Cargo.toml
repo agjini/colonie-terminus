@@ -5,12 +5,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-avian2d = "0.4"
-bevy = "0.17.3"
+avian2d = "0.5"
+bevy = { version = "0.18", default-features = false, features = ["2d"] }
 noise = "0.9"
 rand = "0.9"
 rand_chacha = "0.9.0"
-ron_asset_manager = "0.7.0"
+ron_asset_manager = { git = "https://github.com/agjini/ron_asset_manager.git", branch = "bevy_0.18" }
 serde = { version = "1", features = ["derive"] }
 # Compile out low-severity logs to improve performance.
 # Remove these features if you want to profile your game with tracy.
