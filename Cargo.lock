@@ -4443,7 +4443,8 @@ dependencies = [
 [[package]]
 name = "ron_asset_derive"
 version = "0.6.0"
-source = "git+https://github.com/agjini/ron_asset_manager.git?branch=bevy_0.18#068fac1570697b925ff2d559fc37cabd2e06f1ef"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fdb312bdc83344894927694f5549e55c358a34d94c0d2262f241015413cb7cbb"
 dependencies = [
  "quote",
  "syn",
@@ -4452,7 +4453,8 @@ dependencies = [
 [[package]]
 name = "ron_asset_manager"
 version = "0.8.0"
-source = "git+https://github.com/agjini/ron_asset_manager.git?branch=bevy_0.18#068fac1570697b925ff2d559fc37cabd2e06f1ef"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da8389df79364104b23cf2d1ca5fbd4e7788a1f795ee9f437f24bcbc37263421"
 dependencies = [
  "bevy",
  "ron 0.8.1",
