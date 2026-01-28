@@ -20,7 +20,6 @@ pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
             row_gap: px(20),
             ..default()
         },
-        // Don't block picking events for other UI roots.
         Pickable::IGNORE,
     )
 }
@@ -113,7 +112,6 @@ where
                     Text(text),
                     TextFont::from_font_size(40.0),
                     TextColor(BUTTON_TEXT.into()),
-                    // Don't bubble picking events from the text up to the button.
                     Pickable::IGNORE,
                 )],
             ));
@@ -125,15 +123,11 @@ where
 
 pub fn highlight_focused_element(
     input_focus: Res<InputFocus>,
-    // While this isn't strictly needed for the example,
-    // we're demonstrating how to be a good citizen by respecting the `InputFocusVisible` resource.
     input_focus_visible: Res<InputFocusVisible>,
     mut query: Query<(Entity, &InteractionPalette, &mut BackgroundColor)>,
 ) {
     for (entity, interaction, mut background_color) in query.iter_mut() {
         if input_focus.0 == Some(entity) && input_focus_visible.0 {
-            // Don't change the background size / radius here,
-            // as it would result in wiggling buttons when they are focused
             background_color.0 = interaction.hovered;
         } else {
             background_color.0 = interaction.none;
