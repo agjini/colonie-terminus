@@ -127,8 +127,20 @@ impl TilesetAssets {
     }
 }
 
-pub fn tilemap(seed: u32, tileset_assets: &TilesetAssets) -> impl Bundle {
-    let chunk_size = UVec2::splat(320);
+pub const CHUNK_SIZE: u32 = 320;
+
+pub fn world_size(tileset_assets: &TilesetAssets) -> f32 {
+    CHUNK_SIZE as f32 * tileset_assets.tile_size as f32
+}
+
+pub struct TilemapData {
+    pub chunk: TilemapChunk,
+    pub tile_data: TilemapChunkTileData,
+    pub world_size: f32,
+}
+
+pub fn tilemap_data(seed: u32, tileset_assets: &TilesetAssets) -> TilemapData {
+    let chunk_size = UVec2::splat(CHUNK_SIZE);
     let tile_display_size = UVec2::splat(tileset_assets.tile_size as u32);
 
     let mut random_context = RandomContext::new(seed + 33, tileset_assets.noise_scale);
@@ -138,15 +150,16 @@ pub fn tilemap(seed: u32, tileset_assets: &TilesetAssets) -> impl Bundle {
         .map(|pos| tileset_assets.get_tile(&mut random_context, pos))
         .collect();
 
-    (
-        TilemapChunk {
+    TilemapData {
+        chunk: TilemapChunk {
             chunk_size,
             tile_display_size,
             tileset: tileset_assets.texture.handle.clone(),
             ..default()
         },
-        TilemapChunkTileData(tile_data),
-    )
+        tile_data: TilemapChunkTileData(tile_data),
+        world_size: world_size(tileset_assets),
+    }
 }
 
 fn prepare_tileset_texture(
