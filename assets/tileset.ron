@@ -3,7 +3,6 @@
     texture: "tiles/magic/mainlevbuild.png",
     tile_size: 32,
     width: 1760,
-    height: 1024,
     noise_scale: 0.025,
     grounds: {
         dirt_red: (

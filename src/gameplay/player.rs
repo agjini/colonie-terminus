@@ -1,10 +1,7 @@
 use crate::asset_tracking::LoadResource;
 use crate::{
     AppSystems, PausableSystems,
-    gameplay::{
-        animation::PlayerAnimation,
-        movement::{MovementController, ScreenWrap},
-    },
+    gameplay::{animation::PlayerAnimation, movement::MovementController},
 };
 use avian2d::prelude::{
     Collider, CollisionEventsEnabled, DebugRender, LinearVelocity, LockedAxes, RigidBody,
@@ -48,7 +45,6 @@ pub fn player(
             max_speed,
             ..default()
         },
-        ScreenWrap,
         player_animation,
         RigidBody::Dynamic,
         Collider::rectangle(28.0, 28.0),
