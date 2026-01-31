@@ -12,7 +12,7 @@ use ron_asset_manager::{Shandle, prelude::RonAsset};
 use serde::Deserialize;
 use std::collections::HashMap;
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.load_resource::<TilesetAssets>("tileset.ron")
         .add_systems(Update, prepare_tileset_texture);
 }
@@ -127,7 +127,7 @@ impl TilesetAssets {
     }
 }
 
-pub const CHUNK_SIZE: u32 = 320;
+pub const CHUNK_SIZE: u32 = 100;
 
 pub fn world_size(tileset_assets: &TilesetAssets) -> f32 {
     CHUNK_SIZE as f32 * tileset_assets.tile_size as f32

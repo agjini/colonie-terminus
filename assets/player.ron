@@ -3,7 +3,7 @@
     sprite: "images/ducky.png",
     width: 32,
     height: 32,
-    speed: 400,
+    max_speed: 250,
     steps: [
         "audio/sound_effects/step1.ogg",
         "audio/sound_effects/step2.ogg",

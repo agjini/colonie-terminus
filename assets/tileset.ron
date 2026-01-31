@@ -1,4 +1,3 @@
-/* @[crate::gameplay::tilemap::TilesetAssets] */
 (
     texture: "tiles/magic/mainlevbuild.png",
     tile_size: 32,

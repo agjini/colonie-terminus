@@ -1,5 +1,5 @@
 use avian2d::prelude::LinearVelocity;
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::prelude::*;
 
 use crate::{AppSystems, PausableSystems};
 

@@ -7,6 +7,7 @@ use avian2d::prelude::{
     Collider, CollisionEventsEnabled, DebugRender, LinearVelocity, LockedAxes, RigidBody,
 };
 use bevy::prelude::*;
+use bevy::reflect::DynamicTypePath;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -22,7 +23,6 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 pub fn player(
-    max_speed: f32,
     player_assets: &PlayerAssets,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Bundle {
@@ -31,7 +31,7 @@ pub fn player(
     let player_animation = PlayerAnimation::new();
 
     (
-        Name::new("Player"),
+        Name::new(player_assets.name.to_string()),
         Player,
         Sprite::from_atlas_image(
             player_assets.sprite.handle.clone(),
@@ -40,9 +40,9 @@ pub fn player(
                 index: player_animation.get_atlas_index(),
             },
         ),
-        Transform::from_scale(Vec2::splat(4.0).extend(1.0)),
+        Transform::from_scale(Vec2::splat(2.0).extend(1.0)),
         MovementController {
-            max_speed,
+            max_speed: player_assets.max_speed,
             ..default()
         },
         player_animation,
@@ -107,6 +107,8 @@ fn record_player_directional_input(
 
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Debug, Clone)]
 pub struct PlayerAssets {
+    name: String,
+    max_speed: f32,
     #[asset]
     sprite: Shandle<Image>,
     #[asset]

@@ -1,4 +1,3 @@
-/* @[crate::gameplay::level::LevelAssets] */
 (
     music: "audio/music/Fluffing A Duck.ogg",
     seed: Some(34),

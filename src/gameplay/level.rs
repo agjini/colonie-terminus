@@ -1,4 +1,5 @@
 use crate::asset_tracking::LoadResource;
+use crate::gameplay::enemy::{EnemyAssets, enemy};
 use crate::gameplay::player::Player;
 use crate::gameplay::tilemap::{TilesetAssets, tilemap_data, world_size};
 use crate::{
@@ -11,11 +12,22 @@ use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
 
+const RECENTER_THRESHOLD: f32 = 500.0;
+
 const CAMERA_DECAY_RATE: f32 = 2.;
+
+#[derive(Component)]
+pub struct TilemapOrigin;
+
+#[derive(Component)]
+pub struct WorldEntity;
 
 pub(super) fn plugin(app: &mut App) {
     app.load_resource::<LevelAssets>("level.ron");
-    app.add_systems(Update, (update_camera, loop_translations));
+    app.add_systems(
+        Update,
+        (update_camera, update_tilemap_origin, recenter_world),
+    );
 }
 
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Clone, Debug)]
@@ -30,6 +42,7 @@ pub fn spawn_level(
     level_assets: Res<LevelAssets>,
     tileset_assets: Res<TilesetAssets>,
     player_assets: Res<PlayerAssets>,
+    enemy_assets: Res<EnemyAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let tilemap = tilemap_data(level_assets.seed.unwrap_or(32), &tileset_assets);
@@ -45,6 +58,7 @@ pub fn spawn_level(
             parent
                 .spawn((
                     Name::new("Tilemap"),
+                    TilemapOrigin,
                     Transform::default(),
                     Visibility::default(),
                 ))
@@ -72,7 +86,9 @@ pub fn spawn_level(
                     }
                 });
 
-            parent.spawn(player(400.0, &player_assets, &mut texture_atlas_layouts));
+            parent.spawn(player(&player_assets, &mut texture_atlas_layouts));
+
+            parent.spawn(enemy(&enemy_assets, &mut texture_atlas_layouts));
 
             parent.spawn((
                 Name::new("Gameplay Music"),
@@ -88,12 +104,14 @@ fn update_camera(
 ) {
     let Vec3 { x, y, .. } = player.translation;
     let direction = Vec3::new(x, y, camera.translation.z);
-    camera.translation = direction;
-    //.smooth_nudge(&direction, CAMERA_DECAY_RATE, time.delta_secs());
+    camera
+        .translation
+        .smooth_nudge(&direction, CAMERA_DECAY_RATE, time.delta_secs());
 }
 
-fn loop_translations(
-    mut query: Query<&mut Transform, With<Player>>,
+fn update_tilemap_origin(
+    player: Single<&Transform, With<Player>>,
+    mut tilemap: Single<&mut Transform, (With<TilemapOrigin>, Without<Player>)>,
     tileset_assets: Option<Res<TilesetAssets>>,
 ) {
     let Some(tileset_assets) = tileset_assets else {
@@ -101,8 +119,54 @@ fn loop_translations(
     };
     let size = world_size(&tileset_assets);
 
-    for mut t in &mut query {
-        t.translation.x = t.translation.x.rem_euclid(size);
-        t.translation.y = t.translation.y.rem_euclid(size);
+    let px = player.translation.x;
+    let py = player.translation.y;
+
+    tilemap.translation.x = (px / size).round() * size;
+    tilemap.translation.y = (py / size).round() * size;
+}
+
+fn recenter_world(
+    mut camera: Single<&mut Transform, (With<Camera2d>, Without<Player>, Without<TilemapOrigin>)>,
+    mut player: Single<&mut Transform, (With<Player>, Without<Camera2d>, Without<TilemapOrigin>)>,
+    mut tilemap: Single<&mut Transform, (With<TilemapOrigin>, Without<Player>, Without<Camera2d>)>,
+    mut entities: Query<
+        &mut Transform,
+        (
+            With<WorldEntity>,
+            Without<Camera2d>,
+            Without<Player>,
+            Without<TilemapOrigin>,
+        ),
+    >,
+    tileset_assets: Option<Res<TilesetAssets>>,
+) {
+    let Some(tileset_assets) = tileset_assets else {
+        return;
+    };
+    let size = world_size(&tileset_assets);
+
+    let px = player.translation.x;
+    let py = player.translation.y;
+
+    if px.abs() < RECENTER_THRESHOLD && py.abs() < RECENTER_THRESHOLD {
+        return;
+    }
+
+    let offset_x = (px / size).round() * size;
+    let offset_y = (py / size).round() * size;
+
+    player.translation.x -= offset_x;
+    player.translation.y -= offset_y;
+
+    camera.translation.x -= offset_x;
+    camera.translation.y -= offset_y;
+
+    tilemap.translation.x -= offset_x;
+    tilemap.translation.y -= offset_y;
+
+    for mut t in &mut entities {
+        t.translation.x -= offset_x;
+        t.translation.y -= offset_y;
     }
 }
