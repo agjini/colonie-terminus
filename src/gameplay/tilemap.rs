@@ -1,5 +1,6 @@
 use crate::asset_tracking::LoadResource;
-use bevy::math::{DVec2, U16Vec2};
+use bevy::math::U16Vec2;
+use bevy::math::ops::{cos, sin};
 use bevy::prelude::*;
 use bevy::render::render_resource::Extent3d;
 use bevy::render::render_resource::TextureDimension::D2;
@@ -11,6 +12,7 @@ use rand_chacha::rand_core::SeedableRng;
 use ron_asset_manager::{Shandle, prelude::RonAsset};
 use serde::Deserialize;
 use std::collections::HashMap;
+use std::f32::consts::PI;
 
 pub fn plugin(app: &mut App) {
     app.load_resource::<TilesetAssets>("tileset.ron")
@@ -36,7 +38,6 @@ pub struct TilesetAssets {
     pub texture: Shandle<Image>,
     pub tile_size: u16,
     pub width: u16,
-    pub noise_scale: f64,
     pub grounds: HashMap<Ground, GroundTilesetWithVariant>,
 }
 
@@ -54,39 +55,37 @@ pub struct Tileset {
 
 #[derive(Clone, Debug)]
 pub struct RandomContext {
-    pub scale: f64,
     pub perlin: Perlin,
     pub rng: ChaCha8Rng,
+    width: f32,
+    height: f32,
 }
 
 impl RandomContext {
-    pub fn new(seed: u32, scale: f64) -> Self {
+    pub fn new(seed: u32, width: f32, height: f32) -> Self {
         Self {
-            scale,
             perlin: Perlin::new(seed),
             rng: ChaCha8Rng::seed_from_u64(seed as u64),
+            width,
+            height,
         }
     }
 
-    #[allow(dead_code)]
-    pub fn either<T>(&self, pos: U16Vec2, left: T, right: T) -> T {
-        let val = self.noise(pos);
-        if val.x > 0.5 { left } else { right }
-    }
+    fn noise(&self, pos: U16Vec2) -> f64 {
+        let x = pos.x as f32;
+        let y = pos.y as f32;
 
-    fn noise(&self, pos: U16Vec2) -> DVec2 {
-        let nx = pos.x as f64 * self.scale;
-        let ny = pos.y as f64 * self.scale;
+        let nx = cos(2.0 * PI * x / self.width) as f64;
+        let ny = sin(2.0 * PI * x / self.width) as f64;
+        let nz = cos(2.0 * PI * y / self.height) as f64;
+        let nw = sin(2.0 * PI * y / self.height) as f64;
 
-        let noise_x = self.perlin.get([nx, ny]);
-        let noise_y = self.perlin.get([nx + 1000.0, ny]);
-
-        DVec2::new(noise_x, noise_y)
+        self.perlin.get([nx, ny, nz, nw])
     }
 
     pub fn ground_type(&self, pos: U16Vec2) -> Ground {
         let noise_value = self.noise(pos);
-        if noise_value.x > 0.0 {
+        if noise_value > 0.0 {
             Ground::DirtRed
         } else {
             Ground::DirtBrown
@@ -139,11 +138,16 @@ pub struct TilemapData {
     pub world_size: f32,
 }
 
-pub fn tilemap_data(seed: u32, tileset_assets: &TilesetAssets) -> TilemapData {
+pub fn tilemap_data(
+    seed: u32,
+    width: f32,
+    height: f32,
+    tileset_assets: &TilesetAssets,
+) -> TilemapData {
     let chunk_size = UVec2::splat(CHUNK_SIZE);
     let tile_display_size = UVec2::splat(tileset_assets.tile_size as u32);
 
-    let mut random_context = RandomContext::new(seed + 33, tileset_assets.noise_scale);
+    let mut random_context = RandomContext::new(seed + 33, width, height);
 
     let tile_data: Vec<Option<TileData>> = (0..chunk_size.x)
         .flat_map(|x| (0..chunk_size.y).map(move |y| U16Vec2::new(x as u16, y as u16)))

@@ -7,7 +7,6 @@ use avian2d::prelude::{
     Collider, CollisionEventsEnabled, DebugRender, LinearVelocity, LockedAxes, RigidBody,
 };
 use bevy::prelude::*;
-use bevy::reflect::DynamicTypePath;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;

@@ -12,8 +12,6 @@ use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
 
-const RECENTER_THRESHOLD: f32 = 500.0;
-
 const CAMERA_DECAY_RATE: f32 = 2.;
 
 #[derive(Component)]
@@ -35,6 +33,8 @@ pub struct LevelAssets {
     #[asset]
     pub music: Shandle<AudioSource>,
     pub seed: Option<u32>,
+    pub width: f32,
+    pub height: f32,
 }
 
 pub fn spawn_level(
@@ -45,7 +45,12 @@ pub fn spawn_level(
     enemy_assets: Res<EnemyAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let tilemap = tilemap_data(level_assets.seed.unwrap_or(32), &tileset_assets);
+    let tilemap = tilemap_data(
+        level_assets.seed.unwrap_or(32),
+        level_assets.width,
+        level_assets.height,
+        &tileset_assets,
+    );
 
     commands
         .spawn((
@@ -149,7 +154,8 @@ fn recenter_world(
     let px = player.translation.x;
     let py = player.translation.y;
 
-    if px.abs() < RECENTER_THRESHOLD && py.abs() < RECENTER_THRESHOLD {
+    let threshold = size / 2.;
+    if px.abs() < threshold && py.abs() < threshold {
         return;
     }
 

@@ -1,11 +1,5 @@
 use crate::asset_tracking::LoadResource;
-use crate::{
-    AppSystems, PausableSystems,
-    gameplay::{animation::PlayerAnimation, movement::MovementController},
-};
-use avian2d::prelude::{
-    Collider, CollisionEventsEnabled, DebugRender, LinearVelocity, LockedAxes, RigidBody,
-};
+use crate::gameplay::{animation::PlayerAnimation, movement::MovementController};
 use bevy::prelude::*;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;

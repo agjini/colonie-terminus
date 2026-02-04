@@ -1,4 +1,6 @@
 (
     music: "audio/music/Fluffing A Duck.ogg",
     seed: Some(34),
+    width: 512.0,
+    height: 512.0,
 )
