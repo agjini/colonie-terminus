@@ -54,19 +54,15 @@ fn spawn_splash_screen(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..default()
             },
             ImageNode::new(asset_server.load_with_settings(
-                // This should be an embedded asset for instant loading, but that is
-                // currently [broken on Windows Wasm builds](https://github.com/bevyengine/bevy/issues/14246).
                 "images/splash.png",
                 |settings: &mut ImageLoaderSettings| {
-                    // Make an exception for the splash image in case
-                    // `ImagePlugin::default_nearest()` is used for pixel art.
                     settings.sampler = ImageSampler::linear();
                 },
             )),
             ImageNodeFadeInOut {
                 total_duration: SPLASH_DURATION_SECS,
                 fade_duration: SPLASH_FADE_DURATION_SECS,
-                t: 0.0,
+                progress: 0.0,
             },
         )],
     ));
@@ -75,18 +71,14 @@ fn spawn_splash_screen(mut commands: Commands, asset_server: Res<AssetServer>) {
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 struct ImageNodeFadeInOut {
-    /// Total duration in seconds.
     total_duration: f32,
-    /// Fade duration in seconds.
     fade_duration: f32,
-    /// Current progress in seconds, between 0 and [`Self::total_duration`].
-    t: f32,
+    progress: f32,
 }
 
 impl ImageNodeFadeInOut {
     fn alpha(&self) -> f32 {
-        // Normalize by duration.
-        let t = (self.t / self.total_duration).clamp(0.0, 1.0);
+        let t = (self.progress / self.total_duration).clamp(0.0, 1.0);
         let fade = self.fade_duration / self.total_duration;
 
         // Regular trapezoid-shaped graph, flat at the top with alpha = 1.0.
@@ -96,7 +88,7 @@ impl ImageNodeFadeInOut {
 
 fn tick_fade_in_out(time: Res<Time>, mut animation_query: Query<&mut ImageNodeFadeInOut>) {
     for mut anim in &mut animation_query {
-        anim.t += time.delta_secs();
+        anim.progress += time.delta_secs();
     }
 }
 
@@ -130,10 +122,10 @@ fn tick_splash_timer(time: Res<Time>, mut timer: ResMut<SplashTimer>) {
 
 fn check_splash_timer(timer: ResMut<SplashTimer>, mut next_screen: ResMut<NextState<Screen>>) {
     if timer.0.just_finished() {
-        next_screen.set(Screen::Title);
+        next_screen.set(Screen::Title(true));
     }
 }
 
 fn enter_title_screen(mut next_screen: ResMut<NextState<Screen>>) {
-    next_screen.set(Screen::Title);
+    next_screen.set(Screen::Title(true));
 }

@@ -5,10 +5,16 @@ mod main;
 mod pause;
 mod settings;
 
+use crate::asset_tracking::LoadResource;
 use bevy::prelude::*;
+use ron_asset_manager::Shandle;
+use ron_asset_manager::prelude::RonAsset;
+use serde::Deserialize;
 
 pub(super) fn plugin(app: &mut App) {
     app.init_state::<Menu>();
+
+    app.load_resource::<MenuAssets>("menu.ron");
 
     app.add_plugins((
         credits::plugin,
@@ -26,4 +32,12 @@ pub enum Menu {
     Credits,
     Settings,
     Pause,
+}
+
+#[derive(Resource, TypePath, Asset, RonAsset, Deserialize, Debug, Clone)]
+struct MenuAssets {
+    #[asset]
+    music: Shandle<AudioSource>,
+    created_by: Vec<(String, String)>,
+    assets_by: Vec<(String, String)>,
 }

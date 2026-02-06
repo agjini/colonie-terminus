@@ -1,7 +1,7 @@
 use bevy::{audio::Volume, prelude::*};
 
 use crate::utils::escape_just_pressed;
-use crate::{menu::Menu, screen::Screen, theme::prelude::*};
+use crate::{MetaState, menu::Menu, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Settings), spawn_settings_menu);
@@ -102,18 +102,18 @@ fn update_global_volume_label(
 
 fn go_back_on_click(
     _: On<Pointer<Click>>,
-    screen: Res<State<Screen>>,
+    screen: Res<State<MetaState>>,
     mut next_menu: ResMut<NextState<Menu>>,
 ) {
-    next_menu.set(if screen.get() == &Screen::Title {
+    next_menu.set(if screen.get() == &MetaState::InMenu {
         Menu::Main
     } else {
         Menu::Pause
     });
 }
 
-fn go_back(screen: Res<State<Screen>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(if screen.get() == &Screen::Title {
+fn go_back(screen: Res<State<MetaState>>, mut next_menu: ResMut<NextState<Menu>>) {
+    next_menu.set(if screen.get() == &MetaState::InMenu {
         Menu::Main
     } else {
         Menu::Pause

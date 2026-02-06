@@ -1,5 +1,3 @@
-//! The game's main screen states and transitions between them.
-
 mod gameplay;
 mod loading;
 mod splash;
@@ -18,12 +16,10 @@ pub(super) fn plugin(app: &mut App) {
     ));
 }
 
-/// The game's main screen states.
 #[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 pub enum Screen {
     #[default]
     Splash,
-    Title,
-    Loading,
-    Gameplay,
+    Title(bool),
+    Gameplay(bool),
 }

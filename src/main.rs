@@ -14,6 +14,8 @@ mod utils;
 #[cfg(feature = "dev")]
 mod dev_tools;
 
+use crate::screen::Screen;
+use crate::screen::Screen::{Gameplay, Title};
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::Gravity;
 use bevy::{asset::AssetMetaCheck, prelude::*};
@@ -68,6 +70,7 @@ impl Plugin for AppPlugin {
         );
 
         app.init_state::<Pause>();
+        app.add_computed_state::<MetaState>();
         app.configure_sets(Update, PausableSystems.run_if(in_state(Pause(false))));
 
         app.add_systems(Startup, spawn_camera);
@@ -95,4 +98,32 @@ struct PausableSystems;
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((Name::new("Camera"), Camera2d));
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
+enum MetaState {
+    #[default]
+    InMenu,
+    InGame,
+    Loading,
+}
+
+impl ComputedStates for MetaState {
+    type SourceStates = Screen;
+
+    fn compute(screen: Screen) -> Option<Self> {
+        match screen {
+            Title(loading) => Some(if loading {
+                MetaState::Loading
+            } else {
+                MetaState::InMenu
+            }),
+            Gameplay(loading) => Some(if loading {
+                MetaState::Loading
+            } else {
+                MetaState::InGame
+            }),
+            _ => Some(MetaState::InMenu),
+        }
+    }
 }

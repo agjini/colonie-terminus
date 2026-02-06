@@ -1,6 +1,6 @@
 (
-    music: "audio/music/Fluffing A Duck.ogg",
+    music: "audio/music/11. Awakening Station.ogg",
     seed: Some(34),
-    width: 512.0,
-    height: 512.0,
+    planet_width: 500, // garder un multiple de chunck size
+    planet_height: 500,
 )
