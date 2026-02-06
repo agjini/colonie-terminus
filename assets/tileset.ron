@@ -1,7 +1,7 @@
 (
     texture: "tiles/magic/mainlevbuild.png",
     tile_size: 32,
-    chunk_size: 100,
+    chunk_size: 50,
     width: 1760,
     grounds: {
         dirt_red: (

@@ -176,11 +176,11 @@ fn recycle_chunks(
     let mut uncovered_iter = uncovered.into_iter();
 
     for (mut planet_pos, mut tile_data, mut transform) in &mut chunks {
-        if !expected.contains(&planet_pos.0) {
-            if let Some(new_pos) = uncovered_iter.next() {
-                planet_pos.0 = new_pos;
-                *tile_data = chunk_tile_data(seed, planet_size, new_pos, &tileset_assets);
-            }
+        if !expected.contains(&planet_pos.0)
+            && let Some(new_pos) = uncovered_iter.next()
+        {
+            planet_pos.0 = new_pos;
+            *tile_data = chunk_tile_data(seed, planet_size, new_pos, &tileset_assets);
         }
 
         let gx = planet_pos.0.x / cs - new_center.x;
