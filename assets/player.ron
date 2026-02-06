@@ -5,9 +5,8 @@
     height: 32,
     max_speed: 250,
     steps: [
-        "audio/sound_effects/step1.ogg",
-        "audio/sound_effects/step2.ogg",
-        "audio/sound_effects/step3.ogg",
-        "audio/sound_effects/step4.ogg",
+        "audio/sound_effects/powerUp.wav",
+        "audio/sound_effects/powerUp-1.wav",
+        "audio/sound_effects/powerUp-2.wav"
     ]
 )
