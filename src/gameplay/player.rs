@@ -7,6 +7,7 @@ use avian2d::prelude::{
     Collider, CollisionEventsEnabled, DebugRender, LinearVelocity, LockedAxes, RigidBody,
 };
 use bevy::prelude::*;
+use bevy_seedling::prelude::AudioSample;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -111,5 +112,5 @@ pub struct PlayerAssets {
     #[asset]
     sprite: Shandle<Image>,
     #[asset]
-    pub steps: Vec<Shandle<AudioSource>>,
+    pub steps: Vec<Shandle<AudioSample>>,
 }

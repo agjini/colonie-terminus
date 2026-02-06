@@ -1,6 +1,7 @@
 use crate::{asset_tracking::LoadResource, audio::sound_effect};
 use bevy::input_focus::InputFocus;
 use bevy::prelude::*;
+use bevy_seedling::prelude::AudioSample;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -39,9 +40,9 @@ fn apply_interaction_palette(
 #[derive(Resource, Asset, TypePath, RonAsset, Deserialize, Debug, Clone)]
 struct InteractionAssets {
     #[asset]
-    hover: Shandle<AudioSource>,
+    hover: Shandle<AudioSample>,
     #[asset]
-    click: Shandle<AudioSource>,
+    click: Shandle<AudioSample>,
 }
 
 fn play_on_focus_sound_effect(

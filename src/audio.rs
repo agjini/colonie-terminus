@@ -1,44 +1,70 @@
 use bevy::prelude::*;
+use bevy_seedling::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(
-        Update,
-        apply_global_volume.run_if(resource_changed::<GlobalVolume>),
-    );
+    app.add_plugins(SeedlingPlugin::default());
+    app.add_systems(Startup, set_default_volume);
 }
 
-/// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
-/// general "music" category (e.g. global background music, soundtrack).
-///
-/// This can then be used to query for and operate on sounds in that category.
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
-pub struct Music;
-
-/// A music audio instance.
-pub fn music(handle: Handle<AudioSource>) -> impl Bundle {
-    (AudioPlayer(handle), PlaybackSettings::LOOP, Music)
+pub fn music(handle: Handle<AudioSample>) -> impl Bundle {
+    (MusicPool, SamplePlayer::new(handle).looping())
 }
 
-/// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
-/// general "sound effect" category (e.g. footsteps, the sound of a magic spell, a door opening).
-///
-/// This can then be used to query for and operate on sounds in that category.
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
-pub struct SoundEffect;
-
-/// A sound effect audio instance.
-pub fn sound_effect(handle: Handle<AudioSource>) -> impl Bundle {
-    (AudioPlayer(handle), PlaybackSettings::DESPAWN, SoundEffect)
+pub fn sound_effect(handle: Handle<AudioSample>) -> impl Bundle {
+    SamplePlayer::new(handle)
 }
 
-/// [`GlobalVolume`] doesn't apply to already-running audio entities, so this system will update them.
-fn apply_global_volume(
-    global_volume: Res<GlobalVolume>,
-    mut audio_query: Query<(&PlaybackSettings, &mut AudioSink)>,
+pub const CONVERTER: PerceptualVolume = PerceptualVolume::new();
+
+const MIN_VOLUME: f32 = 0.0;
+const MAX_VOLUME: f32 = 3.0;
+
+const STEP: f32 = 0.1;
+
+pub fn lower_music_volume(
+    _: On<Pointer<Click>>,
+    mut music: Single<&mut VolumeNode, With<SamplerPool<MusicPool>>>,
 ) {
-    for (playback, mut sink) in &mut audio_query {
-        sink.set_volume(global_volume.volume * playback.volume);
-    }
+    music.volume = decrement_volume(music.volume);
+}
+
+pub fn raise_music_volume(
+    _: On<Pointer<Click>>,
+    mut music: Single<&mut VolumeNode, With<SamplerPool<MusicPool>>>,
+) {
+    music.volume = increment_volume(music.volume);
+}
+
+pub fn lower_sfx_volume(
+    _: On<Pointer<Click>>,
+    mut sfx: Single<&mut VolumeNode, With<SoundEffectsBus>>,
+) {
+    sfx.volume = decrement_volume(sfx.volume);
+}
+
+pub fn raise_sfx_volume(
+    _: On<Pointer<Click>>,
+    mut sfx: Single<&mut VolumeNode, With<SoundEffectsBus>>,
+) {
+    sfx.volume = increment_volume(sfx.volume);
+}
+
+fn increment_volume(volume: Volume) -> Volume {
+    let perceptual = CONVERTER.volume_to_perceptual(volume);
+    let new_perceptual = (perceptual + STEP).min(MAX_VOLUME);
+    CONVERTER.perceptual_to_volume(new_perceptual)
+}
+
+fn decrement_volume(volume: Volume) -> Volume {
+    let perceptual = CONVERTER.volume_to_perceptual(volume);
+    let new_perceptual = (perceptual - STEP).max(MIN_VOLUME);
+    CONVERTER.perceptual_to_volume(new_perceptual)
+}
+
+fn set_default_volume(
+    mut master: Single<&mut VolumeNode, (With<MainBus>, Without<SoundEffectsBus>)>,
+    mut sfx: Single<&mut VolumeNode, (With<SoundEffectsBus>, Without<MainBus>)>,
+) {
+    master.volume = CONVERTER.perceptual_to_volume(0.7);
+    sfx.volume = CONVERTER.perceptual_to_volume(1.2);
 }

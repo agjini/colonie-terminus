@@ -1,9 +1,12 @@
-use bevy::{audio::Volume, prelude::*};
-
+use crate::audio::{
+    CONVERTER, lower_music_volume, lower_sfx_volume, raise_music_volume, raise_sfx_volume,
+};
 use crate::utils::escape_just_pressed;
 use crate::{MetaState, menu::Menu, theme::prelude::*};
+use bevy::prelude::*;
+use bevy_seedling::prelude::{MusicPool, SamplerPool, SoundEffectsBus, VolumeNode};
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Settings), spawn_settings_menu);
     app.add_systems(
         Update,
@@ -12,7 +15,7 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_systems(
         Update,
-        update_global_volume_label.run_if(in_state(Menu::Settings)),
+        (update_music_volume_label, update_sfx_volume_label).run_if(in_state(Menu::Settings)),
     );
 }
 
@@ -41,26 +44,34 @@ fn settings_grid() -> impl Bundle {
         },
         children![
             (
-                widget::label("Master Volume"),
+                widget::label("Music Volume"),
                 Node {
                     justify_self: JustifySelf::End,
                     ..default()
                 }
             ),
-            global_volume_widget(),
+            music_volume_widget(),
+            (
+                widget::label("Sfx Volume"),
+                Node {
+                    justify_self: JustifySelf::End,
+                    ..default()
+                }
+            ),
+            sfx_volume_widget(),
         ],
     )
 }
 
-fn global_volume_widget() -> impl Bundle {
+fn music_volume_widget() -> impl Bundle {
     (
-        Name::new("Global Volume Widget"),
+        Name::new("Music Volume Widget"),
         Node {
             justify_self: JustifySelf::Start,
             ..default()
         },
         children![
-            widget::button_small("-", lower_global_volume),
+            widget::button_small("-", lower_music_volume),
             (
                 Name::new("Current Volume"),
                 Node {
@@ -68,36 +79,60 @@ fn global_volume_widget() -> impl Bundle {
                     justify_content: JustifyContent::Center,
                     ..default()
                 },
-                children![(widget::label(""), GlobalVolumeLabel)],
+                children![(widget::label(""), MusicVolumeLabel)],
             ),
-            widget::button_small("+", raise_global_volume),
+            widget::button_small("+", raise_music_volume),
         ],
     )
 }
 
-const MIN_VOLUME: f32 = 0.0;
-const MAX_VOLUME: f32 = 3.0;
-
-fn lower_global_volume(_: On<Pointer<Click>>, mut global_volume: ResMut<GlobalVolume>) {
-    let linear = (global_volume.volume.to_linear() - 0.1).max(MIN_VOLUME);
-    global_volume.volume = Volume::Linear(linear);
-}
-
-fn raise_global_volume(_: On<Pointer<Click>>, mut global_volume: ResMut<GlobalVolume>) {
-    let linear = (global_volume.volume.to_linear() + 0.1).min(MAX_VOLUME);
-    global_volume.volume = Volume::Linear(linear);
+fn sfx_volume_widget() -> impl Bundle {
+    (
+        Name::new("Sfx Volume Widget"),
+        Node {
+            justify_self: JustifySelf::Start,
+            ..default()
+        },
+        children![
+            widget::button_small("-", lower_sfx_volume),
+            (
+                Name::new("Current Sfx Volume"),
+                Node {
+                    padding: UiRect::horizontal(px(10)),
+                    justify_content: JustifyContent::Center,
+                    ..default()
+                },
+                children![(widget::label(""), SfxVolumeLabel)],
+            ),
+            widget::button_small("+", raise_sfx_volume),
+        ],
+    )
 }
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-struct GlobalVolumeLabel;
+struct MusicVolumeLabel;
 
-fn update_global_volume_label(
-    global_volume: Res<GlobalVolume>,
-    mut label: Single<&mut Text, With<GlobalVolumeLabel>>,
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+struct SfxVolumeLabel;
+
+fn update_music_volume_label(
+    mut label: Single<&mut Text, With<MusicVolumeLabel>>,
+    music: Single<&VolumeNode, (With<SamplerPool<MusicPool>>, Changed<VolumeNode>)>,
 ) {
-    let percent = 100.0 * global_volume.volume.to_linear();
-    label.0 = format!("{percent:3.0}%");
+    let percent = CONVERTER.volume_to_perceptual(music.volume) * 100.0;
+    let text = format!("{}%", percent.round());
+    label.0 = text;
+}
+
+fn update_sfx_volume_label(
+    mut label: Single<&mut Text, With<SfxVolumeLabel>>,
+    sfx: Single<&VolumeNode, (With<SoundEffectsBus>, Changed<VolumeNode>)>,
+) {
+    let percent = CONVERTER.volume_to_perceptual(sfx.volume) * 100.0;
+    let text = format!("{}%", percent.round());
+    label.0 = text;
 }
 
 fn go_back_on_click(

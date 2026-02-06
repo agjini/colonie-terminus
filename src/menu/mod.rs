@@ -1,5 +1,3 @@
-//! The game's menus and transitions between them.
-
 mod credits;
 mod main;
 mod pause;
@@ -7,6 +5,7 @@ mod settings;
 
 use crate::asset_tracking::LoadResource;
 use bevy::prelude::*;
+use bevy_seedling::prelude::AudioSample;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -37,7 +36,7 @@ pub enum Menu {
 #[derive(Resource, TypePath, Asset, RonAsset, Deserialize, Debug, Clone)]
 struct MenuAssets {
     #[asset]
-    music: Shandle<AudioSource>,
+    music: Shandle<AudioSample>,
     created_by: Vec<(String, String)>,
     assets_by: Vec<(String, String)>,
 }

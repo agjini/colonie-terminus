@@ -1,15 +1,15 @@
 (
     music: "audio/music/12. Before the Warp.ogg",
     created_by: [
-        ("Game design", "Crustaces team"),
-        ("Dev", "Crustaces team"),
-        ("Crustaces team", "https://www.meetup.com/groupe-meetup-mende-nouvelles-technologies/"),
+        ("Game design", "Crustace team #Lozère"),
+        ("Dev", "Crustace team #Lozère"),
+        ("Crustace team", "https://www.meetup.com/groupe-meetup-mende-nouvelles-technologies/"),
     ],
     assets_by: [
        ("Ducky sprite", "CC0 by Caz Creates Games"),
-       ("Tileset", "2d-magic-lands-set3 created by Szadi art"),
+       ("Tileset", "Szadi art."),
        ("Button SFX", "CC0 by Jaszunio15"),
-       ("Music", "Space Music Pack - Goose Ninja"),
+       ("Music", "AlkaKrab"),
        (
            "Bevy logo",
            "All rights reserved by the Bevy Foundation, permission granted for splash screen use when unmodified",

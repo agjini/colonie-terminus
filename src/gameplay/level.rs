@@ -11,6 +11,7 @@ use crate::{
 };
 use bevy::prelude::*;
 use bevy::sprite_render::TilemapChunkTileData;
+use bevy_seedling::prelude::AudioSample;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -40,7 +41,7 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Clone, Debug)]
 pub struct LevelAssets {
     #[asset]
-    pub music: Shandle<AudioSource>,
+    pub music: Shandle<AudioSample>,
     pub seed: Option<u32>,
     pub planet_width: u32,
     pub planet_height: u32,
