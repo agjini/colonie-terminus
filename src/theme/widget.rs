@@ -98,7 +98,7 @@ where
         Node::default(),
         Children::spawn(SpawnWith(|parent: &mut ChildSpawner| {
             let mut entity = parent.spawn((
-                Name::new("Button Inner"),
+                Name::new(text.to_string()),
                 Button,
                 BackgroundColor(BUTTON_BACKGROUND.into()),
                 InteractionPalette {

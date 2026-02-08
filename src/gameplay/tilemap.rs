@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use bevy::render::render_resource::Extent3d;
 use bevy::render::render_resource::TextureDimension::D2;
 use bevy::sprite_render::{TileData, TilemapChunk, TilemapChunkTileData};
-use noise::{NoiseFn, Perlin};
+use noiz::prelude::*;
 use ron_asset_manager::{Shandle, prelude::RonAsset};
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -54,35 +54,42 @@ pub struct Tileset {
 #[derive(Component)]
 pub struct ChunkPlanetPos(pub IVec2);
 
-#[derive(Clone, Debug)]
-pub struct RandomContext {
-    pub perlin: Perlin,
+#[derive(Clone)]
+pub struct TilemapGenerator {
+    pub noise: Noise<MixCellGradients<OrthoGrid, Smoothstep, QuickGradients>>,
     pub seed: u32,
     planet_width: f32,
     planet_height: f32,
 }
 
-impl RandomContext {
+impl TilemapGenerator {
     pub fn new(seed: u32, planet_width: f32, planet_height: f32) -> Self {
+        let mut noise = Noise::<MixCellGradients<OrthoGrid, Smoothstep, QuickGradients>>::default();
+        noise.set_seed(seed);
+        noise.set_frequency(2.);
         Self {
-            perlin: Perlin::new(seed),
+            noise,
             seed,
             planet_width,
             planet_height,
         }
     }
 
-    fn wrapping_noise(&self, pos: IVec2, scale: f64, offset: f64) -> f64 {
+    fn wrapping_noise(&self, pos: IVec2, scale: f32, offset: f32) -> f64 {
         let x = pos.x as f32;
         let y = pos.y as f32;
 
-        let nx = cos(2.0 * PI * x / self.planet_width) as f64 * scale;
-        let ny = sin(2.0 * PI * x / self.planet_width) as f64 * scale;
-        let nz = cos(2.0 * PI * y / self.planet_height) as f64 * scale;
-        let nw = sin(2.0 * PI * y / self.planet_height) as f64 * scale;
+        let nx = cos(2.0 * PI * x / self.planet_width) * scale;
+        let ny = sin(2.0 * PI * x / self.planet_width) * scale;
+        let nz = cos(2.0 * PI * y / self.planet_height) * scale;
+        let nw = sin(2.0 * PI * y / self.planet_height) * scale;
 
-        self.perlin
-            .get([nx + offset, ny + offset, nz + offset, nw + offset])
+        self.noise.sample(Vec4::new(
+            nx + offset,
+            ny + offset,
+            nz + offset,
+            nw + offset,
+        ))
     }
 
     pub fn ground_type(&self, pos: IVec2) -> Ground {
@@ -119,7 +126,7 @@ fn hash(seed: u32, x: i32, y: i32) -> u32 {
 }
 
 impl TilesetAssets {
-    pub fn get_tile(&self, ctx: &RandomContext, pos: IVec2) -> Option<TileData> {
+    pub fn get_tile(&self, ctx: &TilemapGenerator, pos: IVec2) -> Option<TileData> {
         let ground = ctx.ground_type(pos);
         let has_rocks = ctx.has_variant(pos);
 
@@ -151,7 +158,7 @@ pub fn chunk_tile_data(
     tileset_assets: &TilesetAssets,
 ) -> TilemapChunkTileData {
     let chunk_size = tileset_assets.chunk_size;
-    let ctx = RandomContext::new(seed + 33, planet_size.x as f32, planet_size.y as f32);
+    let ctx = TilemapGenerator::new(seed + 33, planet_size.x as f32, planet_size.y as f32);
 
     let tile_data: Vec<Option<TileData>> = (0..chunk_size)
         .flat_map(|x| (0..chunk_size).map(move |y| IVec2::new(x as i32, y as i32)))

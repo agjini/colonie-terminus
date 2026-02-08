@@ -1,3 +1,5 @@
+use crate::theme::widget::highlight_focused_element;
+use crate::utils::group_by;
 use bevy::camera::NormalizedRenderTarget;
 use bevy::input_focus::directional_navigation::{
     DirectionalNavigation, DirectionalNavigationMap, DirectionalNavigationPlugin,
@@ -7,9 +9,8 @@ use bevy::math::CompassOctant;
 use bevy::picking::backend::HitData;
 use bevy::picking::pointer::{Location, PointerId};
 use bevy::prelude::*;
+use bevy::ui::UiGlobalTransform;
 use std::time::Duration;
-
-use crate::theme::widget::highlight_focused_element;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((InputDispatchPlugin, DirectionalNavigationPlugin));
@@ -40,27 +41,65 @@ impl Default for StickNavigationCooldown {
 }
 
 fn setup_navigation_for_new_buttons(
-    new_buttons: Query<Entity, (Added<Focusable>, With<Button>)>,
-    all_buttons: Query<Entity, (With<Focusable>, With<Button>)>,
+    new_buttons: Query<Entity, (With<Button>, Changed<UiGlobalTransform>)>,
+    all_buttons: Query<(Entity, &UiGlobalTransform), (With<Focusable>, With<Button>)>,
     mut nav_map: ResMut<DirectionalNavigationMap>,
     mut input_focus: ResMut<InputFocus>,
 ) {
-    if new_buttons.is_empty() {
-        return;
-    }
-
-    let buttons: Vec<Entity> = all_buttons.iter().collect();
-
-    if buttons.is_empty() {
+    if new_buttons.is_empty() || all_buttons.is_empty() {
         return;
     }
 
     nav_map.clear();
 
-    nav_map.add_looping_edges(&buttons, CompassOctant::South);
-    nav_map.add_looping_edges(&buttons, CompassOctant::East);
+    let rows = group_by(
+        all_buttons
+            .iter()
+            .map(|(e, t)| (e, t.translation.x, t.translation.y)),
+        |(_, _, y)| *y as i32,
+        |(_, x, _)| *x as i32,
+    );
 
-    input_focus.set(buttons[0]);
+    if let Some(&(first, _, _)) = rows.first().and_then(|r| r.first()) {
+        input_focus.set(first);
+    }
+
+    for row in &rows {
+        let entities: Vec<Entity> = row.iter().map(|(e, _, _)| *e).collect();
+        nav_map.add_looping_edges(&entities, CompassOctant::East);
+    }
+
+    for window in rows.windows(2) {
+        connect_adjacent_rows(&mut nav_map, &window[0], &window[1]);
+    }
+    if rows.len() >= 2 {
+        connect_adjacent_rows(&mut nav_map, rows.last().unwrap(), rows.first().unwrap());
+    }
+}
+
+fn connect_adjacent_rows(
+    nav_map: &mut DirectionalNavigationMap,
+    upper: &[(Entity, f32, f32)],
+    lower: &[(Entity, f32, f32)],
+) {
+    connect_to_nearest(nav_map, upper, lower, CompassOctant::South);
+    connect_to_nearest(nav_map, lower, upper, CompassOctant::North);
+}
+
+fn connect_to_nearest(
+    nav_map: &mut DirectionalNavigationMap,
+    from: &[(Entity, f32, f32)],
+    to: &[(Entity, f32, f32)],
+    direction: CompassOctant,
+) {
+    for &(entity, x, _) in from {
+        if let Some(&(target, _, _)) = to
+            .iter()
+            .min_by(|(_, ax, _), (_, bx, _)| (ax - x).abs().total_cmp(&(bx - x).abs()))
+        {
+            nav_map.add_edge(entity, target, direction);
+        }
+    }
 }
 
 fn handle_keyboard_navigation(

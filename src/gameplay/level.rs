@@ -12,6 +12,8 @@ use crate::{
 use bevy::prelude::*;
 use bevy::sprite_render::TilemapChunkTileData;
 use bevy_seedling::prelude::AudioSample;
+use rand::RngCore;
+use rand::rngs::ThreadRng;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -49,13 +51,17 @@ pub struct LevelAssets {
 
 pub fn spawn_level(
     mut commands: Commands,
-    level_assets: Res<LevelAssets>,
+    mut level_assets: ResMut<LevelAssets>,
     tileset_assets: Res<TilesetAssets>,
     player_assets: Res<PlayerAssets>,
     enemy_assets: Res<EnemyAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
+    if level_assets.seed.is_none() {
+        level_assets.seed = Some(ThreadRng::default().next_u32());
+    }
     let seed = level_assets.seed.unwrap_or(32);
+    info!("seed: {}", seed);
     let planet_size = UVec2::new(level_assets.planet_width, level_assets.planet_height);
     let chunk = tilemap_chunk(&tileset_assets);
     let chunk_px = chunk_pixel_size(&tileset_assets);

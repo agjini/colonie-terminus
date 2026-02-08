@@ -21,9 +21,9 @@ bevy = { version = "0.18", default-features = false, features = [
 ] }
 avian2d = "0.5"
 bevy_seedling = "0.7"
-noise = "0.9"
+noiz = "0.4"
 rand = "0.9"
-rand_chacha = "0.9"
+itertools = "0.14"
 ron_asset_manager = "0.8"
 serde = { version = "1", features = ["derive"] }
 # Compile out low-severity logs to improve performance.

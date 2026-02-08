@@ -1,18 +1,15 @@
 (
     music: "audio/music/12. Before the Warp.ogg",
     created_by: [
-        ("Game design", "Crustace team #Lozère"),
-        ("Dev", "Crustace team #Lozère"),
-        ("Crustace team", "https://www.meetup.com/groupe-meetup-mende-nouvelles-technologies/"),
+        ("Game design", "Crustace team #Lozere #Fr"),
+        ("Dev", "Crustace team #Lozère  #Fr"),
+        ("Join us at", "https://www.meetup.com/groupe-meetup-mende-nouvelles-technologies/"),
     ],
     assets_by: [
-       ("Ducky sprite", "CC0 by Caz Creates Games"),
-       ("Tileset", "Szadi art."),
-       ("Button SFX", "CC0 by Jaszunio15"),
+       ("Ducky sprite", "Caz Creates Games (CC0)"),
+       ("Tiles", "Szadi art"),
+       ("Button SFX", "Jaszunio15 (CC0)"),
        ("Music", "AlkaKrab"),
-       (
-           "Bevy logo",
-           "All rights reserved by the Bevy Foundation, permission granted for splash screen use when unmodified",
-       ),
+       ("Bevy logo", "Bevy Foundation"),
     ]
 )
