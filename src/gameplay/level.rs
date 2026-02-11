@@ -1,5 +1,6 @@
 use crate::asset_tracking::LoadResource;
 use crate::gameplay::enemy::{EnemyAssets, enemy};
+use crate::gameplay::layer::Layer;
 use crate::gameplay::player::Player;
 use crate::gameplay::tilemap::{
     ChunkPlanetPos, TilesetAssets, chunk_pixel_size, chunk_tile_data, tilemap_chunk,
@@ -81,6 +82,7 @@ pub fn spawn_level(
                     TilemapOrigin,
                     Transform::default(),
                     Visibility::default(),
+                    Layer(-1.),
                 ))
                 .with_children(|tilemap_parent| {
                     for ox in -1..=1 {

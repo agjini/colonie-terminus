@@ -1,4 +1,5 @@
 use crate::asset_tracking::LoadResource;
+use crate::gameplay::layer::Layer;
 use crate::gameplay::{animation::PlayerAnimation, movement::MovementController};
 use bevy::prelude::*;
 use ron_asset_manager::Shandle;
@@ -27,6 +28,7 @@ pub fn enemy(
     (
         Name::new(enemy.name.to_string()),
         Enemy,
+        Layer(10.),
         Sprite::from_atlas_image(
             enemy.sprite.handle.clone(),
             TextureAtlas {

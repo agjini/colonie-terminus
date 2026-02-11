@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 mod animation;
 mod enemy;
+mod layer;
 pub mod level;
 mod movement;
 pub mod player;
@@ -15,5 +16,6 @@ pub(super) fn plugin(app: &mut App) {
         player::plugin,
         enemy::plugin,
         tilemap::plugin,
+        layer::plugin,
     ));
 }

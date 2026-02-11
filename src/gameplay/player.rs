@@ -1,4 +1,5 @@
 use crate::asset_tracking::LoadResource;
+use crate::gameplay::layer::Layer;
 use crate::{
     AppSystems, PausableSystems,
     gameplay::{animation::PlayerAnimation, movement::MovementController},
@@ -33,6 +34,7 @@ pub fn player(
     (
         Name::new(player_assets.name.to_string()),
         Player,
+        Layer(20.),
         Sprite::from_atlas_image(
             player_assets.sprite.handle.clone(),
             TextureAtlas {
