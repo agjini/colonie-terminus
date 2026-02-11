@@ -1,12 +1,5 @@
 (
-    enemies:
-    [
-        (
-            name: "Saucison",
-            sprite: "images/bear/s5-2-bear-Sheet - idle.png",
-            rows: 4,
-            cols: 2,
-            max_speed: 250
-        )
-    ]
+    name: "Saucisson",
+    sprite: "images/black_ducky.png",
+    max_speed: 250,
 )

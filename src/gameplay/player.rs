@@ -2,7 +2,7 @@ use crate::asset_tracking::LoadResource;
 use crate::gameplay::layer::Layer;
 use crate::{
     AppSystems, PausableSystems,
-    gameplay::{animation::PlayerAnimation, movement::MovementController},
+    gameplay::{animation::CharacterAnimation, movement::MovementController},
 };
 use avian2d::prelude::{
     Collider, CollisionEventsEnabled, DebugRender, LinearVelocity, LockedAxes, RigidBody,
@@ -13,7 +13,7 @@ use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.load_resource::<PlayerAssets>("player.ron");
     app.add_systems(
         Update,
@@ -29,7 +29,7 @@ pub fn player(
 ) -> impl Bundle {
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(32), 6, 2, Some(UVec2::splat(1)), None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let player_animation = PlayerAnimation::new();
+    let animation = CharacterAnimation::new();
 
     (
         Name::new(player_assets.name.to_string()),
@@ -39,7 +39,7 @@ pub fn player(
             player_assets.sprite.handle.clone(),
             TextureAtlas {
                 layout: texture_atlas_layout,
-                index: player_animation.get_atlas_index(),
+                index: animation.get_atlas_index(),
             },
         ),
         Transform::from_scale(Vec2::splat(2.0).extend(1.0)),
@@ -47,7 +47,7 @@ pub fn player(
             max_speed: player_assets.max_speed,
             ..default()
         },
-        player_animation,
+        animation,
         RigidBody::Dynamic,
         Collider::rectangle(28.0, 28.0),
         LinearVelocity::ZERO,

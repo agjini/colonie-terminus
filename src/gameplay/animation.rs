@@ -25,14 +25,14 @@ pub fn plugin(app: &mut App) {
     );
 }
 
-fn update_animation_timer(time: Res<Time>, mut query: Query<&mut PlayerAnimation>) {
+fn update_animation_timer(time: Res<Time>, mut query: Query<&mut CharacterAnimation>) {
     for mut animation in &mut query {
         animation.update_timer(time.delta());
     }
 }
 
 fn update_animation_movement(
-    mut player_query: Query<(&MovementController, &mut Sprite, &mut PlayerAnimation)>,
+    mut player_query: Query<(&MovementController, &mut Sprite, &mut CharacterAnimation)>,
 ) {
     for (controller, mut sprite, mut animation) in &mut player_query {
         let dx = controller.intent.x;
@@ -41,15 +41,15 @@ fn update_animation_movement(
         }
 
         let animation_state = if controller.intent == Vec2::ZERO {
-            PlayerAnimationState::Idling
+            CharacterAnimationState::Idle
         } else {
-            PlayerAnimationState::Walking
+            CharacterAnimationState::Walk
         };
         animation.update_state(animation_state);
     }
 }
 
-fn update_animation_atlas(mut query: Query<(&PlayerAnimation, &mut Sprite)>) {
+fn update_animation_atlas(mut query: Query<(&CharacterAnimation, &mut Sprite)>) {
     for (animation, mut sprite) in &mut query {
         let Some(atlas) = sprite.texture_atlas.as_mut() else {
             continue;
@@ -63,10 +63,10 @@ fn update_animation_atlas(mut query: Query<(&PlayerAnimation, &mut Sprite)>) {
 fn trigger_step_sound_effect(
     mut commands: Commands,
     player_assets: If<Res<PlayerAssets>>,
-    mut step_query: Query<&PlayerAnimation>,
+    mut step_query: Query<&CharacterAnimation>,
 ) {
     for animation in &mut step_query {
-        if animation.state == PlayerAnimationState::Walking
+        if animation.state == CharacterAnimationState::Walk
             && animation.changed()
             && (animation.frame == 2 || animation.frame == 5)
         {
@@ -79,29 +79,29 @@ fn trigger_step_sound_effect(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct PlayerAnimation {
+pub struct CharacterAnimation {
     timer: Timer,
     frame: usize,
-    state: PlayerAnimationState,
+    state: CharacterAnimationState,
 }
 
 #[derive(Reflect, PartialEq)]
-pub enum PlayerAnimationState {
-    Idling,
-    Walking,
+pub enum CharacterAnimationState {
+    Idle,
+    Walk,
 }
 
-impl PlayerAnimation {
+impl CharacterAnimation {
     const IDLE_FRAMES: usize = 2;
     const IDLE_INTERVAL: Duration = Duration::from_millis(500);
-    const WALKING_FRAMES: usize = 6;
+    const WALK_FRAMES: usize = 6;
     const WALKING_INTERVAL: Duration = Duration::from_millis(50);
 
     fn idling() -> Self {
         Self {
             timer: Timer::new(Self::IDLE_INTERVAL, TimerMode::Repeating),
             frame: 0,
-            state: PlayerAnimationState::Idling,
+            state: CharacterAnimationState::Idle,
         }
     }
 
@@ -109,7 +109,7 @@ impl PlayerAnimation {
         Self {
             timer: Timer::new(Self::WALKING_INTERVAL, TimerMode::Repeating),
             frame: 0,
-            state: PlayerAnimationState::Walking,
+            state: CharacterAnimationState::Walk,
         }
     }
 
@@ -124,16 +124,16 @@ impl PlayerAnimation {
         }
         self.frame = (self.frame + 1)
             % match self.state {
-                PlayerAnimationState::Idling => Self::IDLE_FRAMES,
-                PlayerAnimationState::Walking => Self::WALKING_FRAMES,
+                CharacterAnimationState::Idle => Self::IDLE_FRAMES,
+                CharacterAnimationState::Walk => Self::WALK_FRAMES,
             };
     }
 
-    pub fn update_state(&mut self, state: PlayerAnimationState) {
+    pub fn update_state(&mut self, state: CharacterAnimationState) {
         if self.state != state {
             match state {
-                PlayerAnimationState::Idling => *self = Self::idling(),
-                PlayerAnimationState::Walking => *self = Self::walking(),
+                CharacterAnimationState::Idle => *self = Self::idling(),
+                CharacterAnimationState::Walk => *self = Self::walking(),
             }
         }
     }
@@ -144,8 +144,8 @@ impl PlayerAnimation {
 
     pub fn get_atlas_index(&self) -> usize {
         match self.state {
-            PlayerAnimationState::Idling => self.frame,
-            PlayerAnimationState::Walking => 6 + self.frame,
+            CharacterAnimationState::Idle => self.frame,
+            CharacterAnimationState::Walk => 6 + self.frame,
         }
     }
 }
