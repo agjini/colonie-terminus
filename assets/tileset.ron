@@ -1,5 +1,5 @@
 (
-    texture: "tiles/magic/mainlevbuild.png",
+    texture: "tiles/magic/mainlevbuild.ktx2",
     tile_size: 32,
     chunk_size: 50,
     width: 1760,

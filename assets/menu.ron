@@ -1,8 +1,8 @@
 (
     music: "audio/music/12. Before the Warp.ogg",
     created_by: [
-        ("Game design", "Crustace team #Lozere #Fr"),
-        ("Dev", "Crustace team #Lozère  #Fr"),
+        ("Game design", "Crustace team"),
+        ("Dev", "Crustace team"),
         ("Join us at", "https://www.meetup.com/groupe-meetup-mende-nouvelles-technologies/"),
     ],
     assets_by: [
