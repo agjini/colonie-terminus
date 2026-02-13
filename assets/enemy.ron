@@ -1,5 +1,9 @@
 (
-    name: "Saucisson",
-    sprite: "images/black_ducky.png",
-    max_speed: 250,
+    types: [
+        (
+            name: "Saucisson",
+            sprite: "images/black_ducky.png",
+            max_speed: 250,
+        )
+    ]
 )

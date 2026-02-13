@@ -14,7 +14,7 @@ pub fn enemy(
     enemy_assets: &EnemyAssets,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Bundle {
-    let enemy = enemy_assets;
+    let enemy = enemy_assets.types.first().unwrap();
 
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(32), 6, 2, Some(UVec2::splat(1)), None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
@@ -40,12 +40,17 @@ pub fn enemy(
     )
 }
 
-#[derive(Component, Debug, Clone, Copy, Eq, PartialEq, Default, Reflect)]
-#[reflect(Component)]
+#[derive(Component)]
 pub struct Enemy;
 
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Debug, Clone)]
 pub struct EnemyAssets {
+    #[asset]
+    types: Vec<EnemyType>,
+}
+
+#[derive(RonAsset, Deserialize, Debug, Clone)]
+pub struct EnemyType {
     name: String,
     max_speed: f32,
     #[asset]
