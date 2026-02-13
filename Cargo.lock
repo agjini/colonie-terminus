@@ -1854,6 +1854,7 @@ name = "colonie-terminus"
 version = "0.1.0"
 dependencies = [
  "avian2d",
+ "basis-universal-sys",
  "bevy",
  "bevy_seedling",
  "getrandom 0.3.4",

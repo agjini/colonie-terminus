@@ -1,10 +1,7 @@
 use crate::asset_tracking::LoadResource;
 use crate::gameplay::tilemap::generator::TilemapGenerator;
-use crate::screen::Screen::Gameplay;
 use bevy::math::U16Vec2;
 use bevy::prelude::*;
-use bevy::render::render_resource::Extent3d;
-use bevy::render::render_resource::TextureDimension::D2;
 use bevy::sprite_render::TileData;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;

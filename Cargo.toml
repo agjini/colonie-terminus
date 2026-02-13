@@ -28,6 +28,8 @@ rand = "0.10"
 itertools = "0.14"
 ron_asset_manager = "0.8"
 serde = { version = "1", features = ["derive"] }
+# Use the Rust-only Basis decoder
+basis-universal-sys = { version = "0.3", default-features = false }
 # Compile out low-severity logs to improve performance.
 # Remove these features if you want to profile your game with tracy.
 # (see <https://github.com/bevyengine/bevy/blob/main/docs/profiling.md#tracy-profiler>)
