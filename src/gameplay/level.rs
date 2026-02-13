@@ -46,6 +46,7 @@ pub fn spawn_level(
     player_assets: Res<PlayerAssets>,
     enemy_assets: Res<EnemyAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    mut images: ResMut<Assets<Image>>,
 ) {
     info!("Loading level with seed: {}", level_assets.seed);
 
@@ -65,6 +66,6 @@ pub fn spawn_level(
             parent.spawn(player(&player_assets, &mut texture_atlas_layouts));
             parent.spawn(enemy(&enemy_assets, &mut texture_atlas_layouts));
 
-            spawn_tilemap(parent, &level_assets, &tileset_assets);
+            spawn_tilemap(parent, &level_assets, &tileset_assets, &mut images);
         });
 }

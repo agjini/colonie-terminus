@@ -103,7 +103,7 @@ fn record_player_directional_input(
     };
 
     for mut controller in &mut controller_query {
-        controller.intent = intent;
+        controller.direction = intent;
     }
 }
 

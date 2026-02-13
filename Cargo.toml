@@ -18,8 +18,6 @@ bevy = { version = "0.18", default-features = false, features = [
     "webgpu",
     "x11",
     "bevy_gilrs",
-    "ktx2",
-    "basis-universal"
 ] }
 avian2d = "0.5"
 bevy_seedling = "0.7"
@@ -28,8 +26,6 @@ rand = "0.10"
 itertools = "0.14"
 ron_asset_manager = "0.8"
 serde = { version = "1", features = ["derive"] }
-# Use the Rust-only Basis decoder
-basis-universal-sys = { version = "0.3", default-features = false }
 # Compile out low-severity logs to improve performance.
 # Remove these features if you want to profile your game with tracy.
 # (see <https://github.com/bevyengine/bevy/blob/main/docs/profiling.md#tracy-profiler>)
@@ -39,7 +35,7 @@ tracing = { version = "0.1", features = [
 ] }
 
 [target.wasm32-unknown-unknown.dependencies]
-getrandom = { version = "0.3", features = ["wasm_js"] }
+getrandom = { version = "0.4", features = ["wasm_js"] }
 
 [features]
 # Default to a native dev build.

@@ -35,12 +35,12 @@ fn update_animation_movement(
     mut player_query: Query<(&MovementController, &mut Sprite, &mut CharacterAnimation)>,
 ) {
     for (controller, mut sprite, mut animation) in &mut player_query {
-        let dx = controller.intent.x;
+        let dx = controller.direction.x;
         if dx != 0.0 {
             sprite.flip_x = dx < 0.0;
         }
 
-        let animation_state = if controller.intent == Vec2::ZERO {
+        let animation_state = if controller.direction == Vec2::ZERO {
             CharacterAnimationState::Idle
         } else {
             CharacterAnimationState::Walk
