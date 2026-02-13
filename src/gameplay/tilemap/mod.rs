@@ -1,4 +1,4 @@
-use crate::gameplay::layer::Layer;
+use crate::gameplay::layer::GameLayer;
 use crate::gameplay::level::{LevelAssets, TilemapOrigin};
 use crate::gameplay::tilemap::asset::{TilesetAssets, convert_tileset_to_array};
 use crate::gameplay::tilemap::chunk::{chunk_pixel_size, chunk_tile_data, tilemap_chunk};
@@ -53,7 +53,7 @@ pub fn spawn_tilemap(
             TilemapOrigin,
             Transform::default(),
             Visibility::default(),
-            Layer(-1.),
+            GameLayer::Ground,
         ))
         .with_children(|p| {
             for chunk in chunks {

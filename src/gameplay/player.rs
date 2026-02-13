@@ -1,11 +1,12 @@
 use crate::asset_tracking::LoadResource;
-use crate::gameplay::layer::Layer;
+use crate::gameplay::layer::GameLayer;
 use crate::{
     AppSystems, PausableSystems,
     gameplay::{animation::CharacterAnimation, movement::MovementController},
 };
 use avian2d::prelude::{
-    Collider, CollisionEventsEnabled, DebugRender, LinearVelocity, LockedAxes, RigidBody,
+    Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LinearVelocity, LockedAxes,
+    RigidBody,
 };
 use bevy::prelude::*;
 use bevy_seedling::prelude::AudioSample;
@@ -34,7 +35,7 @@ pub fn player(
     (
         Name::new(player_assets.name.to_string()),
         Player,
-        Layer(20.),
+        GameLayer::Player,
         Sprite::from_atlas_image(
             player_assets.sprite.handle.clone(),
             TextureAtlas {
@@ -49,10 +50,11 @@ pub fn player(
         },
         animation,
         RigidBody::Dynamic,
-        Collider::rectangle(28.0, 28.0),
+        Collider::circle(5.0),
         LinearVelocity::ZERO,
         LockedAxes::ROTATION_LOCKED,
         CollisionEventsEnabled,
+        CollisionLayers::new(GameLayer::Player, [GameLayer::Ground]),
         DebugRender::default().with_collider_color(Color::WHITE),
     )
 }

@@ -1,3 +1,4 @@
+use avian2d::prelude::PhysicsLayer;
 use bevy::app::App;
 use bevy::prelude::{Changed, Component, Query, Transform, Update};
 
@@ -5,12 +6,27 @@ pub fn plugin(app: &mut App) {
     app.add_systems(Update, order_layers);
 }
 
-#[derive(Component)]
-pub struct Layer(pub f32);
+#[derive(Component, PhysicsLayer, Default)]
+pub enum GameLayer {
+    #[default]
+    Ground,
+    Player,
+    Enemy,
+}
 
-fn order_layers(mut sprites: Query<(&mut Transform, &Layer), Changed<Transform>>) {
+impl GameLayer {
+    fn z(&self) -> f32 {
+        match self {
+            GameLayer::Ground => -1.,
+            GameLayer::Player => 20.,
+            GameLayer::Enemy => 10.,
+        }
+    }
+}
+
+fn order_layers(mut sprites: Query<(&mut Transform, &GameLayer), Changed<Transform>>) {
     for (mut transform, layer) in &mut sprites {
         transform.translation.z =
-            layer.0 - (1.0f32 / (1.0f32 + (2.0f32.powf(-0.01 * transform.translation.y))));
+            layer.z() - (1.0f32 / (1.0f32 + (2.0f32.powf(-0.01 * transform.translation.y))));
     }
 }

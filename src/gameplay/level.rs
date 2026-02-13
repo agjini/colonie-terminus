@@ -1,5 +1,6 @@
 use crate::asset_tracking::LoadResource;
-use crate::gameplay::enemy::{EnemyAssets, enemy};
+use crate::gameplay::enemy::asset::EnemyAssets;
+use crate::gameplay::enemy::enemy;
 use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
 use crate::{

@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use rand::prelude::*;
 use std::time::Duration;
 
+use crate::gameplay::player::Player;
 use crate::{
     AppSystems, PausableSystems,
     audio::sound_effect,
@@ -63,7 +64,7 @@ fn update_animation_atlas(mut query: Query<(&CharacterAnimation, &mut Sprite)>) 
 fn trigger_step_sound_effect(
     mut commands: Commands,
     player_assets: If<Res<PlayerAssets>>,
-    mut step_query: Query<&CharacterAnimation>,
+    mut step_query: Query<&CharacterAnimation, With<Player>>,
 ) {
     for animation in &mut step_query {
         if animation.state == CharacterAnimationState::Walk

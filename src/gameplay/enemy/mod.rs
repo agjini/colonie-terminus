@@ -1,13 +1,17 @@
-use crate::asset_tracking::LoadResource;
-use crate::gameplay::layer::Layer;
+use crate::gameplay::enemy::asset::{Enemy, EnemyAssets};
+use crate::gameplay::layer::GameLayer;
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
+use avian2d::prelude::{
+    Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LockedAxes, RigidBody,
+};
+use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
-use ron_asset_manager::Shandle;
-use ron_asset_manager::prelude::RonAsset;
-use serde::Deserialize;
+
+pub mod asset;
+pub mod movement;
 
 pub fn plugin(app: &mut App) {
-    app.load_resource::<EnemyAssets>("enemy.ron");
+    app.add_plugins((asset::plugin, movement::plugin));
 }
 
 pub fn enemy(
@@ -23,7 +27,7 @@ pub fn enemy(
     (
         Name::new(enemy.name.to_string()),
         Enemy,
-        Layer(10.),
+        GameLayer::Enemy,
         Sprite::from_atlas_image(
             enemy.sprite.handle.clone(),
             TextureAtlas {
@@ -37,22 +41,11 @@ pub fn enemy(
             ..default()
         },
         enemy_animation,
+        RigidBody::Dynamic,
+        Collider::circle(5.0),
+        LockedAxes::ROTATION_LOCKED,
+        CollisionEventsEnabled,
+        CollisionLayers::new(GameLayer::Enemy, [GameLayer::Ground]),
+        DebugRender::default().with_collider_color(AMBER_400.into()),
     )
-}
-
-#[derive(Component)]
-pub struct Enemy;
-
-#[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Debug, Clone)]
-pub struct EnemyAssets {
-    #[asset]
-    types: Vec<EnemyType>,
-}
-
-#[derive(RonAsset, Deserialize, Debug, Clone)]
-pub struct EnemyType {
-    name: String,
-    max_speed: f32,
-    #[asset]
-    sprite: Shandle<Image>,
 }
