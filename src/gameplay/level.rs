@@ -1,13 +1,10 @@
 use crate::asset_tracking::LoadResource;
 use crate::gameplay::enemy::asset::EnemyAssets;
 use crate::gameplay::enemy::enemy;
+use crate::gameplay::player::asset::PlayerAssets;
 use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
-use crate::{
-    audio::music,
-    gameplay::player::{PlayerAssets, player},
-    screen::Screen,
-};
+use crate::{audio::music, gameplay::player::player, screen::Screen};
 use bevy::prelude::*;
 use bevy_seedling::prelude::AudioSample;
 use rand::Rng;
@@ -65,7 +62,10 @@ pub fn spawn_level(
             ));
 
             parent.spawn(player(&player_assets, &mut texture_atlas_layouts));
-            parent.spawn(enemy(&enemy_assets, &mut texture_atlas_layouts));
+
+            for _ in 0..2000 {
+                parent.spawn(enemy(&enemy_assets, &mut texture_atlas_layouts));
+            }
 
             spawn_tilemap(parent, &level_assets, &tileset_assets, &mut images);
         });

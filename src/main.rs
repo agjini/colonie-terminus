@@ -17,7 +17,8 @@ mod dev_tools;
 use crate::screen::Screen;
 use crate::screen::Screen::{Gameplay, Title};
 use avian2d::PhysicsPlugins;
-use avian2d::prelude::Gravity;
+use avian2d::prelude::{Gravity, Physics, PhysicsTime};
+use bevy::window::{CursorOptions, WindowMode, WindowResolution};
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
 fn main() -> AppExit {
@@ -41,6 +42,14 @@ impl Plugin for AppPlugin {
                     primary_window: Window {
                         title: "Colonie Terminus".to_string(),
                         fit_canvas_to_parent: true,
+                        resolution: WindowResolution::new(1024, 768)
+                            .with_scale_factor_override(2.0),
+                        mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
+                        ..default()
+                    }
+                    .into(),
+                    primary_cursor_options: CursorOptions {
+                        visible: false,
                         ..default()
                     }
                     .into(),
@@ -70,23 +79,19 @@ impl Plugin for AppPlugin {
         );
 
         app.init_state::<Pause>();
-        app.add_computed_state::<MetaState>();
         app.configure_sets(Update, PausableSystems.run_if(in_state(Pause(false))));
+        app.add_computed_state::<MetaState>();
 
+        app.add_systems(OnEnter(Pause(true)), pause);
+        app.add_systems(OnEnter(Pause(false)), unpause);
         app.add_systems(Startup, spawn_camera);
     }
 }
 
-/// High-level groupings of systems for the app in the `Update` schedule.
-/// When adding a new variant, make sure to order it in the `configure_sets`
-/// call above.
 #[derive(SystemSet, Debug, Clone, Copy, Eq, PartialEq, Hash, PartialOrd, Ord)]
 enum AppSystems {
-    /// Tick timers.
     TickTimers,
-    /// Record player input.
     RecordInput,
-    /// Do everything else (consider splitting this into further variants).
     Update,
 }
 
@@ -126,4 +131,12 @@ impl ComputedStates for MetaState {
             _ => Some(MetaState::InMenu),
         }
     }
+}
+
+fn pause(mut time: ResMut<Time<Physics>>) {
+    time.pause();
+}
+
+fn unpause(mut time: ResMut<Time<Physics>>) {
+    time.unpause();
 }

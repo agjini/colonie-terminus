@@ -6,6 +6,8 @@ use avian2d::prelude::{
 };
 use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
+use rand::RngExt;
+use rand::prelude::ThreadRng;
 
 pub mod asset;
 pub mod movement;
@@ -24,6 +26,11 @@ pub fn enemy(
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
     let enemy_animation = CharacterAnimation::new();
 
+    let mut rng = ThreadRng::default();
+
+    let x = rng.random_range(-2000.0..2000.0);
+    let y = rng.random_range(-2000.0..2000.0);
+
     (
         Name::new(enemy.name.to_string()),
         Enemy,
@@ -35,17 +42,17 @@ pub fn enemy(
                 index: enemy_animation.get_atlas_index(),
             },
         ),
-        Transform::from_scale(Vec2::splat(2.0).extend(1.0)),
+        Transform::from_xyz(x, y, 0.0).with_scale(Vec2::splat(2.0).extend(1.0)),
         MovementController {
             max_speed: enemy.max_speed,
             ..default()
         },
         enemy_animation,
         RigidBody::Dynamic,
-        Collider::circle(5.0),
+        Collider::circle(8.0),
         LockedAxes::ROTATION_LOCKED,
         CollisionEventsEnabled,
-        CollisionLayers::new(GameLayer::Enemy, [GameLayer::Ground]),
+        CollisionLayers::new(GameLayer::Enemy, [GameLayer::Ground, GameLayer::Enemy]),
         DebugRender::default().with_collider_color(AMBER_400.into()),
     )
 }

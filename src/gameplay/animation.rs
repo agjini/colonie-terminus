@@ -3,10 +3,9 @@ use rand::prelude::*;
 use std::time::Duration;
 
 use crate::gameplay::player::Player;
+use crate::gameplay::player::asset::PlayerAssets;
 use crate::{
-    AppSystems, PausableSystems,
-    audio::sound_effect,
-    gameplay::{movement::MovementController, player::PlayerAssets},
+    AppSystems, PausableSystems, audio::sound_effect, gameplay::movement::MovementController,
 };
 
 pub fn plugin(app: &mut App) {
