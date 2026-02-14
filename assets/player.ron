@@ -3,8 +3,9 @@
     sprite: "images/ducky.png",
     max_speed: 250,
     steps: [
-        "audio/sound_effects/powerUp.ogg",
-        "audio/sound_effects/powerUp-1.ogg",
-        "audio/sound_effects/powerUp-2.ogg"
+        "audio/sound_effects/step.ogg",
+        "audio/sound_effects/step-1.ogg",
+        "audio/sound_effects/step-2.ogg",
+        "audio/sound_effects/step-3.ogg"
     ]
 )
