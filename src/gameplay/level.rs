@@ -7,7 +7,7 @@ use crate::gameplay::tilemap::spawn_tilemap;
 use crate::{audio::music, gameplay::player::player, screen::Screen};
 use bevy::prelude::*;
 use bevy_seedling::prelude::AudioSample;
-use rand::Rng;
+use rand::RngCore;
 use rand::rngs::ThreadRng;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;

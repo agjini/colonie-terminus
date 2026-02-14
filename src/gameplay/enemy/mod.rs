@@ -6,7 +6,7 @@ use avian2d::prelude::{
 };
 use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
-use rand::RngExt;
+use rand::Rng;
 use rand::prelude::ThreadRng;
 
 pub mod asset;
