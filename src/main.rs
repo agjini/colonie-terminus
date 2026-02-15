@@ -18,7 +18,8 @@ use crate::screen::Screen;
 use crate::screen::Screen::{Gameplay, Title};
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::{Gravity, Physics, PhysicsTime};
-use bevy::window::{CursorOptions, WindowMode, WindowResolution};
+use bevy::input::common_conditions::input_just_pressed;
+use bevy::window::{CursorOptions, PrimaryWindow, WindowMode, WindowResolution};
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
 fn main() -> AppExit {
@@ -85,6 +86,10 @@ impl Plugin for AppPlugin {
         app.add_systems(OnEnter(Pause(true)), pause);
         app.add_systems(OnEnter(Pause(false)), unpause);
         app.add_systems(Startup, spawn_camera);
+        app.add_systems(
+            Update,
+            change_window_mode.run_if(input_just_pressed(KeyCode::F3)),
+        );
     }
 }
 
@@ -131,6 +136,14 @@ impl ComputedStates for MetaState {
             _ => Some(MetaState::InMenu),
         }
     }
+}
+
+fn change_window_mode(mut window: Single<&mut Window, With<PrimaryWindow>>) {
+    window.mode = if window.mode == WindowMode::Windowed {
+        WindowMode::BorderlessFullscreen(MonitorSelection::Current)
+    } else {
+        WindowMode::Windowed
+    };
 }
 
 fn pause(mut time: ResMut<Time<Physics>>) {

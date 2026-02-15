@@ -9,7 +9,7 @@ pub fn plugin(app: &mut App) {
         Update,
         (
             update_move_timer.in_set(AppSystems::TickTimers),
-            (move_enemies,).chain().in_set(AppSystems::Update),
+            move_enemies.in_set(AppSystems::Update),
         )
             .in_set(PausableSystems),
     );
@@ -21,7 +21,7 @@ struct EnemyMoveTimer(Timer);
 
 impl Default for EnemyMoveTimer {
     fn default() -> Self {
-        Self(Timer::from_seconds(0.5, TimerMode::Repeating))
+        Self(Timer::from_seconds(1., TimerMode::Repeating))
     }
 }
 
