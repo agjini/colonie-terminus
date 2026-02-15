@@ -4,6 +4,7 @@ use crate::gameplay::enemy::enemy;
 use crate::gameplay::player::asset::PlayerAssets;
 use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
+use crate::gameplay::player::weapon::reticle;
 use crate::{audio::music, gameplay::player::player, screen::Screen};
 use bevy::prelude::*;
 use bevy_seedling::prelude::AudioSample;
@@ -47,6 +48,8 @@ fn spawn_level(
     enemy_assets: Res<EnemyAssets>,
     mut camera: Single<&mut Transform, With<Camera2d>>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
     mut images: ResMut<Assets<Image>>,
 ) {
     info!("Loading level with seed: {}", level_assets.seed);
@@ -67,7 +70,11 @@ fn spawn_level(
                 music(level_assets.music.handle.clone()),
             ));
 
-            parent.spawn(player(&player_assets, &mut texture_atlas_layouts));
+            parent
+                .spawn(player(&player_assets, &mut texture_atlas_layouts))
+                .with_children(|player| {
+                    player.spawn(reticle(&mut meshes, &mut materials, &mut images));
+                });
 
             for _ in 0..2000 {
                 parent.spawn(enemy(&mut rng, &enemy_assets, &mut texture_atlas_layouts));

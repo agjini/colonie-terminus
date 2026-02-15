@@ -1,11 +1,12 @@
 use crate::gameplay::player::Player;
+use crate::gameplay::player::weapon::WeaponDirection;
 use crate::{AppSystems, PausableSystems, gameplay::movement::MovementController};
 use bevy::prelude::*;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        record_player_directional_input
+        (record_player_directional_input, record_weapon_direction)
             .in_set(AppSystems::RecordInput)
             .in_set(PausableSystems),
     );
@@ -54,5 +55,35 @@ fn record_player_directional_input(
 
     for mut controller in &mut controller_query {
         controller.direction = intent;
+    }
+}
+
+const AIM_DEADZONE: f32 = 0.2;
+
+fn record_weapon_direction(
+    gamepads: Query<&Gamepad>,
+    window: Single<&Window>,
+    camera: Single<(&Camera, &GlobalTransform), With<Camera2d>>,
+    mut player_query: Query<(&GlobalTransform, &mut WeaponDirection), With<Player>>,
+) {
+    let (cam, cam_transform) = *camera;
+
+    for (player_transform, mut weapon_dir) in &mut player_query {
+        if let Some(gamepad) = gamepads.iter().next() {
+            let stick = gamepad.right_stick();
+            if stick.x.abs() > AIM_DEADZONE || stick.y.abs() > AIM_DEADZONE {
+                weapon_dir.0 = Vec2::new(stick.x, stick.y).normalize();
+                continue;
+            }
+        }
+
+        // if let Some(cursor_pos) = window.cursor_position()
+        //     && let Ok(world_pos) = cam.viewport_to_world_2d(cam_transform, cursor_pos)
+        // {
+        //     let dir = world_pos - player_transform.translation().truncate();
+        //     if dir.length() > 1.0 {
+        //         weapon_dir.0 = dir.normalize();
+        //     }
+        // }
     }
 }

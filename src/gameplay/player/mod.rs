@@ -1,5 +1,6 @@
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::asset::PlayerAssets;
+use crate::gameplay::player::weapon::WeaponDirection;
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use avian2d::prelude::{
     Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LinearVelocity, LockedAxes,
@@ -10,9 +11,10 @@ use bevy::sprite::Anchor;
 
 pub mod asset;
 mod movement;
+pub mod weapon;
 
 pub fn plugin(app: &mut App) {
-    app.add_plugins((asset::plugin, movement::plugin));
+    app.add_plugins((asset::plugin, movement::plugin, weapon::plugin));
 }
 
 pub fn player(
@@ -36,17 +38,22 @@ pub fn player(
         ),
         Anchor(Vec2::new(0., -0.3)),
         Transform::from_scale(Vec2::splat(2.0).extend(1.0)),
-        MovementController {
-            max_speed: player_assets.max_speed,
-            ..default()
-        },
-        animation,
-        RigidBody::Dynamic,
-        Collider::circle(7.),
-        LinearVelocity::ZERO,
-        LockedAxes::ROTATION_LOCKED,
-        CollisionEventsEnabled,
-        CollisionLayers::new(GameLayer::Player, [GameLayer::Ground]),
+        (
+            MovementController {
+                max_speed: player_assets.max_speed,
+                ..default()
+            },
+            animation,
+        ),
+        (
+            RigidBody::Dynamic,
+            Collider::circle(7.),
+            LinearVelocity::ZERO,
+            LockedAxes::ROTATION_LOCKED,
+            CollisionEventsEnabled,
+            CollisionLayers::new(GameLayer::Player, [GameLayer::Ground]),
+        ),
+        (WeaponDirection(Vec2::X),),
         DebugRender::default().with_collider_color(Color::WHITE),
     )
 }
