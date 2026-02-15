@@ -7,8 +7,9 @@ use crate::gameplay::tilemap::spawn_tilemap;
 use crate::{audio::music, gameplay::player::player, screen::Screen};
 use bevy::prelude::*;
 use bevy_seedling::prelude::AudioSample;
-use rand::RngCore;
+use rand::prelude::StdRng;
 use rand::rngs::ThreadRng;
+use rand::{RngCore, SeedableRng};
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -21,6 +22,7 @@ pub struct WorldEntity;
 
 pub fn plugin(app: &mut App) {
     app.load_resource::<LevelAssets>("level.ron");
+    app.add_systems(OnEnter(Screen::Gameplay(false)), spawn_level);
 }
 
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Clone, Debug)]
@@ -37,16 +39,20 @@ fn random_seed() -> u32 {
     ThreadRng::default().next_u32()
 }
 
-pub fn spawn_level(
+fn spawn_level(
     mut commands: Commands,
     level_assets: Res<LevelAssets>,
     tileset_assets: Res<TilesetAssets>,
     player_assets: Res<PlayerAssets>,
     enemy_assets: Res<EnemyAssets>,
+    mut camera: Single<&mut Transform, With<Camera2d>>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut images: ResMut<Assets<Image>>,
 ) {
     info!("Loading level with seed: {}", level_assets.seed);
+    camera.translation = Vec3::ZERO;
+
+    let mut rng = StdRng::seed_from_u64(level_assets.seed as u64);
 
     commands
         .spawn((
@@ -64,7 +70,7 @@ pub fn spawn_level(
             parent.spawn(player(&player_assets, &mut texture_atlas_layouts));
 
             for _ in 0..2000 {
-                parent.spawn(enemy(&enemy_assets, &mut texture_atlas_layouts));
+                parent.spawn(enemy(&mut rng, &enemy_assets, &mut texture_atlas_layouts));
             }
 
             spawn_tilemap(parent, &level_assets, &tileset_assets, &mut images);

@@ -8,7 +8,7 @@ mod movement;
 pub mod player;
 mod tilemap;
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.add_plugins((
         animation::plugin,
         level::plugin,

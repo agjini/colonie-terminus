@@ -2,10 +2,9 @@ use bevy::prelude::*;
 
 use crate::screen::Screen::Gameplay;
 use crate::utils::escape_just_pressed;
-use crate::{Pause, gameplay::level::spawn_level, menu::Menu, screen::Screen};
+use crate::{Pause, menu::Menu, screen::Screen};
 
-pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Gameplay(false)), spawn_level);
+pub fn plugin(app: &mut App) {
     app.add_computed_state::<InGame>();
     app.add_systems(
         Update,

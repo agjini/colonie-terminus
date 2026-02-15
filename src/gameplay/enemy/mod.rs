@@ -6,8 +6,9 @@ use avian2d::prelude::{
 };
 use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 use rand::Rng;
-use rand::prelude::ThreadRng;
+use rand::prelude::StdRng;
 
 pub mod asset;
 pub mod movement;
@@ -17,6 +18,7 @@ pub fn plugin(app: &mut App) {
 }
 
 pub fn enemy(
+    rng: &mut StdRng,
     enemy_assets: &EnemyAssets,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Bundle {
@@ -25,8 +27,6 @@ pub fn enemy(
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(32), 6, 2, Some(UVec2::splat(1)), None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
     let enemy_animation = CharacterAnimation::new();
-
-    let mut rng = ThreadRng::default();
 
     let x = rng.random_range(-2000.0..2000.0);
     let y = rng.random_range(-2000.0..2000.0);
@@ -42,6 +42,7 @@ pub fn enemy(
                 index: enemy_animation.get_atlas_index(),
             },
         ),
+        Anchor(Vec2::new(0., -0.3)),
         Transform::from_xyz(x, y, 0.0).with_scale(Vec2::splat(2.0).extend(1.0)),
         MovementController {
             max_speed: enemy.max_speed,
@@ -49,7 +50,7 @@ pub fn enemy(
         },
         enemy_animation,
         RigidBody::Dynamic,
-        Collider::circle(8.0),
+        Collider::circle(7.),
         LockedAxes::ROTATION_LOCKED,
         CollisionEventsEnabled,
         CollisionLayers::new(GameLayer::Enemy, [GameLayer::Ground, GameLayer::Enemy]),

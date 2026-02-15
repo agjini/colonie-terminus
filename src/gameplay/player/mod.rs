@@ -6,6 +6,7 @@ use avian2d::prelude::{
     RigidBody,
 };
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 
 pub mod asset;
 mod movement;
@@ -33,6 +34,7 @@ pub fn player(
                 index: animation.get_atlas_index(),
             },
         ),
+        Anchor(Vec2::new(0., -0.3)),
         Transform::from_scale(Vec2::splat(2.0).extend(1.0)),
         MovementController {
             max_speed: player_assets.max_speed,
@@ -40,7 +42,7 @@ pub fn player(
         },
         animation,
         RigidBody::Dynamic,
-        Collider::circle(8.0),
+        Collider::circle(7.),
         LinearVelocity::ZERO,
         LockedAxes::ROTATION_LOCKED,
         CollisionEventsEnabled,
