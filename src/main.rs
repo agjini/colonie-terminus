@@ -43,8 +43,7 @@ impl Plugin for AppPlugin {
                     primary_window: Window {
                         title: "Colonie Terminus".to_string(),
                         fit_canvas_to_parent: true,
-                        resolution: WindowResolution::new(1024, 768)
-                            .with_scale_factor_override(2.0),
+                        resolution: WindowResolution::new(1024, 768),
                         mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
                         ..default()
                     }
