@@ -21,7 +21,7 @@ struct EnemyMoveTimer(Timer);
 
 impl Default for EnemyMoveTimer {
     fn default() -> Self {
-        Self(Timer::from_seconds(1., TimerMode::Repeating))
+        Self(Timer::from_seconds(0.5, TimerMode::Repeating))
     }
 }
 

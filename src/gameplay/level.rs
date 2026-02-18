@@ -1,10 +1,9 @@
 use crate::asset_tracking::LoadResource;
-use crate::gameplay::enemy::asset::EnemyAssets;
-use crate::gameplay::enemy::enemy;
+use crate::gameplay::enemy::enemy_root;
 use crate::gameplay::player::asset::PlayerAssets;
+use crate::gameplay::player::weapon::reticle;
 use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
-use crate::gameplay::player::weapon::reticle;
 use crate::{audio::music, gameplay::player::player, screen::Screen};
 use bevy::prelude::*;
 use bevy_seedling::prelude::AudioSample;
@@ -20,6 +19,9 @@ pub struct TilemapOrigin;
 
 #[derive(Component)]
 pub struct WorldEntity;
+
+#[derive(Resource)]
+pub struct RandomSeed(pub(crate) StdRng);
 
 pub fn plugin(app: &mut App) {
     app.load_resource::<LevelAssets>("level.ron");
@@ -45,7 +47,6 @@ fn spawn_level(
     level_assets: Res<LevelAssets>,
     tileset_assets: Res<TilesetAssets>,
     player_assets: Res<PlayerAssets>,
-    enemy_assets: Res<EnemyAssets>,
     mut camera: Single<&mut Transform, With<Camera2d>>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -55,7 +56,9 @@ fn spawn_level(
     info!("Loading level with seed: {}", level_assets.seed);
     camera.translation = Vec3::ZERO;
 
-    let mut rng = StdRng::seed_from_u64(level_assets.seed as u64);
+    let rng = StdRng::seed_from_u64(level_assets.seed as u64);
+
+    commands.insert_resource(RandomSeed(rng));
 
     commands
         .spawn((
@@ -76,9 +79,7 @@ fn spawn_level(
                     player.spawn(reticle(&mut meshes, &mut materials, &mut images));
                 });
 
-            for _ in 0..2000 {
-                parent.spawn(enemy(&mut rng, &enemy_assets, &mut texture_atlas_layouts));
-            }
+            parent.spawn(enemy_root());
 
             spawn_tilemap(parent, &level_assets, &tileset_assets, &mut images);
         });
