@@ -2,6 +2,7 @@ use crate::gameplay::enemy::asset::{Enemy, EnemyAssets, EnemyType};
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::level::RandomSeed;
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
+use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::{
     Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LockedAxes, RigidBody,
@@ -9,9 +10,7 @@ use avian2d::prelude::{
 use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
-use bevy::window::PrimaryWindow;
 use rand::Rng;
-use rand::prelude::StdRng;
 use std::f32::consts::PI;
 
 pub fn plugin(app: &mut App) {
@@ -21,7 +20,8 @@ pub fn plugin(app: &mut App) {
             update_timer.in_set(AppSystems::TickTimers),
             spawn_enemies.in_set(AppSystems::Update),
         )
-            .in_set(PausableSystems),
+            .in_set(PausableSystems)
+            .run_if(in_state(Screen::Gameplay(false))),
     );
     app.insert_resource(SpawnTimer::default());
 }
@@ -31,7 +31,7 @@ struct SpawnTimer(Timer);
 
 impl Default for SpawnTimer {
     fn default() -> Self {
-        Self(Timer::from_seconds(5., TimerMode::Repeating))
+        Self(Timer::from_seconds(1., TimerMode::Repeating))
     }
 }
 
@@ -41,13 +41,13 @@ fn update_timer(time: Res<Time>, mut timer: ResMut<SpawnTimer>) {
 
 fn spawn_enemies(
     mut commands: Commands,
-    root: Single<Entity, With<EnemyRoot>>,
     timer: Res<SpawnTimer>,
     mut rng: ResMut<RandomSeed>,
     enemy_assets: Res<EnemyAssets>,
-    window: Single<&Window, With<PrimaryWindow>>,
-    camera: Single<&Camera2d>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    root: Single<Entity, With<EnemyRoot>>,
+    camera: Single<(&Camera, &GlobalTransform)>,
+    window: Single<&Window>,
 ) {
     if !timer.0.just_finished() {
         return;
@@ -58,18 +58,23 @@ fn spawn_enemies(
     };
 
     let resolution = Vec2::new(window.resolution.width(), window.resolution.height());
+    let (camera, camera_transform) = *camera;
+    let un = camera
+        .viewport_to_world_2d(camera_transform, Vec2::ZERO)
+        .unwrap();
+    let deux = camera
+        .viewport_to_world_2d(camera_transform, resolution)
+        .unwrap();
 
-    let angle = rng.0.random_range(0.0..2.0 * PI);
+    let half_size = (deux - un).abs() / 2.0;
+    let center = (un + deux) / 2.0;
+    let radius = half_size.length() + 50.0;
 
     root.with_children(|parent| {
         for enemy_type in enemy_assets.types.iter() {
-            let x = rng.0.random_range(-resolution.x..resolution.x);
-            let y = rng.0.random_range(-resolution.y..resolution.y);
-            parent.spawn(enemy(
-                Vec2::new(x, y),
-                enemy_type,
-                &mut texture_atlas_layouts,
-            ));
+            let angle = rng.0.random_range(0.0..2.0 * PI);
+            let position = center + Vec2::new(angle.cos(), angle.sin()) * radius;
+            parent.spawn(enemy(position, enemy_type, &mut texture_atlas_layouts));
         }
     });
 }
