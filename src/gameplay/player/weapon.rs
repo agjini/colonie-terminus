@@ -20,17 +20,15 @@ const LASER_COLOR: Color = Color::srgb(1.0, 0.15, 0.1);
 pub struct Reticle;
 
 fn laser_gradient(images: &mut Assets<Image>) -> Handle<Image> {
-    let width = 64u32;
+    let width = 100u32;
     let pixel_size = 4u32;
     let mut data = vec![0u8; (width * pixel_size) as usize];
     for x in 0..width {
-        let t = x as f32 / (width - 1) as f32;
-        let alpha = (1.0 - t * t) * 255.0;
         let i = (x * pixel_size) as usize;
         data[i] = 255;
         data[i + 1] = 255;
         data[i + 2] = 255;
-        data[i + 3] = alpha as u8;
+        data[i + 3] = 100 - x as u8;
     }
     let mut image = Image::new(
         Extent3d {
@@ -67,14 +65,14 @@ pub fn reticle(
 }
 
 #[derive(Component)]
-pub struct WeaponDirection(pub Dir2);
+pub struct WeaponDirection(pub Vec2);
 
 fn update_reticle(
-    direction: Single<&WeaponDirection>,
+    weapon_dir: Single<&WeaponDirection>,
     mut reticle: Single<&mut Transform, With<Reticle>>,
 ) {
-    let angle = direction.0.to_angle();
-    let offset = direction.0.normalize_or_zero() * RETICLE_LENGTH / 2.0;
+    let angle = weapon_dir.0.to_angle();
+    let offset = weapon_dir.0.normalize_or_zero() * RETICLE_LENGTH / 2.0;
     reticle.rotation = Quat::from_rotation_z(angle);
     reticle.translation = offset.extend(reticle.translation.z);
 }
