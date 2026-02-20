@@ -6,7 +6,7 @@ use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.add_systems(Update, apply_interaction_palette);
     app.load_resource::<InteractionAssets>("interaction.ron");
     app.add_systems(Update, play_on_focus_sound_effect);

@@ -12,7 +12,7 @@ use bevy::prelude::*;
 use bevy::ui::UiGlobalTransform;
 use std::time::Duration;
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.add_plugins((InputDispatchPlugin, DirectionalNavigationPlugin));
     app.insert_resource(InputFocusVisible(true));
     app.insert_resource(StickNavigationCooldown::default());

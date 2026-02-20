@@ -19,7 +19,7 @@ pub fn chunk_tile_data(
 
     let tile_data: Vec<Option<TileData>> = (0..chunk_size)
         .cartesian_product(0..chunk_size)
-        .map(|(x, y)| {
+        .map(|(y, x)| {
             let planet_pos = IVec2::new(
                 (chunk_origin.x + x).rem_euclid(planet_size.x as i32),
                 (chunk_origin.y + y).rem_euclid(planet_size.y as i32),

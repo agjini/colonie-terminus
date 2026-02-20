@@ -1,4 +1,3 @@
-/* @[crate::theme::interaction::InteractionAssets] */
 (
     hover: "audio/sound_effects/button_hover.ogg",
     click: "audio/sound_effects/button_click.ogg",

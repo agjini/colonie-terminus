@@ -1,6 +1,6 @@
 use crate::gameplay::enemy::asset::{Enemy, EnemyAssets, EnemyType};
 use crate::gameplay::layer::GameLayer;
-use crate::gameplay::level::RandomSeed;
+use crate::gameplay::level::{RandomSeed, WorldEntity};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
@@ -93,6 +93,7 @@ pub fn enemy(
 
     (
         Name::new(enemy.name.to_string()),
+        WorldEntity,
         Enemy,
         GameLayer::Enemy,
         Sprite::from_atlas_image(

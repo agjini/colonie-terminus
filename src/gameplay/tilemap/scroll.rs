@@ -50,21 +50,34 @@ fn recycle_chunks(
 ) {
     let chunk_px = chunk_pixel_size(&tileset_assets);
     let cs = tileset_assets.chunk_size as i32;
-    let new_center = IVec2::new(
+    let planet_size = UVec2::new(level_assets.planet_width, level_assets.planet_height);
+    let pw = planet_size.x as i32;
+    let ph = planet_size.y as i32;
+    let chunks_x = pw / cs;
+    let chunks_y = ph / cs;
+
+    let raw_center = IVec2::new(
         (tilemap.translation.x / chunk_px).round() as i32,
         (tilemap.translation.y / chunk_px).round() as i32,
     );
+    let wrapped_center = IVec2::new(
+        raw_center.x.rem_euclid(chunks_x),
+        raw_center.y.rem_euclid(chunks_y),
+    );
 
-    if new_center == *last_center {
+    if wrapped_center == *last_center {
         return;
     }
-    *last_center = new_center;
-
-    let planet_size = UVec2::new(level_assets.planet_width, level_assets.planet_height);
+    *last_center = wrapped_center;
 
     let expected: Vec<IVec2> = (-1..=1)
         .flat_map(|ox| {
-            (-1..=1).map(move |oy| IVec2::new((new_center.x + ox) * cs, (new_center.y + oy) * cs))
+            (-1..=1).map(move |oy| {
+                IVec2::new(
+                    (wrapped_center.x + ox).rem_euclid(chunks_x) * cs,
+                    (wrapped_center.y + oy).rem_euclid(chunks_y) * cs,
+                )
+            })
         })
         .collect();
 
@@ -87,10 +100,25 @@ fn recycle_chunks(
             *tile_data = chunk_tile_data(level_assets.seed, planet_size, new_pos, &tileset_assets);
         }
 
-        let gx = planet_pos.0.x / cs - new_center.x;
-        let gy = planet_pos.0.y / cs - new_center.y;
-        transform.translation.x = gx as f32 * chunk_px;
-        transform.translation.y = gy as f32 * chunk_px;
+        let chunk_x = planet_pos.0.x / cs;
+        let chunk_y = planet_pos.0.y / cs;
+
+        let mut dx = chunk_x - wrapped_center.x;
+        if dx > chunks_x / 2 {
+            dx -= chunks_x;
+        } else if dx < -(chunks_x / 2) {
+            dx += chunks_x;
+        }
+
+        let mut dy = chunk_y - wrapped_center.y;
+        if dy > chunks_y / 2 {
+            dy -= chunks_y;
+        } else if dy < -(chunks_y / 2) {
+            dy += chunks_y;
+        }
+
+        transform.translation.x = dx as f32 * chunk_px;
+        transform.translation.y = dy as f32 * chunk_px;
     }
 }
 

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_seedling::prelude::*;
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.add_plugins(SeedlingPlugin::default());
     app.add_systems(Startup, set_default_volume);
 }

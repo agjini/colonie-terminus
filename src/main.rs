@@ -19,7 +19,7 @@ use crate::screen::Screen::{Gameplay, Title};
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::{Gravity, Physics, PhysicsTime};
 use bevy::input::common_conditions::input_just_pressed;
-use bevy::window::{CursorOptions, PrimaryWindow, WindowMode, WindowResolution};
+use bevy::window::{CursorOptions, PresentMode, PrimaryWindow, WindowMode, WindowResolution};
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
 fn main() -> AppExit {
@@ -45,6 +45,7 @@ impl Plugin for AppPlugin {
                         fit_canvas_to_parent: true,
                         resolution: WindowResolution::new(1024, 768),
                         mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
+                        present_mode: PresentMode::AutoNoVsync,
                         ..default()
                     }
                     .into(),

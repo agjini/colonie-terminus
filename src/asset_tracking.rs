@@ -5,7 +5,7 @@ use ron_asset_manager::prelude::RonAsset;
 use std::collections::VecDeque;
 use std::fmt::Debug;
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.init_resource::<ResourceHandles>()
         .add_systems(PreUpdate, load_resource_assets);
 }

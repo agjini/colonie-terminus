@@ -10,7 +10,7 @@ use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.init_state::<Menu>();
 
     app.load_resource::<MenuAssets>("menu.ron");

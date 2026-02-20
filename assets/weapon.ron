@@ -1,4 +1,3 @@
-/* @[crate::gameplay::weapon::WeaponAssets] */
 (
 "blaster": (
         name: "Blaster",
@@ -7,7 +6,7 @@
                 level: 1,
                 stats: (
                     damage: 15.0,
-                    energy_cost: 10.0,
+                    energy_cost: 10.0, 
                     fire_rate: 5.0,
                 ),
                 attack: Projectile(

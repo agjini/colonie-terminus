@@ -4,7 +4,7 @@ use crate::audio::music;
 use crate::menu::MenuAssets;
 use crate::{MetaState, menu::Menu, screen::Screen, theme::widget};
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(MetaState::InMenu), start_menu_music);
     app.add_systems(OnEnter(Menu::Main), spawn_main_menu);
 }

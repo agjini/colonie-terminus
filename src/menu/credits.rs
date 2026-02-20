@@ -1,9 +1,9 @@
-use crate::menu::MenuAssets;
+use crate::menu::{Menu, MenuAssets};
+use crate::theme::widget::*;
 use crate::utils::escape_just_pressed;
-use crate::{menu::Menu, theme::prelude::*};
 use bevy::{ecs::spawn::SpawnIter, prelude::*};
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Credits), spawn_credits_menu);
     app.add_systems(
         Update,
@@ -13,15 +13,15 @@ pub(super) fn plugin(app: &mut App) {
 
 fn spawn_credits_menu(mut commands: Commands, assets: Res<MenuAssets>) {
     commands.spawn((
-        widget::ui_root("Credits Menu"),
+        ui_root("Credits Menu"),
         GlobalZIndex(2),
         DespawnOnExit(Menu::Credits),
         children![
-            widget::header("Created by"),
+            header("Created by"),
             grid(assets.created_by.clone()),
-            widget::header("Assets"),
+            header("Assets"),
             grid(assets.assets_by.clone()),
-            widget::button("Back", go_back_on_click),
+            button("Back", go_back_on_click),
         ],
     ));
 }
@@ -39,14 +39,14 @@ fn grid(content: Vec<(String, String)>) -> impl Bundle {
         Children::spawn(SpawnIter(content.into_iter().flat_map(|(left, right)| {
             [
                 (
-                    widget::label(left),
+                    label(left),
                     Node {
                         justify_self: JustifySelf::End,
                         ..default()
                     },
                 ),
                 (
-                    widget::label(right),
+                    label(right),
                     Node {
                         justify_self: JustifySelf::Start,
                         ..default()

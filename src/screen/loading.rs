@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 
 use crate::screen::Screen::{Gameplay, Title};
-use crate::{MetaState, asset_tracking::ResourceHandles, screen::Screen, theme::prelude::*};
+use crate::theme::widget;
+use crate::{MetaState, asset_tracking::ResourceHandles, screen::Screen};
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(MetaState::Loading), spawn_loading_screen);
 
     app.add_systems(

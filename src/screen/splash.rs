@@ -4,9 +4,10 @@ use bevy::{
     prelude::*,
 };
 
-use crate::{AppSystems, screen::Screen, theme::prelude::*};
+use crate::theme::widget;
+use crate::{AppSystems, screen::Screen};
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.insert_resource(ClearColor(SPLASH_BACKGROUND_COLOR));
     app.add_systems(OnEnter(Screen::Splash), spawn_splash_screen);
 

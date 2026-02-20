@@ -1,8 +1,9 @@
 use crate::audio::{
     CONVERTER, lower_music_volume, lower_sfx_volume, raise_music_volume, raise_sfx_volume,
 };
+use crate::theme::widget;
 use crate::utils::escape_just_pressed;
-use crate::{MetaState, menu::Menu, theme::prelude::*};
+use crate::{MetaState, menu::Menu};
 use bevy::prelude::*;
 use bevy_seedling::prelude::{MusicPool, SamplerPool, SoundEffectsBus, VolumeNode};
 

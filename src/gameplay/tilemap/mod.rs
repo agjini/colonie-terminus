@@ -34,7 +34,10 @@ pub fn spawn_tilemap(
     let chunks = (-1..=1)
         .cartesian_product(-1..=1)
         .map(|(ox, oy)| {
-            let planet_pos = IVec2::new(ox * cs, oy * cs);
+            let planet_pos = IVec2::new(
+                (ox * cs).rem_euclid(planet_size.x as i32),
+                (oy * cs).rem_euclid(planet_size.y as i32),
+            );
             let tile_data =
                 chunk_tile_data(level_assets.seed, planet_size, planet_pos, tileset_assets);
 
