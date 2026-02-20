@@ -58,21 +58,29 @@ fn record_player_directional_input(
     }
 }
 
-const AIM_DEADZONE: f32 = 0.2;
+const AIM_DEADZONE: f32 = 0.1;
 
-fn record_weapon_direction(
+fn record_weapon_direction_with_mouse(
     gamepads: Query<&Gamepad>,
     window: Single<&Window>,
     camera: Single<(&Camera, &GlobalTransform), With<Camera2d>>,
     mut player_query: Query<(&GlobalTransform, &mut WeaponDirection), With<Player>>,
+    time: Res<Time>,
 ) {
+    let delta_time = time.delta_secs();
+    let decay_rate = f32::ln(400.0);
+
     let (cam, cam_transform) = *camera;
 
     for (player_transform, mut weapon_dir) in &mut player_query {
         if let Some(gamepad) = gamepads.iter().next() {
             let stick = gamepad.right_stick();
             if stick.x.abs() > AIM_DEADZONE || stick.y.abs() > AIM_DEADZONE {
-                weapon_dir.0 = Vec2::new(stick.x, stick.y).normalize();
+                weapon_dir.0.smooth_nudge(
+                    &Vec2::new(stick.x, stick.y).normalize(),
+                    decay_rate,
+                    delta_time,
+                );
                 continue;
             }
         }
@@ -85,5 +93,27 @@ fn record_weapon_direction(
         //         weapon_dir.0 = dir.normalize();
         //     }
         // }
+    }
+}
+
+fn record_weapon_direction(
+    gamepads: Query<&Gamepad>,
+    mut weapon_dir: Single<&mut WeaponDirection>,
+    time: Res<Time>,
+) {
+    let Some(gamepad) = gamepads.iter().next() else {
+        return;
+    };
+
+    let delta_time = time.delta_secs();
+    let decay_rate = f32::ln(400.0);
+
+    let stick = gamepad.right_stick();
+    if stick.x.abs() > AIM_DEADZONE || stick.y.abs() > AIM_DEADZONE {
+        weapon_dir.0.smooth_nudge(
+            &Vec2::new(stick.x, stick.y).normalize(),
+            decay_rate,
+            delta_time,
+        );
     }
 }

@@ -67,20 +67,14 @@ pub fn reticle(
 }
 
 #[derive(Component)]
-pub struct WeaponDirection(pub Vec2);
+pub struct WeaponDirection(pub Dir2);
 
 fn update_reticle(
-    players: Query<(&WeaponDirection, &Children)>,
-    mut reticles: Query<&mut Transform, With<Reticle>>,
+    direction: Single<&WeaponDirection>,
+    mut reticle: Single<&mut Transform, With<Reticle>>,
 ) {
-    for (direction, children) in &players {
-        let angle = direction.0.to_angle();
-        for child in children.iter() {
-            if let Ok(mut transform) = reticles.get_mut(child) {
-                transform.rotation = Quat::from_rotation_z(angle);
-                let offset = direction.0.normalize_or_zero() * RETICLE_LENGTH / 2.0;
-                transform.translation = offset.extend(transform.translation.z);
-            }
-        }
-    }
+    let angle = direction.0.to_angle();
+    let offset = direction.0.normalize_or_zero() * RETICLE_LENGTH / 2.0;
+    reticle.rotation = Quat::from_rotation_z(angle);
+    reticle.translation = offset.extend(reticle.translation.z);
 }
