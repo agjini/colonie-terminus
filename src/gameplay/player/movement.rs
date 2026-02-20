@@ -1,6 +1,7 @@
 use crate::gameplay::player::Player;
 use crate::gameplay::player::weapon::WeaponDirection;
 use crate::{AppSystems, PausableSystems, gameplay::movement::MovementController};
+use bevy::input::mouse::AccumulatedMouseMotion;
 use bevy::prelude::*;
 
 pub fn plugin(app: &mut App) {
@@ -59,61 +60,37 @@ fn record_player_directional_input(
 }
 
 const AIM_DEADZONE: f32 = 0.1;
-
-fn record_weapon_direction_with_mouse(
-    gamepads: Query<&Gamepad>,
-    window: Single<&Window>,
-    camera: Single<(&Camera, &GlobalTransform), With<Camera2d>>,
-    mut player_query: Query<(&GlobalTransform, &mut WeaponDirection), With<Player>>,
-    time: Res<Time>,
-) {
-    let delta_time = time.delta_secs();
-    let decay_rate = f32::ln(400.0);
-
-    let (cam, cam_transform) = *camera;
-
-    for (player_transform, mut weapon_dir) in &mut player_query {
-        if let Some(gamepad) = gamepads.iter().next() {
-            let stick = gamepad.right_stick();
-            if stick.x.abs() > AIM_DEADZONE || stick.y.abs() > AIM_DEADZONE {
-                weapon_dir.0.smooth_nudge(
-                    &Vec2::new(stick.x, stick.y).normalize(),
-                    decay_rate,
-                    delta_time,
-                );
-                continue;
-            }
-        }
-
-        // if let Some(cursor_pos) = window.cursor_position()
-        //     && let Ok(world_pos) = cam.viewport_to_world_2d(cam_transform, cursor_pos)
-        // {
-        //     let dir = world_pos - player_transform.translation().truncate();
-        //     if dir.length() > 1.0 {
-        //         weapon_dir.0 = dir.normalize();
-        //     }
-        // }
-    }
-}
+const MOUSE_SENSITIVITY: f32 = 0.05;
 
 fn record_weapon_direction(
     gamepads: Query<&Gamepad>,
+    mouse_motion: Res<AccumulatedMouseMotion>,
     mut weapon_dir: Single<&mut WeaponDirection>,
     time: Res<Time>,
 ) {
-    let Some(gamepad) = gamepads.iter().next() else {
-        return;
-    };
+    const AIM_HALF_LIFE: f32 = 0.08;
+    let decay_rate = f32::ln(2.0) / AIM_HALF_LIFE;
+    let (direction, strength) = get_new_direction(gamepads.iter().next(), &mouse_motion);
+    if strength > 0.0 {
+        weapon_dir
+            .0
+            .smooth_nudge(&direction, decay_rate * strength, time.delta_secs());
+    }
+}
 
-    let delta_time = time.delta_secs();
-    let decay_rate = f32::ln(400.0);
-
-    let stick = gamepad.right_stick();
-    if stick.x.abs() > AIM_DEADZONE || stick.y.abs() > AIM_DEADZONE {
-        weapon_dir.0.smooth_nudge(
-            &Vec2::new(stick.x, stick.y).normalize(),
-            decay_rate,
-            delta_time,
-        );
+fn get_new_direction(
+    gamepad: Option<&Gamepad>,
+    mouse_motion: &AccumulatedMouseMotion,
+) -> (Vec2, f32) {
+    if let Some(gamepad) = gamepad
+        && let stick = gamepad.right_stick()
+        && (stick.x.abs() > AIM_DEADZONE || stick.y.abs() > AIM_DEADZONE)
+    {
+        let stick = Vec2::new(stick.x, stick.y);
+        (stick.normalize(), stick.length().min(1.0))
+    } else {
+        let delta = Vec2::new(mouse_motion.delta.x, -mouse_motion.delta.y);
+        let strength = (delta.length() * MOUSE_SENSITIVITY).min(1.0);
+        (delta.normalize_or_zero(), strength)
     }
 }

@@ -19,7 +19,9 @@ use crate::screen::Screen::{Gameplay, Title};
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::{Gravity, Physics, PhysicsTime};
 use bevy::input::common_conditions::input_just_pressed;
-use bevy::window::{CursorOptions, PresentMode, PrimaryWindow, WindowMode, WindowResolution};
+use bevy::window::{
+    CursorGrabMode, CursorOptions, PresentMode, PrimaryWindow, WindowMode, WindowResolution,
+};
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
 fn main() -> AppExit {
@@ -51,6 +53,7 @@ impl Plugin for AppPlugin {
                     .into(),
                     primary_cursor_options: CursorOptions {
                         visible: false,
+                        grab_mode: CursorGrabMode::Confined,
                         ..default()
                     }
                     .into(),
