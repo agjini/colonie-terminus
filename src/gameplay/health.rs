@@ -36,10 +36,10 @@ pub fn health_bar(meshes: &mut Assets<Mesh>, materials: &mut Assets<ColorMateria
     )
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 struct HealthBar;
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Health {
     pub current: f32,
     pub max: f32,

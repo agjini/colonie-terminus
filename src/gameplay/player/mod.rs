@@ -78,5 +78,4 @@ fn player(
 }
 
 #[derive(Component, Debug, Clone, Copy, Eq, PartialEq, Default, Reflect)]
-#[reflect(Component)]
 pub struct Player;

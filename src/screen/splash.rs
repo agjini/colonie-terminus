@@ -70,7 +70,6 @@ fn spawn_splash_screen(mut commands: Commands, asset_server: Res<AssetServer>) {
 }
 
 #[derive(Component, Reflect)]
-#[reflect(Component)]
 struct ImageNodeFadeInOut {
     total_duration: f32,
     fade_duration: f32,

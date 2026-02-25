@@ -14,10 +14,10 @@ use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct TilemapOrigin;
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct WorldEntity;
 
 #[derive(Resource)]

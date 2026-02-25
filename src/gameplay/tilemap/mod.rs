@@ -15,7 +15,7 @@ pub fn plugin(app: &mut App) {
     app.add_plugins((asset::plugin, scroll::plugin));
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct ChunkPlanetPos(pub IVec2);
 
 pub fn spawn_tilemap(

@@ -16,7 +16,7 @@ const RETICLE_LENGTH: f32 = 64.0;
 const RETICLE_THICKNESS: f32 = 2.0;
 const LASER_COLOR: Color = Color::srgb(1.0, 0.15, 0.1);
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Reticle;
 
 fn laser_gradient(images: &mut Assets<Image>) -> Handle<Image> {
@@ -64,7 +64,7 @@ pub fn reticle(
     )
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct WeaponDirection(pub Vec2);
 
 fn update_reticle(

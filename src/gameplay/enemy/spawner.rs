@@ -79,7 +79,7 @@ fn spawn_enemies(
     });
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct EnemyRoot;
 
 pub fn enemy(

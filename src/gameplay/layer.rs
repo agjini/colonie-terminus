@@ -1,12 +1,12 @@
 use avian2d::prelude::PhysicsLayer;
 use bevy::app::App;
-use bevy::prelude::{Changed, Component, Query, Transform, Update};
+use bevy::prelude::{Changed, Component, Query, Reflect, Transform, Update};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Update, order_layers);
 }
 
-#[derive(Component, PhysicsLayer, Default)]
+#[derive(Component, PhysicsLayer, Default, Reflect)]
 pub enum GameLayer {
     #[default]
     Ground,

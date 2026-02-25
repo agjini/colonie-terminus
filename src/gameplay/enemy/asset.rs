@@ -8,7 +8,7 @@ pub fn plugin(app: &mut App) {
     app.load_resource::<EnemyAssets>("enemy.ron");
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Enemy;
 
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Debug, Clone)]

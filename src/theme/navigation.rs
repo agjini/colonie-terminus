@@ -24,7 +24,7 @@ pub fn plugin(app: &mut App) {
     app.add_systems(Update, highlight_focused_element);
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Focusable;
 
 #[derive(Resource)]

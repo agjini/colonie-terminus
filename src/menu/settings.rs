@@ -111,11 +111,9 @@ fn sfx_volume_widget() -> impl Bundle {
 }
 
 #[derive(Component, Reflect)]
-#[reflect(Component)]
 struct MusicVolumeLabel;
 
 #[derive(Component, Reflect)]
-#[reflect(Component)]
 struct SfxVolumeLabel;
 
 fn update_music_volume_label(

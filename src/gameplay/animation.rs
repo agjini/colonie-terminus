@@ -78,7 +78,6 @@ fn trigger_step_sound_effect(
 }
 
 #[derive(Component, Reflect)]
-#[reflect(Component)]
 pub struct CharacterAnimation {
     timer: Timer,
     frame: usize,

@@ -3,9 +3,12 @@ use avian2d::prelude::{PhysicsDebugPlugin, PhysicsGizmos};
 use bevy::color::palettes::tailwind::GREEN_500;
 use bevy::dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin, FrameTimeGraphConfig};
 use bevy::text::FontSmoothing;
+use bevy::window::{CursorGrabMode, CursorOptions};
 use bevy::{
     dev_tools::states::log_transitions, input::common_conditions::input_just_pressed, prelude::*,
 };
+use bevy_inspector_egui::bevy_egui::EguiPlugin;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 #[derive(Resource, Default)]
 struct DebugState {
@@ -35,6 +38,8 @@ pub fn plugin(app: &mut App) {
                 },
             },
         },
+        EguiPlugin::default(),
+        WorldInspectorPlugin::new().run_if(|debug_state: Res<DebugState>| debug_state.enabled),
     ));
 
     app.insert_gizmo_config(
@@ -69,11 +74,18 @@ fn apply_debug_state(
     mut ui_debug_options: ResMut<UiDebugOptions>,
     mut gizmo_config_store: ResMut<GizmoConfigStore>,
     mut overlay: ResMut<FpsOverlayConfig>,
+    mut cursor: Single<&mut CursorOptions>,
 ) {
     if !debug_state.is_changed() {
         return;
     }
 
+    cursor.grab_mode = if debug_state.enabled {
+        CursorGrabMode::Confined
+    } else {
+        CursorGrabMode::None
+    };
+    cursor.visible = debug_state.enabled;
     ui_debug_options.enabled = debug_state.enabled;
     overlay.enabled = debug_state.enabled;
     overlay.frame_time_graph_config.enabled = debug_state.enabled;

@@ -13,12 +13,9 @@ pub fn plugin(app: &mut App) {
 }
 
 #[derive(Component, Reflect)]
-#[reflect(Component)]
 pub struct MovementController {
-    /// The direction the character wants to move in.
     pub direction: Vec2,
 
-    /// Maximum speed in world units per second.
     /// 1 world unit = 1 pixel when using the default 2D camera and no physics engine.
     pub max_speed: f32,
 }
