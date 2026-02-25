@@ -1,0 +1,35 @@
+# Gameplay Test #1 - V0.0.1
+
+## L'équipe:
+- Augustin
+- Fabien
+- JB
+- Dorian
+- JB²
+- Maxime
+
+## Thème de la réunion : Game design
+
+Récapitulatif des comportements déjà présents dans le jeu:
+- Personnage contrôlable via clavier+souris / manette.
+- Le personnage évolue dans un environnement qui boucle horizontalement et verticalement, à l'infini.
+- L'environnement est généré dynamiquement à partir d'un tileset et de noise.
+- Des ennemis apparaissent continuellement à la limite de l'écran et se dirigent vers le joueur de façon autoguidée.
+- Lorsque le joueur s'éloigne trop du point de départ, une téléportation globale de tous les éléments est effectuée autour du joueur.
+- Les ennemis et le joueur possèdent des "boîtes" de collision circulaires.
+- Les ennemis ne peuvent pas se superposer.
+- Le niveau d'affichage des éléments: Ground < Ennemies < Joueurs.
+
+
+Objectifs planifiés pour cette version :
+- Mettre en place le système de PV du joueur et des ennemis.
+- Afficher la barre de vie du joueur en dessous de son personnage lorsque celle-ci n'est pas pleine.
+- Gérer le DPS des ennemis ainsi que les dommages infligés au joueur.
+
+
+
+## Changements implémentés dans cette version :
+- Barre de vie positionnée sous le joueur
+
+## Objectifs de la prochaine version :
+- Optimiser la disposition de la barre de vie pour qu'elle s'ancre à gauche de la barre "vide".
