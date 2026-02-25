@@ -1,23 +1,41 @@
+use crate::gameplay::health::{Health, health_bar};
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::asset::PlayerAssets;
-use crate::gameplay::player::weapon::WeaponDirection;
+use crate::gameplay::player::weapon::{WeaponDirection, reticle};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use avian2d::prelude::{
     Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LinearVelocity, LockedAxes,
     RigidBody,
 };
+use bevy::ecs::relationship::RelatedSpawnerCommands;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
 pub mod asset;
 mod movement;
-pub mod weapon;
+mod weapon;
 
 pub fn plugin(app: &mut App) {
     app.add_plugins((asset::plugin, movement::plugin, weapon::plugin));
 }
 
-pub fn player(
+pub fn spawn_player(
+    commands: &mut RelatedSpawnerCommands<ChildOf>,
+    player_assets: &PlayerAssets,
+    meshes: &mut Assets<Mesh>,
+    materials: &mut Assets<ColorMaterial>,
+    images: &mut Assets<Image>,
+    texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
+) {
+    commands
+        .spawn(player(&player_assets, texture_atlas_layouts))
+        .with_children(|player| {
+            player.spawn(reticle(meshes, materials, images));
+            player.spawn(health_bar(meshes, materials));
+        });
+}
+
+fn player(
     player_assets: &PlayerAssets,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Bundle {
@@ -28,6 +46,7 @@ pub fn player(
     (
         Name::new(player_assets.name.to_string()),
         Player,
+        Health::new(player_assets.max_health),
         GameLayer::Player,
         Sprite::from_atlas_image(
             player_assets.sprite.handle.clone(),

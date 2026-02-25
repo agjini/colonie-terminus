@@ -10,16 +10,16 @@ pub fn plugin(app: &mut App) {
 pub enum GameLayer {
     #[default]
     Ground,
-    Player,
     Enemy,
+    Player,
 }
 
 impl GameLayer {
     fn z(&self) -> f32 {
         match self {
             GameLayer::Ground => -1.,
-            GameLayer::Player => 20.,
             GameLayer::Enemy => 10.,
+            GameLayer::Player => 20.,
         }
     }
 }

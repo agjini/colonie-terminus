@@ -2,6 +2,7 @@
     name: "Augustine",
     sprite: "images/ducky.png",
     max_speed: 250,
+    max_health: 100,
     steps: [
         "audio/sound_effects/step.ogg",
         "audio/sound_effects/step-1.ogg",

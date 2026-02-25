@@ -12,6 +12,7 @@ pub fn plugin(app: &mut App) {
 pub struct PlayerAssets {
     pub name: String,
     pub max_speed: f32,
+    pub max_health: f32,
     #[asset]
     pub sprite: Shandle<Image>,
     #[asset]

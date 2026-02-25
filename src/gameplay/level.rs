@@ -1,10 +1,10 @@
 use crate::asset_tracking::LoadResource;
 use crate::gameplay::enemy::enemy_root;
 use crate::gameplay::player::asset::PlayerAssets;
-use crate::gameplay::player::weapon::reticle;
+use crate::gameplay::player::spawn_player;
 use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
-use crate::{audio::music, gameplay::player::player, screen::Screen};
+use crate::{audio::music, screen::Screen};
 use bevy::prelude::*;
 use bevy_seedling::prelude::AudioSample;
 use rand::prelude::StdRng;
@@ -73,11 +73,14 @@ fn spawn_level(
                 music(level_assets.music.handle.clone()),
             ));
 
-            parent
-                .spawn(player(&player_assets, &mut texture_atlas_layouts))
-                .with_children(|player| {
-                    player.spawn(reticle(&mut meshes, &mut materials, &mut images));
-                });
+            spawn_player(
+                parent,
+                &player_assets,
+                &mut meshes,
+                &mut materials,
+                &mut images,
+                &mut texture_atlas_layouts,
+            );
 
             parent.spawn(enemy_root());
 
