@@ -6,6 +6,7 @@
 mod asset_tracking;
 mod audio;
 mod gameplay;
+mod hud;
 mod menu;
 mod screen;
 mod theme;
@@ -67,6 +68,7 @@ impl Plugin for AppPlugin {
             menu::plugin,
             screen::plugin,
             theme::plugin,
+            hud::plugin,
             #[cfg(feature = "dev")]
             dev_tools::plugin,
         ))

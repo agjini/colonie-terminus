@@ -30,8 +30,9 @@ pub fn spawn_player(
     commands
         .spawn(player(&player_assets, texture_atlas_layouts))
         .with_children(|player| {
+            let owner = player.target_entity();
             player.spawn(reticle(meshes, materials, images));
-            player.spawn(health_bar(meshes, materials));
+            player.spawn(health_bar(owner, meshes, materials));
         });
 }
 
