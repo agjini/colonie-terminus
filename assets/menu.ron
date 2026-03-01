@@ -1,4 +1,4 @@
-(
+MenuAssets(
     music: "audio/music/12. Before the Warp.ogg",
     created_by: [
         ("Game design", "Crustace team"),
@@ -6,10 +6,10 @@
         ("Join us at", "https://www.meetup.com/groupe-meetup-mende-nouvelles-technologies/"),
     ],
     assets_by: [
-       ("Ducky sprite", "Caz Creates Games (CC0)"),
-       ("Tiles", "Szadi art"),
-       ("Button SFX", "Jaszunio15 (CC0)"),
-       ("Music", "AlkaKrab"),
-       ("Bevy logo", "Bevy Foundation"),
+        ("Ducky sprite", "Caz Creates Games (CC0)"),
+        ("Tiles", "Szadi art"),
+        ("Button SFX", "Jaszunio15 (CC0)"),
+        ("Music", "AlkaKrab"),
+        ("Bevy logo", "Bevy Foundation"),
     ]
 )

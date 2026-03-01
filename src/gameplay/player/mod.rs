@@ -1,7 +1,7 @@
 use crate::gameplay::health::{Health, health_bar};
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::asset::PlayerAssets;
-use crate::gameplay::player::weapon::{WeaponDirection, reticle};
+use crate::gameplay::player::weapon::{WeaponAssets, WeaponDirection, reticle, weapon_slots};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use avian2d::prelude::{
     Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LinearVelocity, LockedAxes,
@@ -13,7 +13,7 @@ use bevy::sprite::Anchor;
 
 pub mod asset;
 mod movement;
-mod weapon;
+pub mod weapon;
 
 pub fn plugin(app: &mut App) {
     app.add_plugins((asset::plugin, movement::plugin, weapon::plugin));
@@ -22,17 +22,19 @@ pub fn plugin(app: &mut App) {
 pub fn spawn_player(
     commands: &mut RelatedSpawnerCommands<ChildOf>,
     player_assets: &PlayerAssets,
+    weapon_assets: &WeaponAssets,
     meshes: &mut Assets<Mesh>,
     materials: &mut Assets<ColorMaterial>,
     images: &mut Assets<Image>,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) {
     commands
-        .spawn(player(&player_assets, texture_atlas_layouts))
+        .spawn(player(player_assets, texture_atlas_layouts))
         .with_children(|player| {
             let owner = player.target_entity();
             player.spawn(reticle(meshes, materials, images));
             player.spawn(health_bar(owner, meshes, materials));
+            player.spawn(weapon_slots(weapon_assets));
         });
 }
 

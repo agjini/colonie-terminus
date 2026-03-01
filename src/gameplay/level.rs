@@ -2,6 +2,7 @@ use crate::asset_tracking::LoadResource;
 use crate::gameplay::enemy::enemy_root;
 use crate::gameplay::player::asset::PlayerAssets;
 use crate::gameplay::player::spawn_player;
+use crate::gameplay::player::weapon::WeaponAssets;
 use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
 use crate::{audio::music, screen::Screen};
@@ -47,6 +48,7 @@ fn spawn_level(
     level_assets: Res<LevelAssets>,
     tileset_assets: Res<TilesetAssets>,
     player_assets: Res<PlayerAssets>,
+    weapon_assets: Res<WeaponAssets>,
     mut camera: Single<&mut Transform, With<Camera2d>>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -76,6 +78,7 @@ fn spawn_level(
             spawn_player(
                 parent,
                 &player_assets,
+                &weapon_assets,
                 &mut meshes,
                 &mut materials,
                 &mut images,

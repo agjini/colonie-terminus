@@ -12,6 +12,7 @@ pub enum GameLayer {
     Ground,
     Enemy,
     Player,
+    Bullet,
 }
 
 impl GameLayer {
@@ -20,6 +21,7 @@ impl GameLayer {
             GameLayer::Ground => -1.,
             GameLayer::Enemy => 10.,
             GameLayer::Player => 20.,
+            GameLayer::Bullet => 30.,
         }
     }
 }

@@ -1,4 +1,4 @@
-(
+TilesetAssets(
     texture: "tiles/magic/mainlevbuild.png",
     tile_size: 32,
     chunk_size: 50,

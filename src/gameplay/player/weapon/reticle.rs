@@ -1,3 +1,4 @@
+use crate::gameplay::player::weapon::WeaponDirection;
 use crate::{AppSystems, PausableSystems};
 use bevy::image::ImageSampler;
 use bevy::prelude::*;
@@ -63,9 +64,6 @@ pub fn reticle(
         Transform::from_translation(Vec3::new(RETICLE_LENGTH / 2.0, 0.0, -1.0)),
     )
 }
-
-#[derive(Component, Reflect)]
-pub struct WeaponDirection(pub Vec2);
 
 fn update_reticle(
     weapon_dir: Single<&WeaponDirection>,

@@ -1,4 +1,4 @@
-(
+LevelAssets(
     music: "audio/music/11. Awakening Station.ogg",
     seed: 3878,
     planet_width: 500, // garder un multiple de chunck size
