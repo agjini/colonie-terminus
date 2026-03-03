@@ -5,7 +5,6 @@ use avian2d::math::PI;
 use avian2d::prelude::*;
 use bevy::color::palettes::tailwind::CYAN_500;
 use bevy::prelude::*;
-use bevy::sprite::Anchor;
 use ron_asset_manager::Shandle;
 
 pub fn plugin(app: &mut App) {
@@ -21,25 +20,28 @@ pub fn plugin(app: &mut App) {
 struct Bullet;
 
 impl WeaponAttack {
-    pub fn bullet(&self) -> Option<impl Bundle> {
+    pub fn bullet(&self, direction: Vec2) -> Option<impl Bundle> {
         match self {
-            WeaponAttack::Projectile { sprite, speed, .. } => Some(bullet(sprite, *speed)),
+            WeaponAttack::Projectile { sprite, speed, .. } => {
+                Some(bullet(sprite, *speed, direction))
+            }
             _ => None,
         }
     }
 }
 
-pub fn bullet(sprite: &Shandle<Image>, speed: f32) -> impl Bundle {
+pub fn bullet(sprite: &Shandle<Image>, speed: f32, direction: Vec2) -> impl Bundle {
     (
         Name::new("Bullet"),
         Bullet,
         GameLayer::Bullet,
         Sprite::from_image(sprite.handle.clone()),
-        Transform::from_scale(Vec2::splat(-0.2).extend(1.0)).rotate_z(PI / 2.),
+        Transform::from_scale(Vec2::splat(-0.1).extend(1.0))
+            .with_rotation(Quat::from_rotation_z(direction.y.atan2(direction.x) + PI / 2.)),
         (
             RigidBody::Dynamic,
             Collider::circle(7.),
-            LinearVelocity::from(Vec2::X * speed),
+            LinearVelocity::from(direction * speed),
             LockedAxes::ROTATION_LOCKED,
             CollisionEventsEnabled,
             CollisionLayers::new(GameLayer::Bullet, [GameLayer::Enemy]),

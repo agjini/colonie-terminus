@@ -35,7 +35,7 @@ fn update_timers(time: Res<Time>, mut slots: Single<&mut WeaponSlots>) {
 
 fn auto_fire(mut commands: Commands, slots: Single<&WeaponSlots>, dir: Single<&WeaponDirection>) {
     for slot in slots.just_finished() {
-        let Some(bullet) = slot.level.attack.bullet() else {
+        let Some(bullet) = slot.level.attack.bullet(dir.0) else {
             return;
         };
         commands.spawn(bullet);
