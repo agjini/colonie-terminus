@@ -2,7 +2,7 @@ use crate::asset_tracking::LoadResource;
 use crate::gameplay::enemy::enemy_root;
 use crate::gameplay::player::asset::PlayerAssets;
 use crate::gameplay::player::spawn_player;
-use crate::gameplay::player::weapon::WeaponAssets;
+use crate::gameplay::player::weapon::{WeaponAssets, bullet_root};
 use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
 use crate::{audio::music, screen::Screen};
@@ -86,6 +86,7 @@ fn spawn_level(
             );
 
             parent.spawn(enemy_root());
+            parent.spawn(bullet_root());
 
             spawn_tilemap(parent, &level_assets, &tileset_assets, &mut images);
         });

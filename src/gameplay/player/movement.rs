@@ -71,10 +71,12 @@ fn record_weapon_direction(
     const AIM_HALF_LIFE: f32 = 0.08;
     let decay_rate = f32::ln(2.0) / AIM_HALF_LIFE;
     let (direction, strength) = get_new_direction(gamepads.iter().next(), &mouse_motion);
-    if strength > 0.0 {
+    if strength > 0.0
+        && let Some(dir) = Dir2::new(direction).ok()
+    {
         weapon_dir
             .0
-            .smooth_nudge(&direction, decay_rate * strength, time.delta_secs());
+            .smooth_nudge(&dir, decay_rate * strength, time.delta_secs());
     }
 }
 

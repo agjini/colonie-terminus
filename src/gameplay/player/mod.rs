@@ -1,7 +1,9 @@
 use crate::gameplay::health::{Health, health_bar};
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::asset::PlayerAssets;
-use crate::gameplay::player::weapon::{WeaponAssets, WeaponDirection, reticle, weapon_slots};
+use crate::gameplay::player::weapon::{
+    WeaponAssets, WeaponDirection, fire_origin, reticle, weapon_slots,
+};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use avian2d::prelude::{
     Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LinearVelocity, LockedAxes,
@@ -35,6 +37,7 @@ pub fn spawn_player(
             player.spawn(reticle(meshes, materials, images));
             player.spawn(health_bar(owner, meshes, materials));
             player.spawn(weapon_slots(weapon_assets));
+            player.spawn(fire_origin());
         });
 }
 
@@ -75,7 +78,7 @@ fn player(
             CollisionEventsEnabled,
             CollisionLayers::new(GameLayer::Player, [GameLayer::Ground]),
         ),
-        (WeaponDirection(Vec2::X),),
+        WeaponDirection(Dir2::X),
         DebugRender::default().with_collider_color(Color::WHITE),
     )
 }

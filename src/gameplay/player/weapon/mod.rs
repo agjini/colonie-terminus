@@ -1,16 +1,16 @@
 use crate::{AppSystems, PausableSystems};
 use bevy::prelude::*;
-use bevy::render::render_resource::{TextureDimension, TextureFormat};
 
 mod asset;
 mod bullet;
 mod reticle;
 mod slot;
 
-use crate::gameplay::player::asset::PlayerAssets;
-use crate::gameplay::player::weapon::asset::WeaponLevel;
+use crate::gameplay::player::Player;
+use crate::gameplay::player::weapon::bullet::FireOrigin;
 use crate::gameplay::player::weapon::slot::WeaponSlots;
 pub use asset::WeaponAssets;
+pub use bullet::{BulletRoot, bullet_root, fire_origin};
 pub use reticle::reticle;
 pub use slot::weapon_slots;
 
@@ -27,17 +27,30 @@ pub fn plugin(app: &mut App) {
 }
 
 #[derive(Component, Reflect)]
-pub struct WeaponDirection(pub Vec2);
+pub struct WeaponDirection(pub Dir2);
 
 fn update_timers(time: Res<Time>, mut slots: Single<&mut WeaponSlots>) {
     slots.tick(time.delta());
 }
 
-fn auto_fire(mut commands: Commands, slots: Single<&WeaponSlots>, dir: Single<&WeaponDirection>) {
-    for slot in slots.just_finished() {
-        let Some(bullet) = slot.level.attack.bullet(dir.0) else {
-            return;
-        };
-        commands.spawn(bullet);
-    }
+fn auto_fire(
+    mut commands: Commands,
+    origin: Single<&GlobalTransform, With<FireOrigin>>,
+    root: Single<Entity, With<BulletRoot>>,
+    slots: Single<&WeaponSlots>,
+    dir: Single<&WeaponDirection>,
+) {
+    let Some(mut root) = commands.get_entity(*root).ok() else {
+        return;
+    };
+
+    root.with_children(|parent| {
+        for bullet in slots.just_finished().flat_map(|s| {
+            s.level
+                .attack
+                .bullet(origin.translation().truncate(), dir.0)
+        }) {
+            parent.spawn(bullet);
+        }
+    });
 }
