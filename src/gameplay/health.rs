@@ -27,7 +27,7 @@ pub fn health_bar(
     )
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Debug)]
 pub struct Health {
     pub current: f32,
     pub max: f32,

@@ -6,19 +6,25 @@ use crate::gameplay::player::weapon::{
 };
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use avian2d::prelude::{
-    Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LinearVelocity, LockedAxes,
-    RigidBody,
+    Collider, CollidingEntities, CollisionEventsEnabled, CollisionLayers, DebugRender,
+    LinearVelocity, LockedAxes, RigidBody, Sensor,
 };
 use bevy::ecs::relationship::RelatedSpawnerCommands;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
 pub mod asset;
+mod health;
 mod movement;
 pub mod weapon;
 
 pub fn plugin(app: &mut App) {
-    app.add_plugins((asset::plugin, movement::plugin, weapon::plugin));
+    app.add_plugins((
+        asset::plugin,
+        movement::plugin,
+        weapon::plugin,
+        health::plugin,
+    ));
 }
 
 pub fn spawn_player(
@@ -73,10 +79,12 @@ fn player(
         (
             RigidBody::Dynamic,
             Collider::circle(7.),
+            Sensor,
             LinearVelocity::ZERO,
             LockedAxes::ROTATION_LOCKED,
             CollisionEventsEnabled,
-            CollisionLayers::new(GameLayer::Player, [GameLayer::Ground]),
+            CollisionLayers::new(GameLayer::Player, [GameLayer::Enemy]),
+            CollidingEntities::default(),
         ),
         WeaponDirection(Dir2::X),
         DebugRender::default().with_collider_color(Color::WHITE),

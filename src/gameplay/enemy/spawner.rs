@@ -1,4 +1,4 @@
-use crate::gameplay::enemy::asset::{Enemy, EnemyAssets, EnemyType};
+use crate::gameplay::enemy::asset::{Damage, Enemy, EnemyAssets, EnemyType};
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::level::{RandomSeed, WorldEntity};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
@@ -94,8 +94,7 @@ pub fn enemy(
     (
         Name::new(enemy.name.to_string()),
         WorldEntity,
-        Enemy,
-        GameLayer::Enemy,
+        (Enemy, Damage(enemy.dps), GameLayer::Enemy),
         Sprite::from_atlas_image(
             enemy.sprite.handle.clone(),
             TextureAtlas {
@@ -110,11 +109,16 @@ pub fn enemy(
             ..default()
         },
         enemy_animation,
-        RigidBody::Dynamic,
-        Collider::circle(7.),
-        LockedAxes::ROTATION_LOCKED,
-        CollisionEventsEnabled,
-        CollisionLayers::new(GameLayer::Enemy, [GameLayer::Ground, GameLayer::Enemy]),
+        (
+            RigidBody::Dynamic,
+            Collider::circle(7.),
+            LockedAxes::ROTATION_LOCKED,
+            CollisionEventsEnabled,
+            CollisionLayers::new(
+                GameLayer::Enemy,
+                [GameLayer::Ground, GameLayer::Enemy, GameLayer::Player],
+            ),
+        ),
         DebugRender::default().with_collider_color(AMBER_400.into()),
     )
 }

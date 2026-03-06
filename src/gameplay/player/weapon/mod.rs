@@ -6,7 +6,6 @@ mod bullet;
 mod reticle;
 mod slot;
 
-use crate::gameplay::player::Player;
 use crate::gameplay::player::weapon::bullet::FireOrigin;
 use crate::gameplay::player::weapon::slot::WeaponSlots;
 pub use asset::WeaponAssets;

@@ -11,6 +11,9 @@ pub fn plugin(app: &mut App) {
 #[derive(Component, Reflect)]
 pub struct Enemy;
 
+#[derive(Component, Reflect, Debug)]
+pub struct Damage(pub f32);
+
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Debug, Clone)]
 pub struct EnemyAssets {
     #[asset]
@@ -21,6 +24,7 @@ pub struct EnemyAssets {
 pub struct EnemyType {
     pub name: String,
     pub max_speed: f32,
+    pub dps: f32,
     #[asset]
     pub sprite: Shandle<Image>,
 }
