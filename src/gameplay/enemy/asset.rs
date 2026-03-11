@@ -12,7 +12,15 @@ pub fn plugin(app: &mut App) {
 pub struct Enemy;
 
 #[derive(Component, Reflect, Debug)]
-pub struct Damage(pub f32);
+pub struct Damage {
+    pub damage: f32,
+    pub cooldown: f32,
+}
+
+#[derive(Component, Reflect, Debug)]
+pub struct DamageCooldown {
+    pub timer: Timer,
+}
 
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Debug, Clone)]
 pub struct EnemyAssets {
@@ -24,7 +32,8 @@ pub struct EnemyAssets {
 pub struct EnemyType {
     pub name: String,
     pub max_speed: f32,
-    pub dps: f32,
+    pub damage: f32,
+    pub cooldown: f32,
     #[asset]
     pub sprite: Shandle<Image>,
 }

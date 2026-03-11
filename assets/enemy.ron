@@ -4,7 +4,8 @@ EnemyAssets(
             name: "Saucisson",
             sprite: "images/black_ducky.png",
             max_speed: 100,
-            dps: 10,
+            damage: 10,
+            cooldown: 1.0,
             max_health: 100
         )
     ]

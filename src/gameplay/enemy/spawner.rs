@@ -94,7 +94,14 @@ pub fn enemy(
     (
         Name::new(enemy.name.to_string()),
         WorldEntity,
-        (Enemy, Damage(enemy.dps), GameLayer::Enemy),
+        (
+            Enemy,
+            Damage {
+                damage: enemy.damage,
+                cooldown: enemy.cooldown,
+            },
+            GameLayer::Enemy,
+        ),
         Sprite::from_atlas_image(
             enemy.sprite.handle.clone(),
             TextureAtlas {
