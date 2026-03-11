@@ -32,7 +32,6 @@ fn update_cooldown(
 
 fn apply_damage(
     mut commands: Commands,
-    time: Res<Time>,
     player: Single<(&mut Health, &CollidingEntities), With<Player>>,
     enemies: Query<&Damage, (With<Enemy>, Without<DamageCooldown>)>,
 ) {
