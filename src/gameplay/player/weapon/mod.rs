@@ -47,7 +47,7 @@ fn auto_fire(
         for bullet in slots.just_finished().flat_map(|s| {
             s.level
                 .attack
-                .bullet(origin.translation().truncate(), dir.0)
+                .bullet(s.level.damage, origin.translation().truncate(), dir.0)
         }) {
             parent.spawn(bullet);
         }

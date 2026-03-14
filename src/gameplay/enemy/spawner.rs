@@ -1,8 +1,11 @@
 use crate::gameplay::enemy::asset::{Damage, Enemy, EnemyAssets, EnemyType};
+use crate::gameplay::health::{Health, health_bar};
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::level::{RandomSeed, WorldEntity};
+use crate::gameplay::player::Player;
+use crate::gameplay::player::weapon::{fire_origin, reticle, weapon_slots};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
-use crate::screen::Screen;
+use crate::screen::{GameState, Screen};
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::{
     Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LockedAxes, RigidBody,
@@ -18,7 +21,7 @@ pub fn plugin(app: &mut App) {
         Update,
         (
             update_timer.in_set(AppSystems::TickTimers),
-            spawn_enemies.in_set(AppSystems::Update),
+            (spawn_enemies, check_death).in_set(AppSystems::Update),
         )
             .in_set(PausableSystems)
             .run_if(in_state(Screen::Gameplay(false))),
@@ -46,6 +49,8 @@ fn spawn_enemies(
     enemy_assets: Res<EnemyAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     root: Single<Entity, With<EnemyRoot>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
     camera: Single<(&Camera, &GlobalTransform)>,
     window: Single<&Window>,
 ) {
@@ -74,7 +79,12 @@ fn spawn_enemies(
         for enemy_type in enemy_assets.types.iter() {
             let angle = rng.0.random_range(0.0..2.0 * PI);
             let position = center + Vec2::new(angle.cos(), angle.sin()) * radius;
-            parent.spawn(enemy(position, enemy_type, &mut texture_atlas_layouts));
+            parent
+                .spawn(enemy(position, enemy_type, &mut texture_atlas_layouts))
+                .with_children(|enemy| {
+                    let owner = enemy.target_entity();
+                    enemy.spawn(health_bar(owner, &mut meshes, &mut materials));
+                });
         }
     });
 }
@@ -100,6 +110,7 @@ pub fn enemy(
                 damage: enemy.damage,
                 cooldown: enemy.cooldown,
             },
+            Health::new(enemy.max_health),
             GameLayer::Enemy,
         ),
         Sprite::from_atlas_image(
@@ -123,9 +134,17 @@ pub fn enemy(
             CollisionEventsEnabled,
             CollisionLayers::new(
                 GameLayer::Enemy,
-                [GameLayer::Ground, GameLayer::Enemy, GameLayer::Player],
+                [GameLayer::Enemy, GameLayer::Player, GameLayer::Bullet],
             ),
         ),
         DebugRender::default().with_collider_color(AMBER_400.into()),
     )
+}
+
+fn check_death(mut commands: Commands, enemies: Query<(Entity, &Health), With<Enemy>>) {
+    for (entity, health) in &enemies {
+        if health.current <= 0. {
+            commands.entity(entity).despawn();
+        }
+    }
 }

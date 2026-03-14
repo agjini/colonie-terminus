@@ -32,6 +32,7 @@ pub struct EnemyAssets {
 pub struct EnemyType {
     pub name: String,
     pub max_speed: f32,
+    pub max_health: f32,
     pub damage: f32,
     pub cooldown: f32,
     #[asset]

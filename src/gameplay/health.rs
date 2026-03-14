@@ -35,7 +35,7 @@ pub struct Health {
 
 impl Health {
     pub fn new(max: f32) -> Self {
-        Self { current: 80., max }
+        Self { current: max, max }
     }
 }
 

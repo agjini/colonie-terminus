@@ -33,6 +33,8 @@ pub fn plugin(app: &mut App) {
 pub struct LevelAssets {
     #[asset]
     pub music: Shandle<AudioSample>,
+    #[asset]
+    pub game_over: Shandle<AudioSample>,
     #[serde(default = "random_seed")]
     pub seed: u32,
     pub planet_width: u32,

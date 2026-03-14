@@ -1,3 +1,5 @@
+use crate::gameplay::enemy::asset::{Damage, Enemy};
+use crate::gameplay::health::Health;
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::weapon::asset::WeaponAttack;
 use crate::{AppSystems, PausableSystems};
@@ -10,7 +12,7 @@ use ron_asset_manager::Shandle;
 pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        despawn_bullets
+        (apply_damage, despawn_bullets)
             .in_set(AppSystems::Update)
             .in_set(PausableSystems),
     );
@@ -26,14 +28,14 @@ pub struct FireOrigin;
 struct Bullet;
 
 impl WeaponAttack {
-    pub fn bullet(&self, from: Vec2, direction: Dir2) -> Option<impl Bundle> {
+    pub fn bullet(&self, damage: f32, from: Vec2, direction: Dir2) -> Option<impl Bundle> {
         match self {
             WeaponAttack::Projectile {
                 sprite,
                 speed,
                 lifetime,
                 ..
-            } => Some(bullet(sprite, *speed, *lifetime, from, direction)),
+            } => Some(bullet(sprite, damage, *speed, *lifetime, from, direction)),
             _ => None,
         }
     }
@@ -62,6 +64,7 @@ impl BulletLifetime {
 
 pub fn bullet(
     sprite: &Shandle<Image>,
+    damage: f32,
     speed: f32,
     lifetime: f32,
     from: Vec2,
@@ -72,6 +75,10 @@ pub fn bullet(
         Bullet,
         GameLayer::Bullet,
         BulletLifetime::new(lifetime),
+        Damage {
+            damage,
+            cooldown: 0.,
+        },
         Sprite::from_image(sprite.handle.clone()),
         Transform::from_scale(Vec2::splat(0.2).extend(1.0))
             .with_translation(from.extend(0.0))
@@ -85,9 +92,30 @@ pub fn bullet(
             LockedAxes::ROTATION_LOCKED,
             CollisionEventsEnabled,
             CollisionLayers::new(GameLayer::Bullet, [GameLayer::Enemy]),
+            CollidingEntities::default(),
         ),
         DebugRender::default().with_collider_color(CYAN_500.into()),
     )
+}
+
+fn apply_damage(
+    mut commands: Commands,
+    bullets: Query<(Entity, &Damage, &CollidingEntities), With<Bullet>>,
+    mut enemies: Query<&mut Health, With<Enemy>>,
+) {
+    for (bullet, damage, colliding_entities) in bullets {
+        if colliding_entities.is_empty() {
+            continue;
+        }
+        for e in colliding_entities.iter() {
+            let Ok(mut health) = enemies.get_mut(*e) else {
+                continue;
+            };
+            health.current -= damage.damage;
+        }
+
+        commands.entity(bullet).despawn();
+    }
 }
 
 fn despawn_bullets(
