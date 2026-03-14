@@ -1,4 +1,5 @@
 mod credits;
+mod game_over;
 mod main;
 mod pause;
 mod settings;
@@ -20,6 +21,7 @@ pub fn plugin(app: &mut App) {
         main::plugin,
         settings::plugin,
         pause::plugin,
+        game_over::plugin,
     ));
 }
 
@@ -31,6 +33,7 @@ pub enum Menu {
     Credits,
     Settings,
     Pause,
+    GameOver,
 }
 
 #[derive(Resource, TypePath, Asset, RonAsset, Deserialize, Debug, Clone)]

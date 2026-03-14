@@ -1,44 +1,67 @@
+use avian2d::prelude::{Physics, PhysicsTime};
 use bevy::prelude::*;
 
-use crate::screen::Screen::Gameplay;
+use crate::menu::Menu;
+use crate::screen::Screen;
 use crate::utils::escape_just_pressed;
-use crate::{Pause, menu::Menu, screen::Screen};
 
 pub fn plugin(app: &mut App) {
-    app.add_computed_state::<InGame>();
+    app.add_sub_state::<GameState>();
     app.add_systems(
         Update,
-        (
-            (pause, spawn_pause_overlay, open_pause_menu).run_if(
-                in_state(Gameplay(false))
-                    .and(in_state(Menu::None))
-                    .and(escape_just_pressed),
-            ),
-            close_menu.run_if(
-                in_state(Gameplay(false))
-                    .and(not(in_state(Menu::None)))
-                    .and(escape_just_pressed),
-            ),
-        ),
+        enter_pause.run_if(in_state(GameState::InGame).and(escape_just_pressed)),
     );
-    app.add_systems(OnExit(Gameplay(false)), (close_menu, unpause));
     app.add_systems(
         OnEnter(Menu::None),
-        unpause.run_if(in_state(Gameplay(false))),
+        resume.run_if(in_state(GameState::Pause)),
     );
+    app.add_systems(
+        OnEnter(GameState::Pause),
+        (open_pause_menu, spawn_overlay),
+    );
+    app.add_systems(
+        OnEnter(GameState::GameOver),
+        (open_game_over_menu, spawn_overlay),
+    );
+    app.add_systems(OnEnter(GameState::LevelUp), spawn_overlay);
+    app.add_systems(OnEnter(GameState::InGame), (close_menu, unpause));
+    app.add_systems(OnExit(GameState::InGame), pause);
+    app.add_systems(OnExit(Screen::Gameplay(false)), close_menu);
 }
 
-fn unpause(mut next_pause: ResMut<NextState<Pause>>) {
-    next_pause.set(Pause(false));
+#[derive(SubStates, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
+#[source(Screen = Screen::Gameplay(false))]
+pub enum GameState {
+    #[default]
+    InGame,
+    Pause,
+    GameOver,
+    LevelUp,
 }
 
-fn pause(mut next_pause: ResMut<NextState<Pause>>) {
-    next_pause.set(Pause(true));
+fn enter_pause(mut next: ResMut<NextState<GameState>>) {
+    next.set(GameState::Pause);
 }
 
-fn spawn_pause_overlay(mut commands: Commands) {
+fn resume(mut next: ResMut<NextState<GameState>>) {
+    next.set(GameState::InGame);
+}
+
+fn open_pause_menu(mut next_menu: ResMut<NextState<Menu>>) {
+    next_menu.set(Menu::Pause);
+}
+
+fn open_game_over_menu(mut next_menu: ResMut<NextState<Menu>>) {
+    next_menu.set(Menu::GameOver);
+}
+
+fn close_menu(mut next_menu: ResMut<NextState<Menu>>) {
+    next_menu.set(Menu::None);
+}
+
+fn spawn_overlay(mut commands: Commands, state: Res<State<GameState>>) {
     commands.spawn((
-        Name::new("Pause Overlay"),
+        Name::new("Overlay"),
         Node {
             width: percent(100),
             height: percent(100),
@@ -46,34 +69,14 @@ fn spawn_pause_overlay(mut commands: Commands) {
         },
         GlobalZIndex(1),
         BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.8)),
-        DespawnOnExit(Pause(true)),
+        DespawnOnExit(*state.get()),
     ));
 }
 
-fn open_pause_menu(mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::Pause);
+fn pause(mut time: ResMut<Time<Physics>>) {
+    time.pause();
 }
 
-fn close_menu(mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::None);
-}
-
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
-struct InGame;
-
-impl ComputedStates for InGame {
-    type SourceStates = Screen;
-
-    fn compute(screen: Screen) -> Option<Self> {
-        match screen {
-            Gameplay(loading) => {
-                if loading {
-                    Some(InGame)
-                } else {
-                    None
-                }
-            }
-            _ => None,
-        }
-    }
+fn unpause(mut time: ResMut<Time<Physics>>) {
+    time.unpause();
 }

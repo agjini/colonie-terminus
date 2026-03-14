@@ -3,6 +3,7 @@ mod loading;
 mod splash;
 mod title;
 
+pub use gameplay::GameState;
 use bevy::prelude::*;
 
 pub fn plugin(app: &mut App) {

@@ -15,10 +15,10 @@ mod utils;
 #[cfg(feature = "dev")]
 mod dev_tools;
 
-use crate::screen::Screen;
 use crate::screen::Screen::{Gameplay, Title};
+use crate::screen::{GameState, Screen};
 use avian2d::PhysicsPlugins;
-use avian2d::prelude::{Gravity, Physics, PhysicsTime};
+use avian2d::prelude::Gravity;
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::window::{
     CursorGrabMode, CursorOptions, PresentMode, PrimaryWindow, WindowMode, WindowResolution,
@@ -84,12 +84,9 @@ impl Plugin for AppPlugin {
                 .chain(),
         );
 
-        app.init_state::<Pause>();
-        app.configure_sets(Update, PausableSystems.run_if(in_state(Pause(false))));
+        app.configure_sets(Update, PausableSystems.run_if(in_state(GameState::InGame)));
         app.add_computed_state::<MetaState>();
 
-        app.add_systems(OnEnter(Pause(true)), pause);
-        app.add_systems(OnEnter(Pause(false)), unpause);
         app.add_systems(Startup, spawn_camera);
         app.add_systems(
             Update,
@@ -104,9 +101,6 @@ enum AppSystems {
     RecordInput,
     Update,
 }
-
-#[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
-struct Pause(pub bool);
 
 #[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
 struct PausableSystems;
@@ -151,10 +145,3 @@ fn change_window_mode(mut window: Single<&mut Window, With<PrimaryWindow>>) {
     };
 }
 
-fn pause(mut time: ResMut<Time<Physics>>) {
-    time.pause();
-}
-
-fn unpause(mut time: ResMut<Time<Physics>>) {
-    time.unpause();
-}

@@ -1,6 +1,7 @@
 use crate::gameplay::enemy::asset::{Damage, DamageCooldown, Enemy};
 use crate::gameplay::health::Health;
 use crate::gameplay::player::Player;
+use crate::screen::GameState;
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::CollidingEntities;
 use bevy::app::App;
@@ -11,7 +12,7 @@ pub fn plugin(app: &mut App) {
         Update,
         (
             update_cooldown.in_set(AppSystems::TickTimers),
-            apply_damage.in_set(AppSystems::Update),
+            (apply_damage, check_death).in_set(AppSystems::Update),
         )
             .in_set(PausableSystems),
     );
@@ -44,5 +45,14 @@ fn apply_damage(
         commands.entity(*e).insert(DamageCooldown {
             timer: Timer::from_seconds(damage.cooldown, TimerMode::Once),
         });
+    }
+}
+
+fn check_death(
+    health: Single<&Health, (With<Player>, Changed<Health>)>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    if health.current <= 0. {
+        next_state.set(GameState::GameOver);
     }
 }
