@@ -1,9 +1,12 @@
 use avian2d::prelude::{Physics, PhysicsTime};
 use bevy::prelude::*;
 
+use crate::audio::music;
+use crate::gameplay::level::{GameplayMusic, LevelAssets};
 use crate::menu::Menu;
 use crate::screen::Screen;
 use crate::utils::escape_just_pressed;
+use bevy_seedling::prelude::PlaybackSettings;
 
 pub fn plugin(app: &mut App) {
     app.add_sub_state::<GameState>();
@@ -21,11 +24,11 @@ pub fn plugin(app: &mut App) {
     );
     app.add_systems(
         OnEnter(GameState::GameOver),
-        (open_game_over_menu, spawn_overlay),
+        (open_game_over_menu, spawn_overlay, start_game_over_music),
     );
     app.add_systems(OnEnter(GameState::LevelUp), spawn_overlay);
-    app.add_systems(OnEnter(GameState::InGame), (close_menu, unpause));
-    app.add_systems(OnExit(GameState::InGame), pause);
+    app.add_systems(OnEnter(GameState::InGame), (close_menu, unpause, resume_music));
+    app.add_systems(OnExit(GameState::InGame), (pause, pause_music));
     app.add_systems(OnExit(Screen::Gameplay(false)), close_menu);
 }
 
@@ -71,6 +74,26 @@ fn spawn_overlay(mut commands: Commands, state: Res<State<GameState>>) {
         BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.8)),
         DespawnOnExit(*state.get()),
     ));
+}
+
+fn start_game_over_music(mut commands: Commands, level_assets: Res<LevelAssets>) {
+    commands.spawn((
+        Name::new("Game Over Music"),
+        DespawnOnExit(GameState::GameOver),
+        music(level_assets.game_over.handle.clone()),
+    ));
+}
+
+fn pause_music(mut music: Query<&mut PlaybackSettings, With<GameplayMusic>>) {
+    for mut settings in &mut music {
+        settings.pause();
+    }
+}
+
+fn resume_music(mut music: Query<&mut PlaybackSettings, With<GameplayMusic>>) {
+    for mut settings in &mut music {
+        settings.play();
+    }
 }
 
 fn pause(mut time: ResMut<Time<Physics>>) {

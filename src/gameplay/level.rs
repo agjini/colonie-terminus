@@ -16,6 +16,9 @@ use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
 
 #[derive(Component, Reflect)]
+pub struct GameplayMusic;
+
+#[derive(Component, Reflect)]
 pub struct TilemapOrigin;
 
 #[derive(Component, Reflect)]
@@ -74,6 +77,7 @@ fn spawn_level(
         .with_children(|parent| {
             parent.spawn((
                 Name::new("Gameplay Music"),
+                GameplayMusic,
                 music(level_assets.music.handle.clone()),
             ));
 
