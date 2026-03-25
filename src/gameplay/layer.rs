@@ -11,6 +11,7 @@ pub enum GameLayer {
     #[default]
     Ground,
     Enemy,
+    AimZone,
     Player,
     Bullet,
 }
@@ -20,6 +21,7 @@ impl GameLayer {
         match self {
             GameLayer::Ground => -1.,
             GameLayer::Enemy => 10.,
+            GameLayer::AimZone => 15.,
             GameLayer::Player => 20.,
             GameLayer::Bullet => 30.,
         }

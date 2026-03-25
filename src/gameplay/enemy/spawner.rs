@@ -7,9 +7,7 @@ use crate::gameplay::player::weapon::{aim_zone, fire_origin, weapon_slots};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use crate::screen::{GameState, Screen};
 use crate::{AppSystems, PausableSystems};
-use avian2d::prelude::{
-    Collider, CollisionEventsEnabled, CollisionLayers, DebugRender, LockedAxes, RigidBody,
-};
+use avian2d::prelude::{Collider, CollisionLayers, DebugRender, LockedAxes, RigidBody};
 use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
@@ -131,10 +129,14 @@ pub fn enemy(
             RigidBody::Dynamic,
             Collider::circle(7.),
             LockedAxes::ROTATION_LOCKED,
-            CollisionEventsEnabled,
             CollisionLayers::new(
                 GameLayer::Enemy,
-                [GameLayer::Enemy, GameLayer::Player, GameLayer::Bullet],
+                [
+                    GameLayer::Enemy,
+                    GameLayer::Player,
+                    GameLayer::Bullet,
+                    GameLayer::AimZone,
+                ],
             ),
         ),
         DebugRender::default().with_collider_color(AMBER_400.into()),

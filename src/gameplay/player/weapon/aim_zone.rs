@@ -1,5 +1,7 @@
+use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::weapon::WeaponDirection;
 use crate::{AppSystems, PausableSystems};
+use avian2d::prelude::{Collider, CollidingEntities, CollisionLayers, Sensor};
 use bevy::mesh::{Indices, PrimitiveTopology, VertexAttributeValues};
 use bevy::prelude::*;
 use std::f32::consts::FRAC_PI_2;
@@ -28,12 +30,31 @@ pub fn aim_zone(
     angle_degrees: f32,
 ) -> impl Bundle {
     let half_angle = (angle_degrees / 2.0).to_radians();
+
+    let angle_start = -half_angle;
+    let angle_end = half_angle;
+    let b = Vec2::new(
+        angle_start.sin() * RETICLE_LENGTH,
+        angle_start.cos() * RETICLE_LENGTH,
+    );
+    let c = Vec2::new(
+        angle_end.sin() * RETICLE_LENGTH,
+        angle_end.cos() * RETICLE_LENGTH,
+    );
+
     (
         Name::new("AimZone"),
         AimZone,
+        GameLayer::AimZone,
         Mesh2d(meshes.add(sector_mesh(half_angle))),
         MeshMaterial2d(materials.add(ColorMaterial::default())),
         Transform::from_translation(Vec3::new(0.0, 0.0, -1.0)),
+        (
+            Collider::triangle(Vec2::ZERO, b, c),
+            CollidingEntities::default(),
+            CollisionLayers::new(GameLayer::AimZone, [GameLayer::Enemy]),
+            Sensor,
+        ),
     )
 }
 

@@ -6,8 +6,8 @@ use crate::gameplay::player::weapon::{
 };
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use avian2d::prelude::{
-    Collider, CollidingEntities, CollisionEventsEnabled, CollisionLayers, DebugRender,
-    LinearVelocity, LockedAxes, RigidBody, Sensor,
+    Collider, CollidingEntities, CollisionLayers, DebugRender, LinearVelocity, LockedAxes, Mass,
+    RigidBody, Sensor,
 };
 use bevy::ecs::relationship::RelatedSpawnerCommands;
 use bevy::prelude::*;
@@ -84,10 +84,10 @@ fn player(
         (
             RigidBody::Dynamic,
             Collider::circle(7.),
+            Mass(1.0),
             Sensor,
             LinearVelocity::ZERO,
             LockedAxes::ROTATION_LOCKED,
-            CollisionEventsEnabled,
             CollisionLayers::new(GameLayer::Player, [GameLayer::Enemy]),
             CollidingEntities::default(),
         ),

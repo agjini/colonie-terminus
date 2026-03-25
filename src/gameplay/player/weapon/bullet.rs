@@ -90,7 +90,6 @@ pub fn bullet(
             Collider::circle(7.),
             LinearVelocity::from(direction * speed),
             LockedAxes::ROTATION_LOCKED,
-            CollisionEventsEnabled,
             CollisionLayers::new(GameLayer::Bullet, [GameLayer::Enemy]),
             CollidingEntities::default(),
         ),

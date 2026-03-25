@@ -1,11 +1,18 @@
 use crate::{AppSystems, PausableSystems};
+use avian2d::prelude::CollidingEntities;
+use bevy::ecs::entity::MapEntities;
 use bevy::prelude::*;
+use itertools::Itertools;
 
 mod aim_zone;
 mod asset;
 mod bullet;
 mod slot;
 
+use crate::gameplay::enemy::asset::DamageCooldown;
+use crate::gameplay::health::Health;
+use crate::gameplay::player::Player;
+use crate::gameplay::player::weapon::aim_zone::AimZone;
 use crate::gameplay::player::weapon::bullet::FireOrigin;
 use crate::gameplay::player::weapon::slot::WeaponSlots;
 pub use aim_zone::aim_zone;
@@ -37,17 +44,35 @@ fn auto_fire(
     origin: Single<&GlobalTransform, With<FireOrigin>>,
     root: Single<Entity, With<BulletRoot>>,
     slots: Single<&WeaponSlots>,
-    dir: Single<&WeaponDirection>,
+    aim_zone: Single<&CollidingEntities, With<AimZone>>,
+    enemies: Query<&GlobalTransform>,
 ) {
     let Some(mut root) = commands.get_entity(*root).ok() else {
         return;
     };
 
+    let origin_pos = origin.translation().truncate();
+
+    let closest = aim_zone
+        .iter()
+        .flat_map(|e| enemies.get(*e).ok().map(|g| g.translation().truncate()))
+        .min_by(|a, b| {
+            let da = a.distance(origin_pos);
+            let db = b.distance(origin_pos);
+            da.partial_cmp(&db).unwrap()
+        });
+
+    let Some(enemy_pos) = closest else {
+        return;
+    };
+
+    let direction = Dir2::new(enemy_pos - origin_pos).unwrap_or(Dir2::X);
+
     root.with_children(|parent| {
         for bullet in slots.just_finished().flat_map(|s| {
             s.level
                 .attack
-                .bullet(s.level.damage, origin.translation().truncate(), dir.0)
+                .bullet(s.level.damage, origin.translation().truncate(), direction)
         }) {
             parent.spawn(bullet);
         }
