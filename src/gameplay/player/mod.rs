@@ -2,7 +2,7 @@ use crate::gameplay::health::{Health, health_bar};
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::asset::PlayerAssets;
 use crate::gameplay::player::weapon::{
-    WeaponAssets, WeaponDirection, fire_origin, reticle, weapon_slots,
+    WeaponAssets, WeaponDirection, aim_zone, fire_origin, weapon_slots,
 };
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use avian2d::prelude::{
@@ -40,7 +40,12 @@ pub fn spawn_player(
         .spawn(player(player_assets, texture_atlas_layouts))
         .with_children(|player| {
             let owner = player.target_entity();
-            player.spawn(reticle(meshes, materials, images));
+            player.spawn(aim_zone(
+                meshes,
+                materials,
+                images,
+                player_assets.auto_aim_angle,
+            ));
             player.spawn(health_bar(owner, meshes, materials));
             player.spawn(weapon_slots(weapon_assets));
             player.spawn(fire_origin());

@@ -1,20 +1,20 @@
 use crate::{AppSystems, PausableSystems};
 use bevy::prelude::*;
 
+mod aim_zone;
 mod asset;
 mod bullet;
-mod reticle;
 mod slot;
 
 use crate::gameplay::player::weapon::bullet::FireOrigin;
 use crate::gameplay::player::weapon::slot::WeaponSlots;
+pub use aim_zone::aim_zone;
 pub use asset::WeaponAssets;
 pub use bullet::{BulletRoot, bullet_root, fire_origin};
-pub use reticle::reticle;
 pub use slot::weapon_slots;
 
 pub fn plugin(app: &mut App) {
-    app.add_plugins((asset::plugin, reticle::plugin, bullet::plugin));
+    app.add_plugins((asset::plugin, aim_zone::plugin, bullet::plugin));
     app.add_systems(
         Update,
         (

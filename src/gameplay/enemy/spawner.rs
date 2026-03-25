@@ -3,7 +3,7 @@ use crate::gameplay::health::{Health, health_bar};
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::level::{RandomSeed, WorldEntity};
 use crate::gameplay::player::Player;
-use crate::gameplay::player::weapon::{fire_origin, reticle, weapon_slots};
+use crate::gameplay::player::weapon::{aim_zone, fire_origin, weapon_slots};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use crate::screen::{GameState, Screen};
 use crate::{AppSystems, PausableSystems};
