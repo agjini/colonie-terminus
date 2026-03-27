@@ -1,7 +1,7 @@
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::weapon::WeaponDirection;
 use crate::{AppSystems, PausableSystems};
-use avian2d::prelude::{Collider, CollidingEntities, CollisionLayers, Sensor};
+use avian2d::prelude::{Collider, CollidingEntities, CollisionLayers, Mass, Sensor};
 use bevy::mesh::{Indices, PrimitiveTopology, VertexAttributeValues};
 use bevy::prelude::*;
 use std::f32::consts::FRAC_PI_2;
@@ -50,6 +50,7 @@ pub fn aim_zone(
         MeshMaterial2d(materials.add(ColorMaterial::default())),
         Transform::from_translation(Vec3::new(0.0, 0.0, -1.0)),
         (
+            Mass(1.0),
             Collider::triangle(Vec2::ZERO, b, c),
             CollidingEntities::default(),
             CollisionLayers::new(GameLayer::AimZone, [GameLayer::Enemy]),

@@ -1,3 +1,4 @@
+use crate::gameplay::enemy::Hurt;
 use crate::gameplay::enemy::asset::{Damage, DamageCooldown, Enemy};
 use crate::gameplay::health::Health;
 use crate::gameplay::player::Player;
@@ -21,7 +22,7 @@ pub fn plugin(app: &mut App) {
 fn update_cooldown(
     mut commands: Commands,
     time: Res<Time>,
-    enemies: Query<(Entity, &mut DamageCooldown)>,
+    enemies: Query<(Entity, &mut DamageCooldown), Without<Hurt>>,
 ) {
     for (entity, mut damage_cooldown) in enemies.into_iter() {
         damage_cooldown.timer.tick(time.delta());
@@ -34,7 +35,7 @@ fn update_cooldown(
 fn apply_damage(
     mut commands: Commands,
     player: Single<(&mut Health, &CollidingEntities), With<Player>>,
-    enemies: Query<&Damage, (With<Enemy>, Without<DamageCooldown>)>,
+    enemies: Query<&Damage, (With<Enemy>, Without<DamageCooldown>, Without<Hurt>)>,
 ) {
     let (mut health, colliding_entities) = player.into_inner();
     for e in colliding_entities.iter() {

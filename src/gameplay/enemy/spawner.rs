@@ -2,12 +2,10 @@ use crate::gameplay::enemy::asset::{Damage, Enemy, EnemyAssets, EnemyType};
 use crate::gameplay::health::{Health, health_bar};
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::level::{RandomSeed, WorldEntity};
-use crate::gameplay::player::Player;
-use crate::gameplay::player::weapon::{aim_zone, fire_origin, weapon_slots};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
-use crate::screen::{GameState, Screen};
+use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
-use avian2d::prelude::{Collider, CollisionLayers, DebugRender, LockedAxes, RigidBody};
+use avian2d::prelude::{Collider, CollisionLayers, DebugRender, LockedAxes, Mass, RigidBody};
 use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
@@ -18,8 +16,8 @@ pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            update_timer.in_set(AppSystems::TickTimers),
-            (spawn_enemies, check_death).in_set(AppSystems::Update),
+            update_spawn_timer.in_set(AppSystems::TickTimers),
+            spawn_enemies.in_set(AppSystems::Update),
         )
             .in_set(PausableSystems)
             .run_if(in_state(Screen::Gameplay(false))),
@@ -36,7 +34,7 @@ impl Default for SpawnTimer {
     }
 }
 
-fn update_timer(time: Res<Time>, mut timer: ResMut<SpawnTimer>) {
+fn update_spawn_timer(time: Res<Time>, mut timer: ResMut<SpawnTimer>) {
     timer.0.tick(time.delta());
 }
 
@@ -127,6 +125,7 @@ pub fn enemy(
         enemy_animation,
         (
             RigidBody::Dynamic,
+            Mass(1.0),
             Collider::circle(7.),
             LockedAxes::ROTATION_LOCKED,
             CollisionLayers::new(
@@ -141,12 +140,4 @@ pub fn enemy(
         ),
         DebugRender::default().with_collider_color(AMBER_400.into()),
     )
-}
-
-fn check_death(mut commands: Commands, enemies: Query<(Entity, &Health), With<Enemy>>) {
-    for (entity, health) in &enemies {
-        if health.current <= 0. {
-            commands.entity(entity).despawn();
-        }
-    }
 }

@@ -1,23 +1,18 @@
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::CollidingEntities;
-use bevy::ecs::entity::MapEntities;
 use bevy::prelude::*;
-use itertools::Itertools;
 
 mod aim_zone;
 mod asset;
 mod bullet;
 mod slot;
 
-use crate::gameplay::enemy::asset::DamageCooldown;
-use crate::gameplay::health::Health;
-use crate::gameplay::player::Player;
 use crate::gameplay::player::weapon::aim_zone::AimZone;
 use crate::gameplay::player::weapon::bullet::FireOrigin;
 use crate::gameplay::player::weapon::slot::WeaponSlots;
 pub use aim_zone::aim_zone;
 pub use asset::WeaponAssets;
-pub use bullet::{BulletRoot, bullet_root, fire_origin};
+pub use bullet::{bullet_root, fire_origin, BulletRoot};
 pub use slot::weapon_slots;
 
 pub fn plugin(app: &mut App) {

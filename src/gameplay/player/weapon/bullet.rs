@@ -86,8 +86,9 @@ pub fn bullet(
                 direction.y.atan2(direction.x) - PI / 2.,
             )),
         (
-            RigidBody::Dynamic,
+            RigidBody::Kinematic,
             Collider::circle(7.),
+            Sensor,
             LinearVelocity::from(direction * speed),
             LockedAxes::ROTATION_LOCKED,
             CollisionLayers::new(GameLayer::Bullet, [GameLayer::Enemy]),
