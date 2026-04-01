@@ -37,6 +37,10 @@ impl Health {
     pub fn new(max: f32) -> Self {
         Self { current: max, max }
     }
+
+    pub fn is_dead(&self) -> bool {
+        self.current <= 0.
+    }
 }
 
 fn update_health_bar(mut bars: Query<&mut ProgressBar>, health: Query<&Health>) {

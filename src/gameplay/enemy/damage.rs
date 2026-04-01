@@ -9,7 +9,7 @@ pub fn plugin(app: &mut App) {
         Update,
         (
             update_damage_timer.in_set(AppSystems::TickTimers),
-            (check_damage, blink_when_hurt).in_set(AppSystems::Update),
+            (check_damage, flash_when_hurt).in_set(AppSystems::Update),
         )
             .in_set(PausableSystems)
             .run_if(in_state(Screen::Gameplay(false))),
@@ -17,13 +17,23 @@ pub fn plugin(app: &mut App) {
 }
 
 #[derive(Component, Reflect)]
-pub struct Hurt(Timer);
+pub struct Hurt {
+    pub timer: Timer,
+    pub dead: bool,
+}
 
-fn check_damage(mut commands: Commands, enemies: Query<Entity, (With<Enemy>, Changed<Health>)>) {
-    for entity in &enemies {
-        commands
-            .entity(entity)
-            .insert(Hurt(Timer::from_seconds(1., TimerMode::Once)));
+fn check_damage(
+    mut commands: Commands,
+    enemies: Query<(Entity, &Health), (With<Enemy>, Changed<Health>)>,
+) {
+    for (entity, health) in &enemies {
+        if health.current == health.max {
+            continue;
+        }
+        commands.entity(entity).insert(Hurt {
+            timer: Timer::from_seconds(0.2, TimerMode::Once),
+            dead: health.is_dead(),
+        });
     }
 }
 
@@ -33,28 +43,22 @@ fn update_damage_timer(
     hurts: Query<(Entity, &mut Hurt, &Health), With<Enemy>>,
 ) {
     for (e, mut hurt, health) in hurts.into_iter() {
-        hurt.0.tick(time.delta());
-        if hurt.0.just_finished() {
-            if health.current <= 0. {
+        hurt.timer.tick(time.delta());
+        if hurt.timer.just_finished() {
+            if health.is_dead() {
                 commands.entity(e).despawn();
             } else {
-                commands
-                    .entity(e)
-                    .remove::<Hurt>()
-                    .insert(Visibility::Inherited);
+                commands.entity(e).remove::<Hurt>();
             }
         }
     }
 }
 
-fn blink_when_hurt(mut enemies: Query<(&Hurt, &mut Visibility), With<Enemy>>) {
-    for (hurt, mut visibility) in &mut enemies {
-        let elapsed = hurt.0.elapsed_secs();
-        let blink_on = (elapsed * 10.0) as u32 % 2 == 0;
-        *visibility = if blink_on {
-            Visibility::Inherited
-        } else {
-            Visibility::Hidden
-        };
+fn flash_when_hurt(mut enemies: Query<(&Hurt, &mut Sprite), With<Enemy>>) {
+    for (hurt, mut sprite) in &mut enemies {
+        let t = hurt.timer.fraction();
+        let f = EasingCurve::new(20.0, 1.0, EaseFunction::CubicIn);
+        let intensity = f.sample_clamped(t);
+        sprite.color = Color::linear_rgb(intensity, intensity, intensity);
     }
 }
