@@ -1,7 +1,10 @@
+use crate::gameplay::animation::CharacterAnimation;
 use crate::gameplay::enemy::asset::Enemy;
 use crate::gameplay::health::Health;
+use crate::gameplay::movement::MovementController;
 use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
+use avian2d::prelude::LinearVelocity;
 use bevy::prelude::*;
 
 pub fn plugin(app: &mut App) {
@@ -24,28 +27,33 @@ pub struct Hurt {
 
 fn check_damage(
     mut commands: Commands,
-    enemies: Query<(Entity, &Health), (With<Enemy>, Changed<Health>)>,
+    enemies: Query<(Entity, &Health, &mut LinearVelocity), (With<Enemy>, Changed<Health>)>,
 ) {
-    for (entity, health) in &enemies {
+    for (entity, health, mut vel) in enemies.into_iter() {
         if health.current == health.max {
             continue;
         }
-        commands.entity(entity).insert(Hurt {
+        let dead = health.is_dead();
+        let mut entity = commands.entity(entity);
+        if dead {
+            entity.remove::<Enemy>();
+            entity.remove::<Health>();
+            entity.remove::<MovementController>();
+            entity.remove::<CharacterAnimation>();
+            vel.0 = Vec2::ZERO;
+        }
+        entity.insert(Hurt {
             timer: Timer::from_seconds(0.2, TimerMode::Once),
-            dead: health.is_dead(),
+            dead,
         });
     }
 }
 
-fn update_damage_timer(
-    mut commands: Commands,
-    time: Res<Time>,
-    hurts: Query<(Entity, &mut Hurt, &Health), With<Enemy>>,
-) {
-    for (e, mut hurt, health) in hurts.into_iter() {
+fn update_damage_timer(mut commands: Commands, time: Res<Time>, hurts: Query<(Entity, &mut Hurt)>) {
+    for (e, mut hurt) in hurts.into_iter() {
         hurt.timer.tick(time.delta());
         if hurt.timer.just_finished() {
-            if health.is_dead() {
+            if hurt.dead {
                 commands.entity(e).despawn();
             } else {
                 commands.entity(e).remove::<Hurt>();
@@ -54,7 +62,7 @@ fn update_damage_timer(
     }
 }
 
-fn flash_when_hurt(mut enemies: Query<(&Hurt, &mut Sprite), With<Enemy>>) {
+fn flash_when_hurt(mut enemies: Query<(&Hurt, &mut Sprite)>) {
     for (hurt, mut sprite) in &mut enemies {
         let t = hurt.timer.fraction();
         let f = EasingCurve::new(20.0, 1.0, EaseFunction::CubicIn);

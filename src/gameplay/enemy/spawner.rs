@@ -75,12 +75,7 @@ fn spawn_enemies(
         for enemy_type in enemy_assets.types.iter() {
             let angle = rng.0.random_range(0.0..2.0 * PI);
             let position = center + Vec2::new(angle.cos(), angle.sin()) * radius;
-            parent
-                .spawn(enemy(position, enemy_type, &mut texture_atlas_layouts))
-                .with_children(|enemy| {
-                    let owner = enemy.target_entity();
-                    enemy.spawn(health_bar(owner, &mut meshes, &mut materials));
-                });
+            parent.spawn(enemy(position, enemy_type, &mut texture_atlas_layouts));
         }
     });
 }
