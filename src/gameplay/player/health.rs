@@ -24,7 +24,7 @@ fn update_cooldown(
     time: Res<Time>,
     enemies: Query<(Entity, &mut DamageCooldown), Without<Hurt>>,
 ) {
-    for (entity, mut damage_cooldown) in enemies.into_iter() {
+    for (entity, mut damage_cooldown) in enemies {
         damage_cooldown.timer.tick(time.delta());
         if damage_cooldown.timer.just_finished() {
             commands.entity(entity).remove::<DamageCooldown>();

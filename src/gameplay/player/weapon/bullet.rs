@@ -2,6 +2,7 @@ use crate::gameplay::enemy::asset::{Damage, Enemy};
 use crate::gameplay::health::Health;
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::weapon::asset::WeaponAttack;
+use crate::hud::spawn_damage_popup;
 use crate::{AppSystems, PausableSystems};
 use avian2d::math::PI;
 use avian2d::prelude::*;
@@ -101,17 +102,18 @@ pub fn bullet(
 fn apply_damage(
     mut commands: Commands,
     bullets: Query<(Entity, &Damage, &CollidingEntities), With<Bullet>>,
-    mut enemies: Query<&mut Health, With<Enemy>>,
+    mut enemies: Query<(&mut Health, &GlobalTransform), With<Enemy>>,
 ) {
     for (bullet, damage, colliding_entities) in bullets {
         if colliding_entities.is_empty() {
             continue;
         }
         for e in colliding_entities.iter() {
-            let Ok(mut health) = enemies.get_mut(*e) else {
+            let Ok((mut health, t)) = enemies.get_mut(*e) else {
                 continue;
             };
             health.current -= damage.damage;
+            spawn_damage_popup(&mut commands, t.translation(), damage.damage);
         }
 
         commands.entity(bullet).despawn();

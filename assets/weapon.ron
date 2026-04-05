@@ -8,7 +8,7 @@ WeaponAssets(
                     attack: Projectile(
                         sprite: "images/bullet/Laser Bullet 10.png",
                         speed: 500.0,
-                        fire_rate: 1.0,
+                        fire_rate: 0.3,
                         lifetime: 0.9,
                         trajectories: [
                             Straight,
