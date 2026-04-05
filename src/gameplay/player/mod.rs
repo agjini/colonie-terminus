@@ -17,6 +17,9 @@ pub mod asset;
 mod health;
 mod movement;
 pub mod weapon;
+mod xp;
+
+pub use xp::Xp;
 
 pub fn plugin(app: &mut App) {
     app.add_plugins((
@@ -24,6 +27,7 @@ pub fn plugin(app: &mut App) {
         movement::plugin,
         weapon::plugin,
         health::plugin,
+        xp::plugin,
     ));
 }
 
@@ -98,4 +102,5 @@ fn player(
 }
 
 #[derive(Component, Debug, Clone, Copy, Eq, PartialEq, Default, Reflect)]
+#[require(Health, Transform, Visibility, Xp)]
 pub struct Player;

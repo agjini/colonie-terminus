@@ -5,6 +5,7 @@ use crate::gameplay::player::spawn_player;
 use crate::gameplay::player::weapon::{WeaponAssets, bullet_root};
 use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
+use crate::hud::xp_bar;
 use crate::{audio::music, screen::Screen};
 use bevy::prelude::*;
 use bevy_seedling::prelude::AudioSample;
@@ -75,6 +76,8 @@ fn spawn_level(
             DespawnOnExit(Screen::Gameplay(false)),
         ))
         .with_children(|parent| {
+            parent.spawn(xp_bar(parent.target_entity(), &mut meshes, &mut materials));
+
             parent.spawn((
                 Name::new("Gameplay Music"),
                 GameplayMusic,
