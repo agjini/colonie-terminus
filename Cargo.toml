@@ -18,9 +18,9 @@ bevy = { version = "0.18", default-features = false, features = [
     "wayland",
     "webgpu",
     "x11",
-    "bevy_gilrs",
+    "bevy_gilrs"
 ] }
-avian2d = "0.5"
+avian2d = "0.6"
 bevy_seedling = "0.7"
 bevy-inspector-egui = { version = "0.36.0", optional = true }
 noiz = "0.4"

@@ -24,6 +24,7 @@ pub fn health_bar(
         BAR_THICKNESS,
         Color::WHITE,
         RED_500.into(),
+        Vec3::new(0.0, -10.0, -1.0),
     )
 }
 

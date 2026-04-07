@@ -13,11 +13,12 @@ pub fn progress_bar(
     thickness: f32,
     bg: Color,
     fg: Color,
+    position: Vec3,
 ) -> impl Bundle {
     (
         Name::new(format!("{} Bar", &name.into())),
         Visibility::default(),
-        Transform::from_translation(Vec3::new(0.0, -10.0, -1.0)),
+        Transform::from_translation(position),
         children![
             (
                 Mesh2d(meshes.add(Rectangle::new(length, thickness))),

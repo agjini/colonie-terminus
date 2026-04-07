@@ -37,7 +37,7 @@ fn apply_movement(
     >,
 ) {
     for (controller, mut linear_velocity) in &mut movement_query {
-        let velocity = controller.max_speed * controller.direction;
+        let velocity = controller.max_speed * controller.direction.normalize_or_zero();
         linear_velocity.0 = velocity;
     }
 }

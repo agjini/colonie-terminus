@@ -19,7 +19,10 @@ use crate::screen::Screen::{Gameplay, Title};
 use crate::screen::{GameState, Screen};
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::Gravity;
+use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::input::common_conditions::input_just_pressed;
+use bevy::post_process::bloom::Bloom;
+use bevy::render::view::Hdr;
 use bevy::window::{
     CursorGrabMode, CursorOptions, PresentMode, PrimaryWindow, WindowMode, WindowResolution,
 };
@@ -106,7 +109,17 @@ enum AppSystems {
 struct PausableSystems;
 
 fn spawn_camera(mut commands: Commands) {
-    commands.spawn((Name::new("Camera"), Camera2d));
+    commands.spawn((
+        Name::new("Camera"),
+        Camera2d,
+        Hdr,
+        Bloom {
+            intensity: 0.3,
+            low_frequency_boost: 0.6,
+            ..Bloom::NATURAL
+        },
+        Tonemapping::None,
+    ));
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
@@ -144,4 +157,3 @@ fn change_window_mode(mut window: Single<&mut Window, With<PrimaryWindow>>) {
         WindowMode::Windowed
     };
 }
-
