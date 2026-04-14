@@ -2,6 +2,9 @@ WeaponAssets(
     types: [
         (
             name: "Blaster",
+            trigger_sounds: [
+                "audio/sound_effects/laser-2.ogg"
+            ],
             levels: [
                 (
                     damage: 15.0,

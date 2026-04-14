@@ -1,18 +1,20 @@
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::CollidingEntities;
 use bevy::prelude::*;
+use rand::prelude::IndexedRandom;
 
 mod aim_zone;
 mod asset;
 mod bullet;
 mod slot;
 
+use crate::audio::sound_effect;
 use crate::gameplay::player::weapon::aim_zone::AimZone;
 use crate::gameplay::player::weapon::bullet::FireOrigin;
 use crate::gameplay::player::weapon::slot::WeaponSlots;
 pub use aim_zone::aim_zone;
 pub use asset::WeaponAssets;
-pub use bullet::{bullet_root, fire_origin, BulletRoot};
+pub use bullet::{BulletRoot, bullet_root, fire_origin};
 pub use slot::weapon_slots;
 
 pub fn plugin(app: &mut App) {
@@ -64,12 +66,17 @@ fn auto_fire(
     let direction = Dir2::new(enemy_pos - origin_pos).unwrap_or(Dir2::X);
 
     root.with_children(|parent| {
-        for bullet in slots.just_finished().flat_map(|s| {
-            s.level
-                .attack
-                .bullet(s.level.damage, origin.translation().truncate(), direction)
-        }) {
+        for s in slots.just_finished() {
+            let Some(bullet) =
+                s.level
+                    .attack
+                    .bullet(s.level.damage, origin.translation().truncate(), direction)
+            else {
+                continue;
+            };
             parent.spawn(bullet);
+            let sound = s.weapon.trigger_sounds.choose(&mut rand::rng()).unwrap();
+            parent.spawn(sound_effect(sound.handle.clone()));
         }
     });
 }

@@ -1,11 +1,13 @@
+use crate::audio::sound_effect;
 use crate::gameplay::animation::CharacterAnimation;
-use crate::gameplay::enemy::asset::Enemy;
+use crate::gameplay::enemy::asset::{Enemy, EnemyAssets};
 use crate::gameplay::health::Health;
 use crate::gameplay::movement::MovementController;
 use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::LinearVelocity;
 use bevy::prelude::*;
+use rand::prelude::*;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(
@@ -27,6 +29,7 @@ pub struct Hurt {
 
 fn check_damage(
     mut commands: Commands,
+    enemy_assets: If<Res<EnemyAssets>>,
     enemies: Query<(Entity, &Health, &mut LinearVelocity), (With<Enemy>, Changed<Health>)>,
 ) {
     for (entity, health, mut vel) in enemies {
@@ -46,6 +49,8 @@ fn check_damage(
             timer: Timer::from_seconds(0.15, TimerMode::Once),
             dead,
         });
+        let sound = enemy_assets.hit_sounds.choose(&mut rand::rng()).unwrap();
+        commands.spawn(sound_effect(sound.handle.clone()));
     }
 }
 

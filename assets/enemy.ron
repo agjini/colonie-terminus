@@ -1,4 +1,7 @@
 EnemyAssets(
+    hit_sounds: [
+        "audio/sound_effects/hurt-1.ogg"
+    ],
     types: [
         (
             name: "Saucisson",

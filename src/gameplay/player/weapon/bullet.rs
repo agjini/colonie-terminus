@@ -71,6 +71,8 @@ pub fn bullet(
     from: Vec2,
     direction: Dir2,
 ) -> impl Bundle {
+    let mut sprite = Sprite::from_image(sprite.handle.clone());
+    sprite.color = Color::linear_rgb(10., 10., 10.);
     (
         Name::new("Bullet"),
         Bullet,
@@ -80,7 +82,7 @@ pub fn bullet(
             damage,
             cooldown: 0.,
         },
-        Sprite::from_image(sprite.handle.clone()),
+        sprite,
         Transform::from_scale(Vec2::splat(0.2).extend(1.0))
             .with_translation(from.extend(0.0))
             .with_rotation(Quat::from_rotation_z(

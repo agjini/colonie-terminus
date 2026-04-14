@@ -1,5 +1,6 @@
 use crate::asset_tracking::LoadResource;
 use bevy::prelude::*;
+use bevy_seedling::prelude::*;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -26,6 +27,8 @@ pub struct DamageCooldown {
 pub struct EnemyAssets {
     #[asset]
     pub types: Vec<EnemyType>,
+    #[asset]
+    pub hit_sounds: Vec<Shandle<AudioSample>>,
 }
 
 #[derive(RonAsset, Deserialize, Debug, Clone)]

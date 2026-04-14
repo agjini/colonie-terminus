@@ -16,7 +16,7 @@ pub fn plugin(app: &mut App) {
 }
 
 const RETICLE_LENGTH: f32 = 200.0;
-const PLAIN_RETICLE_COLOR: [f32; 4] = [1.0, 0.15, 0.1, 0.25];
+const PLAIN_RETICLE_COLOR: [f32; 4] = [3.0, 0.15, 0.1, 0.1];
 const RETICLE_COLOR: [f32; 4] = [1.0, 0.15, 0.1, 0.];
 const ARC_SEGMENTS: u32 = 16;
 
