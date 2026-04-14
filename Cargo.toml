@@ -16,7 +16,7 @@ bevy = { version = "0.18", default-features = false, features = [
     "std",
     "sysinfo_plugin",
     "wayland",
-    "webgpu",
+    "webgl2",
     "x11",
     "bevy_gilrs"
 ] }
