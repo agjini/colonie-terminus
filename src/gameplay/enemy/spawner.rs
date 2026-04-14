@@ -1,5 +1,5 @@
 use crate::gameplay::enemy::asset::{Damage, Enemy, EnemyAssets, EnemyType};
-use crate::gameplay::health::{Health, health_bar};
+use crate::gameplay::health::Health;
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::level::{RandomSeed, WorldEntity};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
@@ -45,8 +45,6 @@ fn spawn_enemies(
     enemy_assets: Res<EnemyAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     root: Single<Entity, With<EnemyRoot>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
     camera: Single<(&Camera, &GlobalTransform)>,
     window: Single<&Window>,
 ) {

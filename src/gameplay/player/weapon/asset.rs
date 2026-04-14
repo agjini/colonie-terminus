@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::asset_tracking::LoadResource;
 use bevy::asset::LoadContext;
 use bevy::prelude::*;
@@ -81,9 +83,8 @@ impl RonAsset for WeaponLevel {
 
 impl RonAsset for WeaponAttack {
     fn load_assets(&mut self, context: &mut LoadContext) {
-        match self {
-            WeaponAttack::Projectile { sprite, .. } => sprite.load_assets(context),
-            _ => {}
+        if let WeaponAttack::Projectile { sprite, .. } = self {
+            sprite.load_assets(context);
         }
     }
 }

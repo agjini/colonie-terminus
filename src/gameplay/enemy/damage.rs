@@ -29,7 +29,7 @@ pub struct Hurt {
 
 fn check_damage(
     mut commands: Commands,
-    enemy_assets: If<Res<EnemyAssets>>,
+    enemy_assets: Res<EnemyAssets>,
     enemies: Query<(Entity, &Health, &mut LinearVelocity), (With<Enemy>, Changed<Health>)>,
 ) {
     for (entity, health, mut vel) in enemies {

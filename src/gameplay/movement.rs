@@ -1,7 +1,6 @@
 use avian2d::prelude::LinearVelocity;
 use bevy::prelude::*;
 
-use crate::gameplay::health::Health;
 use crate::{AppSystems, PausableSystems};
 
 pub fn plugin(app: &mut App) {

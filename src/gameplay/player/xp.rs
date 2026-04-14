@@ -1,16 +1,7 @@
-use crate::gameplay::player::Player;
-use crate::{AppSystems, PausableSystems};
-use bevy::prelude::{App, Component, IntoScheduleConfigs, Reflect, Single, Update};
+use bevy::prelude::{App, Component, Reflect};
 use std::ops::Add;
 
-pub fn plugin(app: &mut App) {
-    // app.add_systems(
-    //     Update,
-    //     check_level_up
-    //         .in_set(AppSystems::Update)
-    //         .in_set(PausableSystems),
-    // );
-}
+pub fn plugin(_app: &mut App) {}
 
 #[derive(Component, Reflect)]
 pub struct Xp {

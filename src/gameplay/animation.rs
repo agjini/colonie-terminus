@@ -62,7 +62,7 @@ fn update_animation_atlas(mut query: Query<(&CharacterAnimation, &mut Sprite)>) 
 
 fn trigger_step_sound_effect(
     mut commands: Commands,
-    player_assets: If<Res<PlayerAssets>>,
+    player_assets: Res<PlayerAssets>,
     mut step_query: Query<&CharacterAnimation, With<Player>>,
 ) {
     for animation in &mut step_query {
