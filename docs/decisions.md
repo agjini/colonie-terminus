@@ -1,4 +1,4 @@
-# Décisions :
+# Décisions
 
 - [x] On choisit l'exploration spatiale car on aime bien le style dépouillé, situation désespérée. On pense que ce thème
   simple est adapté à notre gameplay et reste à notre portée en terme de faisabilité.
@@ -79,11 +79,11 @@ Quelle est la vraie raison ?
 # Difficulté du run
 
 - [x] Un type d'ennemi a des stats fixes :
-  - santé
-  - dégat
-  - frequence d'apparition de base
-  - vitesse
-  - nombre de crédits qu'on gagne quand on le tue
+    - santé
+    - dégat
+    - frequence d'apparition de base
+    - vitesse
+    - nombre de crédits qu'on gagne quand on le tue
 
 # Exploration/Events aléatoires :
 
@@ -101,14 +101,14 @@ Sur quels paramètres on gère le rythme des ennemis :
 - quel types d'ennemis
   Comment augmente ses indicateurs ? Sur le temps ou l'XP ou les deux ?
 
-# Questions ??
+# Questions
 
 - Fusion d'arme pour libérer un slot ?
 - [ ] Est-ce qu'on garde les events aléatoires : un autre vaisseau se crash (loot). Si oui pourquoi ? Ce serai une
   récompense immediate qui apparait à un point de la carte. Cela pousserai à l'exploration
 - [ ] Est-ce que l'exfiltration marche dès que le temps est écoulé ?
 
-# Affichage :
+# Affichage
 
 - compteur de temps
 - barre d'XP
