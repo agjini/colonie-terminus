@@ -18,16 +18,16 @@ pub fn plugin(app: &mut App) {
         OnEnter(Menu::None),
         resume.run_if(in_state(GameState::Pause)),
     );
-    app.add_systems(
-        OnEnter(GameState::Pause),
-        (open_pause_menu, spawn_overlay),
-    );
+    app.add_systems(OnEnter(GameState::Pause), (open_pause_menu, spawn_overlay));
     app.add_systems(
         OnEnter(GameState::GameOver),
         (open_game_over_menu, spawn_overlay, start_game_over_music),
     );
     app.add_systems(OnEnter(GameState::LevelUp), spawn_overlay);
-    app.add_systems(OnEnter(GameState::InGame), (close_menu, unpause, resume_music));
+    app.add_systems(
+        OnEnter(GameState::InGame),
+        (close_menu, unpause, resume_music),
+    );
     app.add_systems(OnExit(GameState::InGame), (pause, pause_music));
     app.add_systems(OnExit(Screen::Gameplay(false)), close_menu);
 }
