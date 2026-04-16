@@ -1,0 +1,1 @@
+- [No plural naming](feedback_no_plural_names.md) — modules, structs, enums must always be singular

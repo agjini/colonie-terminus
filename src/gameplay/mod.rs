@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 mod animation;
 mod enemy;
-mod health;
+pub mod health;
 mod layer;
 pub mod level;
 mod movement;

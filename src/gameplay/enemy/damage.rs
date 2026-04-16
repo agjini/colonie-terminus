@@ -3,6 +3,7 @@ use crate::gameplay::animation::CharacterAnimation;
 use crate::gameplay::enemy::asset::{Enemy, EnemyAssets};
 use crate::gameplay::health::Health;
 use crate::gameplay::movement::MovementController;
+use crate::hud::elimination::EliminationCount;
 use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::LinearVelocity;
@@ -30,6 +31,7 @@ pub struct Hurt {
 fn check_damage(
     mut commands: Commands,
     enemy_assets: Res<EnemyAssets>,
+    mut elimination_count: ResMut<EliminationCount>,
     enemies: Query<(Entity, &Health, &mut LinearVelocity), (With<Enemy>, Changed<Health>)>,
 ) {
     for (entity, health, mut vel) in enemies {
@@ -39,6 +41,7 @@ fn check_damage(
         let dead = health.is_dead();
         let mut entity = commands.entity(entity);
         if dead {
+            elimination_count.0 += 1;
             entity.remove::<Enemy>();
             entity.remove::<Health>();
             entity.remove::<MovementController>();
