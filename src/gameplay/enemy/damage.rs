@@ -28,17 +28,30 @@ pub struct Hurt {
     pub dead: bool,
 }
 
+#[derive(Event)]
+pub struct EnemyDeathEvent {
+    pub pos: Vec2,
+}
+
 fn check_damage(
     mut commands: Commands,
     enemy_assets: Res<EnemyAssets>,
     mut elimination_count: ResMut<EliminationCount>,
-    enemies: Query<(Entity, &Health, &mut LinearVelocity), (With<Enemy>, Changed<Health>)>,
+    enemies: Query<
+        (Entity, &Health, &mut LinearVelocity, &GlobalTransform),
+        (With<Enemy>, Changed<Health>),
+    >,
 ) {
-    for (entity, health, mut vel) in enemies {
+    for (entity, health, mut vel, position) in enemies {
         if health.current == health.max {
             continue;
         }
         let dead = health.is_dead();
+        if dead {
+            commands.trigger(EnemyDeathEvent {
+                pos: position.translation().truncate(),
+            });
+        }
         let mut entity = commands.entity(entity);
         if dead {
             elimination_count.0 += 1;

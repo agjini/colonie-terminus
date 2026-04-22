@@ -6,6 +6,7 @@ mod damage;
 pub mod movement;
 mod spawner;
 
+pub use damage::EnemyDeathEvent;
 pub use damage::Hurt;
 
 pub fn plugin(app: &mut App) {

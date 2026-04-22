@@ -5,6 +5,7 @@ mod enemy;
 pub mod health;
 mod layer;
 pub mod level;
+mod loot;
 mod movement;
 pub mod player;
 mod tilemap;
@@ -21,5 +22,6 @@ pub fn plugin(app: &mut App) {
         tilemap::plugin,
         health::plugin,
         layer::plugin,
+        loot::plugin,
     ));
 }
