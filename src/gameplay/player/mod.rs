@@ -93,7 +93,7 @@ fn player(
             Sensor,
             LinearVelocity::ZERO,
             LockedAxes::ROTATION_LOCKED,
-            CollisionLayers::new(GameLayer::Player, [GameLayer::Enemy]),
+            CollisionLayers::new(GameLayer::Player, [GameLayer::Loot, GameLayer::Enemy]),
             CollidingEntities::default(),
         ),
         WeaponDirection(Dir2::X),

@@ -1,10 +1,19 @@
-use crate::gameplay::enemy::EnemyDeathEvent;
+use avian2d::prelude::{CollisionLayers, LockedAxes, RigidBody, Sensor};
 use bevy::app::App;
-use bevy::prelude::On;
+use bevy::prelude::*;
+
+mod asset;
+mod xp;
+
+pub use xp::XpAmount;
+
+#[derive(Component, Reflect, Default)]
+struct LootRoot;
 
 pub fn plugin(app: &mut App) {
-    app.world_mut()
-        .add_observer(|enemy_death: On<EnemyDeathEvent>| {
-            println!("{}", enemy_death.pos);
-        });
+    app.add_plugins((asset::plugin, xp::plugin));
+}
+
+pub fn loot_root() -> impl Bundle {
+    (LootRoot, Transform::default(), Visibility::default())
 }
