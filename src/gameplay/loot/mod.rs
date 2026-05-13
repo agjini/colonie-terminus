@@ -1,4 +1,3 @@
-use avian2d::prelude::{CollisionLayers, LockedAxes, RigidBody, Sensor};
 use bevy::app::App;
 use bevy::prelude::*;
 

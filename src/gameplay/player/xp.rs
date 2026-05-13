@@ -7,7 +7,6 @@ use bevy::app::Update;
 use bevy::prelude::{
     App, Commands, Component, IntoScheduleConfigs, Query, Reflect, Single, With, in_state,
 };
-use std::ops::Add;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(
