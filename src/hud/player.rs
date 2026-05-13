@@ -2,7 +2,6 @@ use crate::gameplay::health::Health;
 use crate::gameplay::player::{Player, Xp};
 use crate::hud::panel::{PanelPosition, panel};
 use crate::screen::Screen;
-use crate::PausableSystems;
 use bevy::prelude::*;
 
 const HP_BAR_COLOR: Color = Color::srgb(0.85, 0.1, 0.1);
@@ -16,10 +15,7 @@ const BAR_RADIUS: Val = Val::Px(2.0);
 
 pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay(false)), spawn_player_panel);
-    app.add_systems(
-        Update,
-        (update_hp_bar, update_xp_bar).in_set(PausableSystems),
-    );
+    app.add_systems(Update, (update_hp_bar, update_xp_bar));
 }
 
 #[derive(Component)]
