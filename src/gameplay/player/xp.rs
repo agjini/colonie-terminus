@@ -1,11 +1,13 @@
+use crate::audio::sound_effect;
 use crate::gameplay::loot::XpAmount;
 use crate::gameplay::player::Player;
+use crate::gameplay::player::asset::PlayerAssets;
 use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::CollidingEntities;
 use bevy::app::Update;
 use bevy::prelude::{
-    App, Commands, Component, IntoScheduleConfigs, Query, Reflect, Single, With, in_state,
+    App, Commands, Component, IntoScheduleConfigs, Query, Reflect, Res, Single, With, in_state,
 };
 
 pub fn plugin(app: &mut App) {
@@ -21,6 +23,7 @@ fn apply_xp(
     mut commands: Commands,
     player: Single<(&mut Xp, &CollidingEntities), With<Player>>,
     xp_gems: Query<&XpAmount>,
+    player_assets: Res<PlayerAssets>,
 ) {
     let (mut xp, colliding_entities) = player.into_inner();
     for e in colliding_entities.iter() {
@@ -29,6 +32,7 @@ fn apply_xp(
         };
         xp.add(amount.0);
         commands.entity(*e).despawn();
+        commands.spawn(sound_effect(player_assets.pickup_xp.handle.clone()));
     }
 }
 

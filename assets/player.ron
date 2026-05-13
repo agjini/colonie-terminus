@@ -9,5 +9,6 @@ PlayerAssets(
         "audio/sound_effects/step-1.ogg",
         "audio/sound_effects/step-2.ogg",
         "audio/sound_effects/step-3.ogg"
-    ]
+    ],
+    pickup_xp: "audio/sound_effects/pickup-2.ogg"
 )

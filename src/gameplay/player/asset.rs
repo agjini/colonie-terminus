@@ -18,4 +18,6 @@ pub struct PlayerAssets {
     pub sprite: Shandle<Image>,
     #[asset]
     pub steps: Vec<Shandle<AudioSample>>,
+    #[asset]
+    pub pickup_xp: Shandle<AudioSample>,
 }

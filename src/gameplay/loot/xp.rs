@@ -41,7 +41,7 @@ fn xp_gem(sprite: &Shandle<Image>, position: Vec2) -> impl Bundle {
         Transform::from_translation(position.extend(1.0)),
         (
             RigidBody::Static,
-            Collider::circle(7.),
+            Collider::circle(30.),
             Sensor,
             LockedAxes::ROTATION_LOCKED,
             CollisionLayers::new(GameLayer::Loot, [GameLayer::Player]),

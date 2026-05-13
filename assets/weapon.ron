@@ -3,7 +3,7 @@ WeaponAssets(
         (
             name: "Blaster",
             trigger_sounds: [
-                "audio/sound_effects/laser-2.ogg"
+                "audio/sound_effects/laser-3.ogg"
             ],
             levels: [
                 (
