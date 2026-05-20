@@ -1,5 +1,6 @@
 mod credits;
 mod game_over;
+mod level_up;
 mod main;
 mod pause;
 mod settings;
@@ -21,6 +22,7 @@ pub fn plugin(app: &mut App) {
         main::plugin,
         settings::plugin,
         pause::plugin,
+        level_up::plugin,
         game_over::plugin,
     ));
 }
@@ -33,6 +35,7 @@ pub enum Menu {
     Credits,
     Settings,
     Pause,
+    LevelUp,
     GameOver,
 }
 

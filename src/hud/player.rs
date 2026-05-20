@@ -170,8 +170,8 @@ fn update_xp_bar(
     mut text: Single<&mut Text, With<LevelText>>,
     xp: Single<&Xp, With<Player>>,
 ) {
-    let ratio = if xp.next_level > 0.0 {
-        (xp.current / xp.next_level).clamp(0.0, 1.0)
+    let ratio = if xp.next_level() > 0.0 {
+        (xp.current / xp.next_level()).clamp(0.0, 1.0)
     } else {
         0.0
     };

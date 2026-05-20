@@ -6,6 +6,7 @@ use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::CollidingEntities;
 use bevy::app::Update;
+use bevy::math::ops::round;
 use bevy::prelude::{
     App, Commands, Component, IntoScheduleConfigs, Query, Reflect, Res, Single, With, in_state,
 };
@@ -40,7 +41,6 @@ fn apply_xp(
 pub struct Xp {
     pub level: u32,
     pub current: f32,
-    pub next_level: f32,
 }
 
 impl Default for Xp {
@@ -48,21 +48,58 @@ impl Default for Xp {
         Self {
             level: 1,
             current: 0.,
-            next_level: 5.,
         }
     }
 }
 
 impl Xp {
-    fn add(&mut self, rhs: f32) {
-        let current = self.current + rhs;
-        let diff = current - self.next_level;
-        if diff >= 0. {
+    fn new(level: u32) -> Self {
+        Self { level, current: 0. }
+    }
+
+    pub fn add(&mut self, rhs: f32) -> bool {
+        self.current = self.current + rhs;
+        self.current <= self.next_level()
+    }
+
+    pub fn level_up(&mut self) {
+        let diff = self.current - self.next_level();
+        if diff <= 0. {
             self.current = diff;
-            self.next_level = self.next_level + 10.;
             self.level = self.level + 1;
-        } else {
-            self.current = current;
         }
+    }
+
+    pub fn skip(&mut self) {
+        self.current = self.next_level() / 2.;
+    }
+
+    pub fn next_level(&self) -> f32 {
+        self.level as f32 * 5.
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn start_at_5() {
+        assert_eq!(Xp::default().next_level(), 5.0);
+    }
+
+    #[test]
+    fn level_2_at_15() {
+        assert_eq!(Xp::new(2).next_level(), 10.0);
+    }
+
+    #[test]
+    fn level_3_at_30() {
+        assert_eq!(Xp::new(3).next_level(), 15.0);
+    }
+
+    #[test]
+    fn level_4_at_45() {
+        assert_eq!(Xp::new(4).next_level(), 20.0);
     }
 }
