@@ -6,7 +6,6 @@ use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::CollidingEntities;
 use bevy::app::Update;
-use bevy::math::ops::round;
 use bevy::prelude::{
     App, Commands, Component, IntoScheduleConfigs, Query, Reflect, Res, Single, With, in_state,
 };
