@@ -1,4 +1,4 @@
-use crate::gameplay::health::{Health, health_bar};
+use crate::gameplay::health::Health;
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::asset::PlayerAssets;
 use crate::gameplay::player::weapon::{
@@ -19,6 +19,7 @@ mod movement;
 pub mod weapon;
 mod xp;
 
+use crate::gameplay::animation::Animation;
 pub use xp::Xp;
 
 pub fn plugin(app: &mut App) {
@@ -37,59 +38,51 @@ pub fn spawn_player(
     weapon_assets: &WeaponAssets,
     meshes: &mut Assets<Mesh>,
     materials: &mut Assets<ColorMaterial>,
-    images: &mut Assets<Image>,
+    animations: &mut Assets<Animation>,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) {
     commands
-        .spawn(player(player_assets, texture_atlas_layouts))
+        .spawn(player(player_assets, animations, texture_atlas_layouts))
         .with_children(|player| {
-            let owner = player.target_entity();
             player.spawn(aim_zone(
                 meshes,
                 materials,
-                images,
+                player_assets.fire_origin,
                 player_assets.auto_aim_angle,
             ));
-            player.spawn(health_bar(owner, meshes, materials));
             player.spawn(weapon_slots(weapon_assets));
-            player.spawn(fire_origin());
+            player.spawn(fire_origin(player_assets.fire_origin));
         });
 }
 
 fn player(
     player_assets: &PlayerAssets,
+    animations: &mut Assets<Animation>,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Bundle {
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(32), 6, 2, Some(UVec2::splat(1)), None);
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let animation = CharacterAnimation::new();
+    let (sprite, animation) =
+        CharacterAnimation::init(animations, texture_atlas_layouts, &player_assets.sprite);
 
     (
         Name::new(player_assets.name.to_string()),
         Player,
         Health::new(player_assets.max_health),
         GameLayer::Player,
-        Sprite::from_atlas_image(
-            player_assets.sprite.handle.clone(),
-            TextureAtlas {
-                layout: texture_atlas_layout,
-                index: animation.get_atlas_index(),
-            },
-        ),
-        Anchor(Vec2::new(0., -0.3)),
-        Transform::from_scale(Vec2::splat(2.0).extend(1.0)),
+        Anchor(Vec2::new(0., -0.1)),
+        Transform::default(),
         (
+            sprite,
+            animation,
             MovementController {
                 max_speed: player_assets.max_speed,
                 ..default()
             },
-            animation,
         ),
         (
             RigidBody::Dynamic,
-            Collider::circle(7.),
+            Collider::capsule(12., 70.),
             Mass(10.0),
-            CenterOfMass::new(0.0, -0.5),
+            CenterOfMass::new(0.0, -0.1),
             Sensor,
             LinearVelocity::ZERO,
             LockedAxes::ROTATION_LOCKED,

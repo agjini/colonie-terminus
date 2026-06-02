@@ -1,4 +1,5 @@
 use crate::asset_tracking::LoadResource;
+use crate::gameplay::animation::Animation;
 use crate::gameplay::enemy::enemy_root;
 use crate::gameplay::loot::loot_root;
 use crate::gameplay::player::asset::PlayerAssets;
@@ -56,6 +57,7 @@ fn spawn_level(
     player_assets: Res<PlayerAssets>,
     weapon_assets: Res<WeaponAssets>,
     mut camera: Single<&mut Transform, With<Camera2d>>,
+    mut animations: ResMut<Assets<Animation>>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -88,7 +90,7 @@ fn spawn_level(
                 &weapon_assets,
                 &mut meshes,
                 &mut materials,
-                &mut images,
+                &mut animations,
                 &mut texture_atlas_layouts,
             );
 

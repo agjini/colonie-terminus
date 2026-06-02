@@ -1,0 +1,27 @@
+Animation(
+    sheet: "images/bishop.png",
+    size: (128, 128),
+    rows: 2,
+    columns: 8,
+    frames:  {
+        Idle: (
+            row: 0,
+            count: 2,
+            interval: 300,
+        ),
+        Walk: (
+            row: 1,
+            count: 8,
+            interval: 100,
+            steps: Some((
+                frames: [0, 4],
+                samples: [
+                    "audio/sound_effects/step.ogg",
+                    "audio/sound_effects/step-1.ogg",
+                    "audio/sound_effects/step-2.ogg",
+                    "audio/sound_effects/step-3.ogg"
+                ]
+            ))
+        )
+    }
+)

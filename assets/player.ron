@@ -1,14 +1,9 @@
 PlayerAssets(
-    name: "Augustine",
-    sprite: "images/ducky.png",
+    name: "Bishop",
     max_speed: 250,
     max_health: 100,
     auto_aim_angle: 30,
-    steps: [
-        "audio/sound_effects/step.ogg",
-        "audio/sound_effects/step-1.ogg",
-        "audio/sound_effects/step-2.ogg",
-        "audio/sound_effects/step-3.ogg"
-    ],
-    pickup_xp: "audio/sound_effects/pickup-2.ogg"
+    pickup_xp: "audio/sound_effects/pickup-2.ogg",
+    sprite: "images/bishop.ron",
+    fire_origin: (5, 10)
 )

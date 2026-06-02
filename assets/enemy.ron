@@ -5,7 +5,7 @@ EnemyAssets(
     types: [
         (
             name: "Saucisson",
-            sprite: "images/black_ducky.png",
+            sprite: "images/black_ducky.ron",
             max_speed: 100,
             max_health: 20,
             damage: 10,
@@ -13,7 +13,7 @@ EnemyAssets(
         ),
         (
             name: "Rosette",
-            sprite: "images/ducky.png",
+            sprite: "images/ducky.ron",
             max_speed: 200,
             max_health: 10,
             damage: 20,

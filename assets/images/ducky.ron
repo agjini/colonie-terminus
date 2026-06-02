@@ -1,0 +1,30 @@
+Animation(
+    sheet: "images/ducky.png",
+    orientation: Right,
+    size: (32, 32),
+    scale: (2, 2),
+    rows: 2,
+    columns: 6,
+    padding: Some((1, 1)),
+    frames:  {
+        Idle: (
+            row: 0,
+            count: 2,
+            interval: 500,
+        ),
+        Walk: (
+            row: 1,
+            count: 6,
+            interval: 50,
+            steps: Some((
+                frames: [2, 5],
+                samples: [
+                    "audio/sound_effects/step.ogg",
+                    "audio/sound_effects/step-1.ogg",
+                    "audio/sound_effects/step-2.ogg",
+                    "audio/sound_effects/step-3.ogg"
+                ]
+            ))
+        )
+    }
+)

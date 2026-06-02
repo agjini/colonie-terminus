@@ -1,4 +1,5 @@
 use crate::asset_tracking::LoadResource;
+use crate::gameplay::animation::Animation;
 use bevy::prelude::*;
 use bevy_seedling::prelude::*;
 use ron_asset_manager::Shandle;
@@ -39,5 +40,5 @@ pub struct EnemyType {
     pub damage: f32,
     pub cooldown: f32,
     #[asset]
-    pub sprite: Shandle<Image>,
+    pub sprite: Shandle<Animation>,
 }

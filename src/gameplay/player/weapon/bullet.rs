@@ -46,8 +46,12 @@ pub fn bullet_root() -> impl Bundle {
     (BulletRoot, Transform::default(), Visibility::default())
 }
 
-pub fn fire_origin() -> impl Bundle {
-    (FireOrigin, Transform::default(), Visibility::default())
+pub fn fire_origin(fire_origin: Vec2) -> impl Bundle {
+    (
+        FireOrigin,
+        Transform::from_xyz(fire_origin.x, fire_origin.y, 0.),
+        Visibility::default(),
+    )
 }
 
 #[derive(Component)]

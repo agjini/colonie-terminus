@@ -1,3 +1,4 @@
+use crate::gameplay::animation::Animation;
 use crate::gameplay::enemy::asset::{Damage, Enemy, EnemyAssets, EnemyType};
 use crate::gameplay::health::Health;
 use crate::gameplay::layer::GameLayer;
@@ -43,6 +44,7 @@ fn spawn_enemies(
     timer: Res<SpawnTimer>,
     mut rng: ResMut<RandomSeed>,
     enemy_assets: Res<EnemyAssets>,
+    mut animations: ResMut<Assets<Animation>>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     root: Single<Entity, With<EnemyRoot>>,
     camera: Single<(&Camera, &GlobalTransform)>,
@@ -73,7 +75,12 @@ fn spawn_enemies(
         for enemy_type in enemy_assets.types.iter() {
             let angle = rng.0.random_range(0.0..2.0 * PI);
             let position = center + Vec2::new(angle.cos(), angle.sin()) * radius;
-            parent.spawn(enemy(position, enemy_type, &mut texture_atlas_layouts));
+            parent.spawn(enemy(
+                position,
+                enemy_type,
+                &mut animations,
+                &mut texture_atlas_layouts,
+            ));
         }
     });
 }
@@ -84,11 +91,11 @@ pub struct EnemyRoot;
 pub fn enemy(
     position: Vec2,
     enemy: &EnemyType,
+    animations: &mut Assets<Animation>,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Bundle {
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(32), 6, 2, Some(UVec2::splat(1)), None);
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let enemy_animation = CharacterAnimation::new();
+    let (sprite, animation) =
+        CharacterAnimation::init(animations, texture_atlas_layouts, &enemy.sprite);
 
     (
         Name::new(enemy.name.to_string()),
@@ -102,20 +109,14 @@ pub fn enemy(
             Health::new(enemy.max_health),
             GameLayer::Enemy,
         ),
-        Sprite::from_atlas_image(
-            enemy.sprite.handle.clone(),
-            TextureAtlas {
-                layout: texture_atlas_layout,
-                index: enemy_animation.get_atlas_index(),
-            },
-        ),
+        sprite,
+        animation,
         Anchor(Vec2::new(0., -0.3)),
         Transform::from_xyz(position.x, position.y, 0.0).with_scale(Vec2::splat(2.0).extend(1.0)),
         MovementController {
             max_speed: enemy.max_speed,
             ..default()
         },
-        enemy_animation,
         (
             RigidBody::Dynamic,
             Mass(1.0),

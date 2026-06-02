@@ -1,4 +1,5 @@
 use crate::asset_tracking::LoadResource;
+use crate::gameplay::animation::Animation;
 use bevy::prelude::*;
 use bevy_seedling::prelude::*;
 use ron_asset_manager::prelude::*;
@@ -14,10 +15,9 @@ pub struct PlayerAssets {
     pub max_speed: f32,
     pub max_health: f32,
     pub auto_aim_angle: f32,
+    pub fire_origin: Vec2,
     #[asset]
-    pub sprite: Shandle<Image>,
-    #[asset]
-    pub steps: Vec<Shandle<AudioSample>>,
+    pub sprite: Shandle<Animation>,
     #[asset]
     pub pickup_xp: Shandle<AudioSample>,
 }
