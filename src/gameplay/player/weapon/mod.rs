@@ -65,14 +65,16 @@ fn auto_fire(
     let direction = Dir2::new(enemy_pos - origin_pos).unwrap_or(Dir2::X);
 
     root.with_children(|parent| {
-        if let Some(s) = slots.just_finished()
-            && let Some(bullet) =
-                s.level
-                    .attack
-                    .bullet(s.level.damage, origin.translation().truncate(), direction)
-        {
+        for weapon in slots.just_finished() {
+            let Some(bullet) = weapon.bullet(origin_pos, direction) else {
+                continue;
+            };
             parent.spawn(bullet);
-            let sound = s.weapon.trigger_sounds.choose(&mut rand::rng()).unwrap();
+            let sound = weapon
+                .weapon
+                .trigger_sounds
+                .choose(&mut rand::rng())
+                .unwrap();
             parent.spawn(sound_effect(sound.handle.clone()));
         }
     });

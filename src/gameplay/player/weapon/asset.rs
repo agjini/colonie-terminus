@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 
 use crate::asset_tracking::LoadResource;
-use bevy::asset::LoadContext;
 use bevy::prelude::*;
 use bevy_seedling::prelude::AudioSample;
 use ron_asset_manager::Shandle;
@@ -12,79 +11,36 @@ pub fn plugin(app: &mut App) {
     app.load_resource::<WeaponAssets>("weapon.ron");
 }
 
-#[derive(Resource, Asset, TypePath, Deserialize, Debug, Clone)]
+#[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Debug, Clone)]
 pub struct WeaponAssets {
+    #[asset]
     pub types: Vec<WeaponType>,
 }
 
-#[derive(Deserialize, Debug, Clone, Default)]
+#[derive(Deserialize, RonAsset, TypePath, Debug, Clone, Default)]
 pub struct WeaponType {
     pub name: String,
     pub trigger_sounds: Vec<Shandle<AudioSample>>,
-    pub levels: Vec<WeaponLevel>,
+    pub stats: WeaponStats,
+    #[asset]
+    pub bullet: Shandle<Image>,
 }
 
-#[derive(Deserialize, Debug, Clone, Default)]
-pub struct WeaponLevel {
+#[derive(Deserialize, Debug, Copy, Clone, Default, Reflect)]
+pub struct WeaponStats {
     pub damage: f32,
-    pub attack: WeaponAttack,
+    pub speed: f32,
+    pub fire_rate: f32,
+    pub lifetime: f32,
 }
 
-#[derive(Deserialize, Debug, Clone, Default)]
-pub enum WeaponAttack {
-    #[default]
-    None,
-    Projectile {
-        sprite: Shandle<Image>,
-        speed: f32,
-        fire_rate: f32,
-        lifetime: f32,
-        trajectories: Vec<Trajectory>,
-        on_hit: Option<HitEffect>,
-    },
-}
-
-#[derive(Deserialize, Debug, Clone, Default)]
-pub enum HitEffect {
-    #[default]
-    Explode,
-}
-
-#[derive(Deserialize, Debug, Clone, Default)]
-pub enum Trajectory {
-    #[default]
-    Straight,
-    Spread {
-        angle: f32,
-    },
-    Homing {
-        turn_rate: f32,
-    },
-}
-
-impl RonAsset for WeaponAssets {
-    fn load_assets(&mut self, context: &mut LoadContext) {
-        self.types.load_assets(context);
-    }
-}
-
-impl RonAsset for WeaponType {
-    fn load_assets(&mut self, context: &mut LoadContext) {
-        self.trigger_sounds.load_assets(context);
-        self.levels.load_assets(context);
-    }
-}
-
-impl RonAsset for WeaponLevel {
-    fn load_assets(&mut self, context: &mut LoadContext) {
-        self.attack.load_assets(context);
-    }
-}
-
-impl RonAsset for WeaponAttack {
-    fn load_assets(&mut self, context: &mut LoadContext) {
-        if let WeaponAttack::Projectile { sprite, .. } = self {
-            sprite.load_assets(context);
+impl WeaponStats {
+    pub fn upgrade(&self, upgrade: WeaponStats) -> Self {
+        Self {
+            damage: self.damage + (self.damage * upgrade.damage),
+            speed: self.speed + (self.speed * upgrade.speed),
+            fire_rate: self.fire_rate + (self.fire_rate * upgrade.fire_rate),
+            lifetime: self.lifetime + (self.lifetime * upgrade.lifetime),
         }
     }
 }

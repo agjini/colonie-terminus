@@ -5,21 +5,13 @@ WeaponAssets(
             trigger_sounds: [
                 "audio/sound_effects/laser-3.ogg"
             ],
-            levels: [
-                (
-                    damage: 15.0,
-                    attack: Projectile(
-                        sprite: "images/bullet/Laser Bullet 10.png",
-                        speed: 500.0,
-                        fire_rate: 0.3,
-                        lifetime: 0.9,
-                        trajectories: [
-                            Straight,
-                        ],
-                        on_hit: None,
-                    ),
-                )
-            ],
+            stats: (
+                damage: 15.0,
+                speed: 500.0,
+                fire_rate: 0.3,
+                lifetime: 0.9,
+            ),
+            bullet: "images/bullet/Laser Bullet 10.png",
         )
     ]
 )

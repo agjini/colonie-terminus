@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::gameplay::player::weapon::WeaponSlots;
 use crate::gameplay::player::{LevelUp, Xp};
 use crate::menu::Menu;
 use crate::theme::widget;
@@ -28,8 +29,17 @@ fn spawn_level_up_menu(mut commands: Commands, xp: Single<&Xp>) {
     ));
 }
 
-fn attack_up(_: On<Pointer<Click>>, mut next: ResMut<NextState<Menu>>, mut xp: Single<&mut Xp>) {
+fn attack_up(
+    _: On<Pointer<Click>>,
+    mut next: ResMut<NextState<Menu>>,
+    mut xp: Single<&mut Xp>,
+    mut slots: Single<&mut WeaponSlots>,
+) {
     xp.level_up();
+    let Some(w) = slots.slots.get_mut(0) else {
+        return;
+    };
+    w.inc_damage(0.10);
     next.set(Menu::None);
 }
 

@@ -1,7 +1,7 @@
 use crate::gameplay::enemy::asset::{Damage, Enemy};
 use crate::gameplay::health::Health;
 use crate::gameplay::layer::GameLayer;
-use crate::gameplay::player::weapon::asset::WeaponAttack;
+use crate::gameplay::player::weapon::slot::Weapon;
 use crate::hud::spawn_damage_popup;
 use crate::{AppSystems, PausableSystems};
 use avian2d::math::PI;
@@ -28,17 +28,17 @@ pub struct FireOrigin;
 #[derive(Component)]
 struct Bullet;
 
-impl WeaponAttack {
-    pub fn bullet(&self, damage: f32, from: Vec2, direction: Dir2) -> Option<impl Bundle> {
-        match self {
-            WeaponAttack::Projectile {
-                sprite,
-                speed,
-                lifetime,
-                ..
-            } => Some(bullet(sprite, damage, *speed, *lifetime, from, direction)),
-            _ => None,
-        }
+impl Weapon {
+    pub fn bullet(&self, from: Vec2, direction: Dir2) -> Option<impl Bundle> {
+        let stats = self.stats();
+        Some(bullet(
+            &self.weapon.bullet,
+            stats.damage,
+            stats.speed,
+            stats.lifetime,
+            from,
+            direction,
+        ))
     }
 }
 
