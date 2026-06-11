@@ -2,7 +2,7 @@ use crate::gameplay::enemy::Hurt;
 use crate::gameplay::enemy::asset::{Damage, DamageCooldown, Enemy};
 use crate::gameplay::health::Health;
 use crate::gameplay::player::Player;
-use crate::screen::GameState;
+use crate::menu::Menu;
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::CollidingEntities;
 use bevy::app::App;
@@ -51,9 +51,9 @@ fn apply_damage(
 
 fn check_death(
     health: Single<&Health, (With<Player>, Changed<Health>)>,
-    mut next_state: ResMut<NextState<GameState>>,
+    mut next: ResMut<NextState<Menu>>,
 ) {
     if health.current <= 0. {
-        next_state.set(GameState::GameOver);
+        next.set(Menu::GameOver);
     }
 }

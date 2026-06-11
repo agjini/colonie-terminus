@@ -11,11 +11,10 @@ mod slot;
 use crate::audio::sound_effect;
 use crate::gameplay::player::weapon::aim_zone::AimZone;
 use crate::gameplay::player::weapon::bullet::FireOrigin;
-use crate::gameplay::player::weapon::slot::WeaponSlots;
 pub use aim_zone::aim_zone;
 pub use asset::WeaponAssets;
 pub use bullet::{BulletRoot, bullet_root, fire_origin};
-pub use slot::weapon_slots;
+pub use slot::{WeaponSlots, weapon_slots};
 
 pub fn plugin(app: &mut App) {
     app.add_plugins((asset::plugin, aim_zone::plugin, bullet::plugin));
@@ -66,14 +65,12 @@ fn auto_fire(
     let direction = Dir2::new(enemy_pos - origin_pos).unwrap_or(Dir2::X);
 
     root.with_children(|parent| {
-        for s in slots.just_finished() {
-            let Some(bullet) =
+        if let Some(s) = slots.just_finished()
+            && let Some(bullet) =
                 s.level
                     .attack
                     .bullet(s.level.damage, origin.translation().truncate(), direction)
-            else {
-                continue;
-            };
+        {
             parent.spawn(bullet);
             let sound = s.weapon.trigger_sounds.choose(&mut rand::rng()).unwrap();
             parent.spawn(sound_effect(sound.handle.clone()));

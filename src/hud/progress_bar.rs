@@ -4,6 +4,7 @@ pub fn plugin(app: &mut App) {
     app.add_systems(Update, update_progress_bar);
 }
 
+#[allow(dead_code)]
 pub fn progress_bar(
     owner: Entity,
     meshes: &mut Assets<Mesh>,

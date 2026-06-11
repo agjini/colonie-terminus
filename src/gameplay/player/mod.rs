@@ -20,7 +20,7 @@ pub mod weapon;
 mod xp;
 
 use crate::gameplay::animation::Animation;
-pub use xp::Xp;
+pub use xp::{LevelUp, Xp};
 
 pub fn plugin(app: &mut App) {
     app.add_plugins((

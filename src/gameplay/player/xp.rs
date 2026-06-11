@@ -7,7 +7,8 @@ use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::CollidingEntities;
 use bevy::app::Update;
 use bevy::prelude::{
-    App, Commands, Component, IntoScheduleConfigs, Query, Reflect, Res, Single, With, in_state,
+    App, Commands, Component, Event, IntoScheduleConfigs, Query, Reflect, Res, Single, With,
+    in_state,
 };
 
 pub fn plugin(app: &mut App) {
@@ -18,6 +19,9 @@ pub fn plugin(app: &mut App) {
             .run_if(in_state(Screen::Gameplay(false))),
     );
 }
+
+#[derive(Event)]
+pub struct LevelUp;
 
 fn apply_xp(
     mut commands: Commands,
@@ -30,13 +34,15 @@ fn apply_xp(
         let Ok(amount) = xp_gems.get(*e) else {
             continue;
         };
-        xp.add(amount.0);
+        if xp.add(amount.0) {
+            commands.trigger(LevelUp);
+        }
         commands.entity(*e).despawn();
         commands.spawn(sound_effect(player_assets.pickup_xp.handle.clone()));
     }
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Clone)]
 pub struct Xp {
     pub level: u32,
     pub current: f32,
@@ -58,12 +64,12 @@ impl Xp {
 
     pub fn add(&mut self, rhs: f32) -> bool {
         self.current = self.current + rhs;
-        self.current <= self.next_level()
+        self.current >= self.next_level()
     }
 
     pub fn level_up(&mut self) {
         let diff = self.current - self.next_level();
-        if diff <= 0. {
+        if diff >= 0. {
             self.current = diff;
             self.level = self.level + 1;
         }

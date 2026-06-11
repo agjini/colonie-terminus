@@ -5,21 +5,21 @@ use std::time::Duration;
 
 #[derive(Component, Debug, Clone, Reflect)]
 pub struct WeaponSlots {
-    pub slots: [Option<WeaponSlot>; 2],
+    pub slot_1: WeaponSlot,
+    pub slot_2: Option<WeaponSlot>,
 }
 
 impl WeaponSlots {
     pub fn tick(&mut self, delta: Duration) {
-        for slot in self.slots.iter_mut().flatten() {
-            slot.timer.tick(delta);
-        }
+        self.slot_1.timer.tick(delta);
     }
 
-    pub fn just_finished(&self) -> impl Iterator<Item = &WeaponSlot> {
-        self.slots
-            .iter()
-            .flatten()
-            .filter(|slot| slot.timer.just_finished())
+    pub fn just_finished(&self) -> Option<&WeaponSlot> {
+        if self.slot_1.timer.just_finished() {
+            Some(&self.slot_1)
+        } else {
+            None
+        }
     }
 }
 
@@ -51,7 +51,8 @@ pub fn weapon_slots(weapon_assets: &WeaponAssets) -> impl Bundle {
     (
         Name::new("WeaponSlots"),
         WeaponSlots {
-            slots: [WeaponSlot::try_level(weapon.clone(), 0), None],
+            slot_1: WeaponSlot::try_level(weapon.clone(), 0).unwrap(),
+            slot_2: None,
         },
     )
 }

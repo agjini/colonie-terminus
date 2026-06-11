@@ -15,8 +15,9 @@ mod utils;
 #[cfg(feature = "dev")]
 mod dev_tools;
 
+use crate::menu::Menu;
+use crate::screen::Screen;
 use crate::screen::Screen::{Gameplay, Title};
-use crate::screen::{GameState, Screen};
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::Gravity;
 use bevy::core_pipeline::tonemapping::Tonemapping;
@@ -87,7 +88,10 @@ impl Plugin for AppPlugin {
                 .chain(),
         );
 
-        app.configure_sets(Update, PausableSystems.run_if(in_state(GameState::InGame)));
+        app.configure_sets(
+            Update,
+            PausableSystems.run_if(in_state(MetaState::InGame).and(in_state(Menu::None))),
+        );
         app.add_computed_state::<MetaState>();
 
         app.add_systems(Startup, spawn_camera);

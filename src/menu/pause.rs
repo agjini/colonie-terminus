@@ -1,7 +1,11 @@
 use bevy::prelude::*;
 
 use crate::utils::escape_just_pressed;
-use crate::{menu::Menu, screen::Screen, theme::widget};
+use crate::{
+    menu::{Menu, Nav},
+    screen::Screen,
+    theme::widget,
+};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Pause), spawn_pause_menu);
@@ -25,18 +29,18 @@ fn spawn_pause_menu(mut commands: Commands) {
     ));
 }
 
-fn open_settings_menu(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::Settings);
+fn open_settings_menu(_: On<Pointer<Click>>, mut commands: Commands) {
+    commands.trigger(Nav::Open(Menu::Settings));
 }
 
-fn close_menu(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::None);
+fn close_menu(_: On<Pointer<Click>>, mut next: ResMut<NextState<Menu>>) {
+    next.set(Menu::None);
 }
 
 fn quit_to_title(_: On<Pointer<Click>>, mut next_screen: ResMut<NextState<Screen>>) {
     next_screen.set(Screen::Title(true));
 }
 
-fn go_back(mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::None);
+fn go_back(mut next: ResMut<NextState<Menu>>) {
+    next.set(Menu::None);
 }

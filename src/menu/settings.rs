@@ -1,9 +1,9 @@
 use crate::audio::{
     CONVERTER, lower_music_volume, lower_sfx_volume, raise_music_volume, raise_sfx_volume,
 };
+use crate::menu::{Menu, Nav};
 use crate::theme::widget;
 use crate::utils::escape_just_pressed;
-use crate::{MetaState, menu::Menu};
 use bevy::prelude::*;
 use bevy_seedling::prelude::{MusicPool, SamplerPool, SoundEffectsBus, VolumeNode};
 
@@ -134,22 +134,10 @@ fn update_sfx_volume_label(
     label.0 = text;
 }
 
-fn go_back_on_click(
-    _: On<Pointer<Click>>,
-    screen: Res<State<MetaState>>,
-    mut next_menu: ResMut<NextState<Menu>>,
-) {
-    next_menu.set(if screen.get() == &MetaState::InMenu {
-        Menu::Main
-    } else {
-        Menu::Pause
-    });
+fn go_back_on_click(_: On<Pointer<Click>>, mut commands: Commands) {
+    commands.trigger(Nav::Back);
 }
 
-fn go_back(screen: Res<State<MetaState>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(if screen.get() == &MetaState::InMenu {
-        Menu::Main
-    } else {
-        Menu::Pause
-    });
+fn go_back(mut commands: Commands) {
+    commands.trigger(Nav::Back);
 }

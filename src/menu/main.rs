@@ -2,7 +2,12 @@ use bevy::prelude::*;
 
 use crate::audio::music;
 use crate::menu::MenuAssets;
-use crate::{MetaState, menu::Menu, screen::Screen, theme::widget};
+use crate::{
+    MetaState,
+    menu::{Menu, Nav},
+    screen::Screen,
+    theme::widget,
+};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(MetaState::InMenu), start_menu_music);
@@ -34,12 +39,12 @@ fn enter_gameplay_screen(_: On<Pointer<Click>>, mut next_screen: ResMut<NextStat
     next_screen.set(Screen::Gameplay(true));
 }
 
-fn open_settings_menu(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::Settings);
+fn open_settings_menu(_: On<Pointer<Click>>, mut commands: Commands) {
+    commands.trigger(Nav::Open(Menu::Settings));
 }
 
-fn open_credits_menu(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::Credits);
+fn open_credits_menu(_: On<Pointer<Click>>, mut commands: Commands) {
+    commands.trigger(Nav::Open(Menu::Credits));
 }
 
 #[cfg(not(target_family = "wasm"))]

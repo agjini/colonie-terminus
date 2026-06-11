@@ -4,7 +4,6 @@ mod splash;
 mod title;
 
 use bevy::prelude::*;
-pub use gameplay::GameState;
 
 pub fn plugin(app: &mut App) {
     app.init_state::<Screen>();

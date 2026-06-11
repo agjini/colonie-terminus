@@ -1,4 +1,4 @@
-use crate::menu::{Menu, MenuAssets};
+use crate::menu::{Menu, MenuAssets, Nav};
 use crate::theme::widget::*;
 use crate::utils::escape_just_pressed;
 use bevy::{ecs::spawn::SpawnIter, prelude::*};
@@ -57,10 +57,10 @@ fn grid(content: Vec<(String, String)>) -> impl Bundle {
     )
 }
 
-fn go_back_on_click(_: On<Pointer<Click>>, next_menu: ResMut<NextState<Menu>>) {
-    go_back(next_menu);
+fn go_back_on_click(_: On<Pointer<Click>>, mut commands: Commands) {
+    commands.trigger(Nav::Back);
 }
 
-fn go_back(mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::Main);
+fn go_back(mut commands: Commands) {
+    commands.trigger(Nav::Back);
 }
