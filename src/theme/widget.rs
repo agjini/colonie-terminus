@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 
+use crate::menu::MenuAssets;
 use crate::theme::{interaction::InteractionPalette, navigation::Focusable, palette::*};
 use bevy::input_focus::{InputFocus, InputFocusVisible};
 use bevy::{
@@ -23,36 +24,47 @@ pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
     )
 }
 
-pub fn header(text: impl Into<String>) -> impl Bundle {
+pub fn header(assets: &MenuAssets, text: impl Into<String>) -> impl Bundle {
     (
         Name::new("Header"),
         Text(text.into()),
-        TextFont::from_font_size(40.0),
+        TextFont {
+            font: assets.font.handle.clone(),
+            font_size: assets.font_size_base + 10.,
+            ..default()
+        },
         TextColor(HEADER_TEXT.into()),
     )
 }
 
-pub fn label(text: impl Into<String>) -> impl Bundle {
+pub fn label(font: Handle<Font>, font_size_base: f32, text: impl Into<String>) -> impl Bundle {
     (
         Name::new("Label"),
         Text(text.into()),
-        TextFont::from_font_size(24.0),
+        TextFont {
+            font,
+            font_size: font_size_base,
+            ..default()
+        },
         TextColor(LABEL_TEXT.into()),
     )
 }
 
-pub fn button<E, B, M, I>(text: impl Into<String>, action: I) -> impl Bundle
+pub fn button<E, B, M, I>(assets: &MenuAssets, text: impl Into<String>, action: I) -> impl Bundle
 where
     E: EntityEvent,
     B: Bundle,
     I: IntoObserverSystem<E, B, M>,
 {
+    let text = text.into();
+    let width = text.len() as f32 * 12. + 20.;
     button_base(
+        assets,
         text,
         action,
         (Node {
-            width: px(380),
-            height: px(80),
+            width: px(width),
+            height: px(40),
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
             border_radius: BorderRadius::MAX,
@@ -61,14 +73,19 @@ where
     )
 }
 
-pub fn button_small<E, B, M, I>(text: impl Into<String>, action: I) -> impl Bundle
+pub fn button_small<E, B, M, I>(
+    assets: &MenuAssets,
+    text: impl Into<String>,
+    action: I,
+) -> impl Bundle
 where
     E: EntityEvent,
     B: Bundle,
     I: IntoObserverSystem<E, B, M>,
 {
     button_base(
-        text,
+        assets,
+        text.into(),
         action,
         Node {
             width: px(30),
@@ -81,7 +98,8 @@ where
 }
 
 fn button_base<E, B, M, I>(
-    text: impl Into<String>,
+    assets: &MenuAssets,
+    text: String,
     action: I,
     button_bundle: impl Bundle,
 ) -> impl Bundle
@@ -90,14 +108,24 @@ where
     B: Bundle,
     I: IntoObserverSystem<E, B, M>,
 {
-    let text = text.into();
     let action = IntoObserverSystem::into_system(action);
+    let text_font = TextFont {
+        font: assets.font.handle.clone(),
+        font_size: assets.font_size_base,
+        ..default()
+    };
     (
         Name::new("Button"),
-        Node::default(),
+        Node {
+            padding: UiRect::all(Val::Px(5.0)),
+            border_radius: BorderRadius::new(Val::Px(0.), Val::Px(20.), Val::Px(0.), Val::Px(20.)),
+            flex_direction: FlexDirection::Column,
+            row_gap: Val::Px(4.0),
+            ..default()
+        },
         Children::spawn(SpawnWith(|parent: &mut ChildSpawner| {
             let mut entity = parent.spawn((
-                Name::new(text.to_string()),
+                Name::new(text.clone()),
                 Button,
                 BackgroundColor(BUTTON_BACKGROUND.into()),
                 InteractionPalette {
@@ -109,7 +137,7 @@ where
                 children![(
                     Name::new("Button Text"),
                     Text(text),
-                    TextFont::from_font_size(40.0),
+                    text_font,
                     TextColor(BUTTON_TEXT.into()),
                 )],
             ));

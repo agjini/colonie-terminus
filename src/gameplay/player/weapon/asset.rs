@@ -39,7 +39,7 @@ impl WeaponStats {
         Self {
             damage: self.damage + (self.damage * upgrade.damage),
             speed: self.speed + (self.speed * upgrade.speed),
-            fire_rate: self.fire_rate + (self.fire_rate * upgrade.fire_rate),
+            fire_rate: self.fire_rate - (self.fire_rate * upgrade.fire_rate),
             lifetime: self.lifetime + (self.lifetime * upgrade.lifetime),
         }
     }

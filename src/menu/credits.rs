@@ -17,16 +17,44 @@ fn spawn_credits_menu(mut commands: Commands, assets: Res<MenuAssets>) {
         GlobalZIndex(2),
         DespawnOnExit(Menu::Credits),
         children![
-            header("Created by"),
-            grid(assets.created_by.clone()),
-            header("Assets"),
-            grid(assets.assets_by.clone()),
-            button("Back", go_back_on_click),
+            header(&assets, "Created by"),
+            grid(
+                assets.font.handle.clone(),
+                assets.font_size_base,
+                assets.created_by.clone()
+            ),
+            header(&assets, "Assets"),
+            grid(
+                assets.font.handle.clone(),
+                assets.font_size_base,
+                assets.assets_by.clone()
+            ),
+            button(&assets, "Back", go_back_on_click),
         ],
     ));
 }
 
-fn grid(content: Vec<(String, String)>) -> impl Bundle {
+fn grid(font: Handle<Font>, font_size_base: f32, content: Vec<(String, String)>) -> impl Bundle {
+    let children = Children::spawn(SpawnIter(content.into_iter().flat_map(
+        move |(left, right)| {
+            [
+                (
+                    label(font.clone(), font_size_base, left),
+                    Node {
+                        justify_self: JustifySelf::End,
+                        ..default()
+                    },
+                ),
+                (
+                    label(font.clone(), font_size_base, right),
+                    Node {
+                        justify_self: JustifySelf::Start,
+                        ..default()
+                    },
+                ),
+            ]
+        },
+    )));
     (
         Name::new("Grid"),
         Node {
@@ -36,24 +64,7 @@ fn grid(content: Vec<(String, String)>) -> impl Bundle {
             grid_template_columns: RepeatedGridTrack::px(2, 400.0),
             ..default()
         },
-        Children::spawn(SpawnIter(content.into_iter().flat_map(|(left, right)| {
-            [
-                (
-                    label(left),
-                    Node {
-                        justify_self: JustifySelf::End,
-                        ..default()
-                    },
-                ),
-                (
-                    label(right),
-                    Node {
-                        justify_self: JustifySelf::Start,
-                        ..default()
-                    },
-                ),
-            ]
-        }))),
+        children,
     )
 }
 

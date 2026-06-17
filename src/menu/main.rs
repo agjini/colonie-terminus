@@ -14,23 +14,23 @@ pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Main), spawn_main_menu);
 }
 
-fn spawn_main_menu(mut commands: Commands) {
+fn spawn_main_menu(assets: Res<MenuAssets>, mut commands: Commands) {
     commands.spawn((
         widget::ui_root("Main Menu"),
         GlobalZIndex(2),
         DespawnOnExit(Menu::Main),
         #[cfg(not(target_family = "wasm"))]
         children![
-            widget::button("Play", enter_gameplay_screen),
-            widget::button("Settings", open_settings_menu),
-            widget::button("Credits", open_credits_menu),
-            widget::button("Exit", exit_app),
+            widget::button(&assets, "Play", enter_gameplay_screen),
+            widget::button(&assets, "Settings", open_settings_menu),
+            widget::button(&assets, "Credits", open_credits_menu),
+            widget::button(&assets, "Exit", exit_app),
         ],
         #[cfg(target_family = "wasm")]
         children![
-            widget::button("Play", enter_gameplay_screen),
-            widget::button("Settings", open_settings_menu),
-            widget::button("Credits", open_credits_menu),
+            widget::button(&assets, "Play", enter_gameplay_screen),
+            widget::button(&assets, "Settings", open_settings_menu),
+            widget::button(&assets, "Credits", open_credits_menu),
         ],
     ));
 }

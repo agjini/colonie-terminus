@@ -1,7 +1,7 @@
 use crate::audio::{
     CONVERTER, lower_music_volume, lower_sfx_volume, raise_music_volume, raise_sfx_volume,
 };
-use crate::menu::{Menu, Nav};
+use crate::menu::{Menu, MenuAssets, Nav};
 use crate::theme::widget;
 use crate::utils::escape_just_pressed;
 use bevy::prelude::*;
@@ -20,20 +20,20 @@ pub fn plugin(app: &mut App) {
     );
 }
 
-fn spawn_settings_menu(mut commands: Commands) {
+fn spawn_settings_menu(assets: Res<MenuAssets>, mut commands: Commands) {
     commands.spawn((
         widget::ui_root("Settings Menu"),
         GlobalZIndex(2),
         DespawnOnExit(Menu::Settings),
         children![
-            widget::header("Settings"),
-            settings_grid(),
-            widget::button("Back", go_back_on_click),
+            widget::header(&assets, "Settings"),
+            settings_grid(&assets),
+            widget::button(&assets, "Back", go_back_on_click),
         ],
     ));
 }
 
-fn settings_grid() -> impl Bundle {
+fn settings_grid(assets: &Res<MenuAssets>) -> impl Bundle {
     (
         Name::new("Settings Grid"),
         Node {
@@ -45,26 +45,34 @@ fn settings_grid() -> impl Bundle {
         },
         children![
             (
-                widget::label("Music Volume"),
+                widget::label(
+                    assets.font.handle.clone(),
+                    assets.font_size_base,
+                    "Music Volume"
+                ),
                 Node {
                     justify_self: JustifySelf::End,
                     ..default()
                 }
             ),
-            music_volume_widget(),
+            music_volume_widget(&assets),
             (
-                widget::label("Sfx Volume"),
+                widget::label(
+                    assets.font.handle.clone(),
+                    assets.font_size_base,
+                    "Sfx Volume"
+                ),
                 Node {
                     justify_self: JustifySelf::End,
                     ..default()
                 }
             ),
-            sfx_volume_widget(),
+            sfx_volume_widget(&assets),
         ],
     )
 }
 
-fn music_volume_widget() -> impl Bundle {
+fn music_volume_widget(assets: &Res<MenuAssets>) -> impl Bundle {
     (
         Name::new("Music Volume Widget"),
         Node {
@@ -72,7 +80,7 @@ fn music_volume_widget() -> impl Bundle {
             ..default()
         },
         children![
-            widget::button_small("-", lower_music_volume),
+            widget::button_small(&assets, "-", lower_music_volume),
             (
                 Name::new("Current Volume"),
                 Node {
@@ -80,14 +88,17 @@ fn music_volume_widget() -> impl Bundle {
                     justify_content: JustifyContent::Center,
                     ..default()
                 },
-                children![(widget::label(""), MusicVolumeLabel)],
+                children![(
+                    widget::label(assets.font.handle.clone(), assets.font_size_base, ""),
+                    MusicVolumeLabel
+                )],
             ),
-            widget::button_small("+", raise_music_volume),
+            widget::button_small(&assets, "+", raise_music_volume),
         ],
     )
 }
 
-fn sfx_volume_widget() -> impl Bundle {
+fn sfx_volume_widget(assets: &Res<MenuAssets>) -> impl Bundle {
     (
         Name::new("Sfx Volume Widget"),
         Node {
@@ -95,7 +106,7 @@ fn sfx_volume_widget() -> impl Bundle {
             ..default()
         },
         children![
-            widget::button_small("-", lower_sfx_volume),
+            widget::button_small(&assets, "-", lower_sfx_volume),
             (
                 Name::new("Current Sfx Volume"),
                 Node {
@@ -103,9 +114,12 @@ fn sfx_volume_widget() -> impl Bundle {
                     justify_content: JustifyContent::Center,
                     ..default()
                 },
-                children![(widget::label(""), SfxVolumeLabel)],
+                children![(
+                    widget::label(assets.font.handle.clone(), assets.font_size_base, ""),
+                    SfxVolumeLabel
+                )],
             ),
-            widget::button_small("+", raise_sfx_volume),
+            widget::button_small(&assets, "+", raise_sfx_volume),
         ],
     )
 }

@@ -10,6 +10,7 @@ pub fn plugin(app: &mut App) {
     app.add_systems(Update, update_health_bar);
 }
 
+#[allow(dead_code)]
 pub fn health_bar(
     owner: Entity,
     meshes: &mut Assets<Mesh>,
@@ -41,6 +42,11 @@ impl Health {
 
     pub fn is_dead(&self) -> bool {
         self.current <= 0.
+    }
+
+    pub fn inc_max_health(&mut self, amount: f32) {
+        self.max = self.max + (self.max * amount);
+        self.current = self.current + (self.max * amount);
     }
 }
 

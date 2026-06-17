@@ -86,9 +86,12 @@ fn spawn_overlay(mut commands: Commands, menu: Res<State<Menu>>) {
 }
 
 #[derive(Resource, TypePath, Asset, RonAsset, Deserialize, Debug, Clone)]
-struct MenuAssets {
+pub struct MenuAssets {
     #[asset]
-    music: Shandle<AudioSample>,
-    created_by: Vec<(String, String)>,
-    assets_by: Vec<(String, String)>,
+    pub music: Shandle<AudioSample>,
+    #[asset]
+    pub font: Shandle<Font>,
+    pub font_size_base: f32,
+    pub created_by: Vec<(String, String)>,
+    pub assets_by: Vec<(String, String)>,
 }

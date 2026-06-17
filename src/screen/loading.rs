@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::menu::MenuAssets;
 use crate::screen::Screen::{Gameplay, Title};
 use crate::theme::widget;
 use crate::{MetaState, asset_tracking::ResourceHandles, screen::Screen};
@@ -13,11 +14,15 @@ pub fn plugin(app: &mut App) {
     );
 }
 
-fn spawn_loading_screen(mut commands: Commands) {
+fn spawn_loading_screen(assets: Res<MenuAssets>, mut commands: Commands) {
     commands.spawn((
         widget::ui_root("Loading Screen"),
         DespawnOnExit(MetaState::Loading),
-        children![widget::label("Loading...")],
+        children![widget::label(
+            assets.font.handle.clone(),
+            assets.font_size_base,
+            "Loading..."
+        )],
     ));
 }
 

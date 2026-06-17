@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::menu::MenuAssets;
 use crate::utils::escape_just_pressed;
 use crate::{
     menu::{Menu, Nav},
@@ -15,16 +16,16 @@ pub fn plugin(app: &mut App) {
     );
 }
 
-fn spawn_pause_menu(mut commands: Commands) {
+fn spawn_pause_menu(assets: Res<MenuAssets>, mut commands: Commands) {
     commands.spawn((
         widget::ui_root("Pause Menu"),
         GlobalZIndex(2),
         DespawnOnExit(Menu::Pause),
         children![
-            widget::header("Game paused"),
-            widget::button("Continue", close_menu),
-            widget::button("Settings", open_settings_menu),
-            widget::button("Quit to title", quit_to_title),
+            widget::header(&assets, "Game paused"),
+            widget::button(&assets, "Continue", close_menu),
+            widget::button(&assets, "Settings", open_settings_menu),
+            widget::button(&assets, "Quit to title", quit_to_title),
         ],
     ));
 }
