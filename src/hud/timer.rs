@@ -1,6 +1,6 @@
+use crate::PausableSystems;
 use crate::hud::panel::{PanelPosition, panel};
 use crate::screen::Screen;
-use crate::PausableSystems;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
 

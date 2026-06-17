@@ -1,6 +1,6 @@
+use crate::PausableSystems;
 use crate::hud::panel::{PanelPosition, panel};
 use crate::screen::Screen;
-use crate::PausableSystems;
 use bevy::prelude::*;
 
 const LABEL_COLOR: Color = Color::srgba(0.5, 0.5, 0.6, 0.8);
