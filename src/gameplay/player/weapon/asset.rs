@@ -2,7 +2,6 @@
 
 use crate::asset_tracking::LoadResource;
 use bevy::prelude::*;
-use bevy_seedling::prelude::AudioSample;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -20,7 +19,7 @@ pub struct WeaponAssets {
 #[derive(Deserialize, RonAsset, TypePath, Debug, Clone, Default)]
 pub struct WeaponType {
     pub name: String,
-    pub trigger_sounds: Vec<Shandle<AudioSample>>,
+    pub trigger_sounds: Vec<Shandle<AudioSource>>,
     pub stats: WeaponStats,
     #[asset]
     pub bullet: Shandle<Image>,

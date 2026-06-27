@@ -4,7 +4,7 @@ use bevy::camera::NormalizedRenderTarget;
 use bevy::input_focus::directional_navigation::{
     DirectionalNavigation, DirectionalNavigationMap, DirectionalNavigationPlugin,
 };
-use bevy::input_focus::{InputDispatchPlugin, InputFocus, InputFocusVisible};
+use bevy::input_focus::{FocusCause, InputFocus, InputFocusVisible};
 use bevy::math::CompassOctant;
 use bevy::picking::backend::HitData;
 use bevy::picking::pointer::{Location, PointerId};
@@ -13,7 +13,7 @@ use bevy::ui::UiGlobalTransform;
 use std::time::Duration;
 
 pub fn plugin(app: &mut App) {
-    app.add_plugins((InputDispatchPlugin, DirectionalNavigationPlugin));
+    app.add_plugins(DirectionalNavigationPlugin);
     app.insert_resource(InputFocusVisible(true));
     app.insert_resource(StickNavigationCooldown::default());
     app.add_systems(Update, setup_navigation_for_new_buttons);
@@ -61,7 +61,7 @@ fn setup_navigation_for_new_buttons(
     );
 
     if let Some(&(first, _, _)) = rows.first().and_then(|r| r.first()) {
-        input_focus.set(first);
+        input_focus.set(first, FocusCause::Navigated);
     }
 
     for row in &rows {
@@ -181,29 +181,31 @@ fn handle_keyboard_activation(
         return;
     }
 
-    let Some(focused_entity) = input_focus.0 else {
+    let Some(focused_entity) = input_focus.get() else {
         return;
     };
 
-    commands.trigger(Pointer::<Click> {
-        entity: focused_entity,
-        pointer_id: PointerId::Mouse,
-        pointer_location: Location {
+    commands.trigger(Pointer::new(
+        PointerId::Mouse,
+        Location {
             target: NormalizedRenderTarget::None {
                 width: 0,
                 height: 0,
             },
             position: Vec2::ZERO,
         },
-        event: Click {
+        Click {
             button: PointerButton::Primary,
+            count: 1,
             hit: HitData {
                 camera: Entity::PLACEHOLDER,
                 depth: 0.0,
                 position: None,
                 normal: None,
+                extra: None,
             },
             duration: Duration::from_secs_f32(0.1),
         },
-    })
+        focused_entity,
+    ));
 }

@@ -1,6 +1,5 @@
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
-use bevy_seedling::prelude::AudioSample;
 use ron_asset_manager::prelude::*;
 use serde::Deserialize;
 use std::collections::HashSet;
@@ -37,7 +36,7 @@ pub struct AnimationFrames {
 pub struct AnimationSounds {
     pub frames: HashSet<usize>,
     #[asset]
-    pub samples: Vec<Shandle<AudioSample>>,
+    pub samples: Vec<Shandle<AudioSource>>,
 }
 
 #[derive(Deserialize, Debug, Clone, Reflect, Hash, PartialEq, Eq)]

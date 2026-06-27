@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::audio::music;
+use crate::audio::{AudioSettings, music};
 use crate::menu::MenuAssets;
 use crate::{
     MetaState,
@@ -52,11 +52,15 @@ fn exit_app(_: On<Pointer<Click>>, mut app_exit: MessageWriter<AppExit>) {
     app_exit.write(AppExit::Success);
 }
 
-fn start_menu_music(mut commands: Commands, menu_assets: Option<Res<MenuAssets>>) {
+fn start_menu_music(
+    mut commands: Commands,
+    menu_assets: Option<Res<MenuAssets>>,
+    audio_settings: Res<AudioSettings>,
+) {
     let Some(assets) = menu_assets else { return };
     commands.spawn((
         Name::new("Menu Music"),
         DespawnOnExit(MetaState::InMenu),
-        music(assets.music.handle.clone()),
+        music(assets.music.handle.clone(), &audio_settings),
     ));
 }

@@ -19,7 +19,7 @@ pub fn spawn_damage_popup(commands: &mut Commands, position: Vec3, damage: f32) 
         GameLayer::AimZone,
         Text2d::new(damage.to_string()),
         TextFont {
-            font_size: 20.0,
+            font_size: FontSize::Px(20.0),
             ..default()
         },
         TextColor(Color::srgb(1.0, 1.0, 1.0)),

@@ -10,7 +10,7 @@ pub fn plugin(app: &mut App) {
 
     app.add_systems(
         Update,
-        enter_next_screen.run_if(in_state(MetaState::Loading).and(all_assets_loaded)),
+        enter_next_screen.run_if(in_state(MetaState::Loading).and_then(all_assets_loaded)),
     );
 }
 

@@ -1,7 +1,7 @@
-use crate::{asset_tracking::LoadResource, audio::sound_effect};
+use crate::audio::AudioSettings;
+use crate::{asset_tracking::LoadResource, audio::sound_fx};
 use bevy::input_focus::InputFocus;
 use bevy::prelude::*;
-use bevy_seedling::prelude::AudioSample;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -39,22 +39,23 @@ fn apply_interaction_palette(
 #[derive(Resource, Asset, TypePath, RonAsset, Deserialize, Debug, Clone)]
 struct InteractionAssets {
     #[asset]
-    hover: Shandle<AudioSample>,
+    hover: Shandle<AudioSource>,
     #[asset]
-    click: Shandle<AudioSample>,
+    click: Shandle<AudioSource>,
 }
 
 fn play_on_focus_sound_effect(
-    res: Res<InputFocus>,
+    input_focus: Res<InputFocus>,
     mut commands: Commands,
     interaction_assets: Option<Res<InteractionAssets>>,
     interaction_query: Query<(), With<Interaction>>,
+    audio_settings: Res<AudioSettings>,
 ) {
-    if !res.is_changed() {
+    if !input_focus.is_changed() {
         return;
     }
 
-    let Some(input_focus) = res.0 else {
+    let Some(focused_entity) = input_focus.get() else {
         return;
     };
 
@@ -62,8 +63,11 @@ fn play_on_focus_sound_effect(
         return;
     };
 
-    if interaction_query.contains(input_focus.entity()) {
-        commands.spawn(sound_effect(interaction_assets.hover.handle.clone()));
+    if interaction_query.contains(focused_entity) {
+        commands.spawn(sound_fx(
+            interaction_assets.hover.handle.clone(),
+            &audio_settings,
+        ));
     }
 }
 
@@ -72,12 +76,16 @@ fn play_on_click_sound_effect(
     mut commands: Commands,
     interaction_assets: Option<Res<InteractionAssets>>,
     interaction_query: Query<(), With<Interaction>>,
+    audio_settings: Res<AudioSettings>,
 ) {
     let Some(interaction_assets) = interaction_assets else {
         return;
     };
 
     if interaction_query.contains(trigger.entity) {
-        commands.spawn(sound_effect(interaction_assets.click.handle.clone()));
+        commands.spawn(sound_fx(
+            interaction_assets.click.handle.clone(),
+            &audio_settings,
+        ));
     }
 }

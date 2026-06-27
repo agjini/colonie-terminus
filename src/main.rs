@@ -20,13 +20,11 @@ use crate::screen::Screen;
 use crate::screen::Screen::{Gameplay, Title};
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::Gravity;
+use bevy::camera::Hdr;
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::post_process::bloom::Bloom;
-use bevy::render::view::Hdr;
-use bevy::window::{
-    CursorGrabMode, CursorOptions, PresentMode, PrimaryWindow, WindowMode, WindowResolution,
-};
+use bevy::window::{PresentMode, PrimaryWindow, WindowMode, WindowResolution};
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
 fn main() -> AppExit {
@@ -53,12 +51,6 @@ impl Plugin for AppPlugin {
                         resolution: WindowResolution::new(1024, 768),
                         mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
                         present_mode: PresentMode::AutoNoVsync,
-                        ..default()
-                    }
-                    .into(),
-                    primary_cursor_options: CursorOptions {
-                        visible: false,
-                        grab_mode: CursorGrabMode::Confined,
                         ..default()
                     }
                     .into(),
@@ -90,7 +82,7 @@ impl Plugin for AppPlugin {
 
         app.configure_sets(
             Update,
-            PausableSystems.run_if(in_state(MetaState::InGame).and(in_state(Menu::None))),
+            PausableSystems.run_if(in_state(MetaState::InGame).and_then(in_state(Menu::None))),
         );
         app.add_computed_state::<MetaState>();
 

@@ -7,7 +7,7 @@ pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Credits), spawn_credits_menu);
     app.add_systems(
         Update,
-        go_back.run_if(in_state(Menu::Credits).and(escape_just_pressed)),
+        go_back.run_if(in_state(Menu::Credits).and_then(escape_just_pressed)),
     );
 }
 

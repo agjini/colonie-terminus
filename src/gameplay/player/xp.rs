@@ -1,4 +1,4 @@
-use crate::audio::sound_effect;
+use crate::audio::{AudioSettings, sound_fx};
 use crate::gameplay::loot::XpAmount;
 use crate::gameplay::player::Player;
 use crate::gameplay::player::asset::PlayerAssets;
@@ -28,6 +28,7 @@ fn apply_xp(
     player: Single<(&mut Xp, &CollidingEntities), With<Player>>,
     xp_gems: Query<&XpAmount>,
     player_assets: Res<PlayerAssets>,
+    audio_settings: Res<AudioSettings>,
 ) {
     let (mut xp, colliding_entities) = player.into_inner();
     for e in colliding_entities.iter() {
@@ -38,7 +39,10 @@ fn apply_xp(
             commands.trigger(LevelUp);
         }
         commands.entity(*e).despawn();
-        commands.spawn(sound_effect(player_assets.pickup_xp.handle.clone()));
+        commands.spawn(sound_fx(
+            player_assets.pickup_xp.handle.clone(),
+            &audio_settings,
+        ));
     }
 }
 
@@ -58,6 +62,7 @@ impl Default for Xp {
 }
 
 impl Xp {
+    #[cfg(test)]
     fn new(level: u32) -> Self {
         Self { level, current: 0. }
     }

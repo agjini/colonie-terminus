@@ -10,7 +10,7 @@ use avian2d::prelude::{Collider, CollisionLayers, DebugRender, LockedAxes, Mass,
 use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
-use rand::Rng;
+use rand::RngExt;
 use std::f32::consts::PI;
 
 pub fn plugin(app: &mut App) {

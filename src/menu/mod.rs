@@ -7,7 +7,6 @@ mod settings;
 
 use crate::asset_tracking::LoadResource;
 use bevy::prelude::*;
-use bevy_seedling::prelude::AudioSample;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -88,7 +87,7 @@ fn spawn_overlay(mut commands: Commands, menu: Res<State<Menu>>) {
 #[derive(Resource, TypePath, Asset, RonAsset, Deserialize, Debug, Clone)]
 pub struct MenuAssets {
     #[asset]
-    pub music: Shandle<AudioSample>,
+    pub music: Shandle<AudioSource>,
     #[asset]
     pub font: Shandle<Font>,
     pub font_size_base: f32,

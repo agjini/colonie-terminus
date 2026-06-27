@@ -1,17 +1,16 @@
 use crate::audio::{
-    CONVERTER, lower_music_volume, lower_sfx_volume, raise_music_volume, raise_sfx_volume,
+    AudioSettings, lower_music_volume, lower_sfx_volume, raise_music_volume, raise_sfx_volume,
 };
 use crate::menu::{Menu, MenuAssets, Nav};
 use crate::theme::widget;
 use crate::utils::escape_just_pressed;
 use bevy::prelude::*;
-use bevy_seedling::prelude::{MusicPool, SamplerPool, SoundEffectsBus, VolumeNode};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Settings), spawn_settings_menu);
     app.add_systems(
         Update,
-        go_back.run_if(in_state(Menu::Settings).and(escape_just_pressed)),
+        go_back.run_if(in_state(Menu::Settings).and_then(escape_just_pressed)),
     );
 
     app.add_systems(
@@ -132,18 +131,18 @@ struct SfxVolumeLabel;
 
 fn update_music_volume_label(
     mut label: Single<&mut Text, With<MusicVolumeLabel>>,
-    music: Single<&VolumeNode, (With<SamplerPool<MusicPool>>, Changed<VolumeNode>)>,
+    audio_settings: Res<AudioSettings>,
 ) {
-    let percent = CONVERTER.volume_to_perceptual(music.volume) * 100.0;
+    let percent = audio_settings.music_volume * 100.0;
     let text = format!("{}%", percent.round());
     label.0 = text;
 }
 
 fn update_sfx_volume_label(
     mut label: Single<&mut Text, With<SfxVolumeLabel>>,
-    sfx: Single<&VolumeNode, (With<SoundEffectsBus>, Changed<VolumeNode>)>,
+    audio_settings: Res<AudioSettings>,
 ) {
-    let percent = CONVERTER.volume_to_perceptual(sfx.volume) * 100.0;
+    let percent = audio_settings.sound_fx_volume * 100.0;
     let text = format!("{}%", percent.round());
     label.0 = text;
 }

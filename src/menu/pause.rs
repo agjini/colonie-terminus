@@ -12,7 +12,7 @@ pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Pause), spawn_pause_menu);
     app.add_systems(
         Update,
-        go_back.run_if(in_state(Menu::Pause).and(escape_just_pressed)),
+        go_back.run_if(in_state(Menu::Pause).and_then(escape_just_pressed)),
     );
 }
 

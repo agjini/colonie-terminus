@@ -1,70 +1,94 @@
+use bevy::audio::PlaybackMode::Loop;
+use bevy::audio::Volume;
 use bevy::prelude::*;
-use bevy_seedling::prelude::*;
 
 pub fn plugin(app: &mut App) {
-    app.add_plugins(SeedlingPlugin::default());
-    app.add_systems(Startup, set_default_volume);
+    app.init_resource::<AudioSettings>();
+    app.add_systems(Update, apply_volume);
 }
 
-pub fn music(handle: Handle<AudioSample>) -> impl Bundle {
-    (MusicPool, SamplePlayer::new(handle).looping())
+#[derive(Component, Reflect)]
+pub struct Music;
+
+#[derive(Component, Reflect)]
+pub struct SoundFx;
+
+fn apply_volume(audio_settings: Res<AudioSettings>, musics: Query<&mut AudioSink, With<Music>>) {
+    if !audio_settings.is_changed() {
+        return;
+    }
+
+    let vol = Volume::Linear(audio_settings.music_volume);
+    for mut music in musics.into_iter() {
+        music.set_volume(vol);
+    }
 }
 
-pub fn sound_effect(handle: Handle<AudioSample>) -> impl Bundle {
-    SamplePlayer::new(handle)
+pub fn music(handle: Handle<AudioSource>, audio_settings: &AudioSettings) -> impl Bundle {
+    (
+        AudioPlayer::new(handle),
+        Music,
+        PlaybackSettings {
+            mode: Loop,
+            volume: Volume::Linear(audio_settings.music_volume),
+            ..default()
+        },
+    )
 }
 
-pub const CONVERTER: PerceptualVolume = PerceptualVolume::new();
-
-const MIN_VOLUME: f32 = 0.0;
-const MAX_VOLUME: f32 = 3.0;
-
-const STEP: f32 = 0.1;
-
-pub fn lower_music_volume(
-    _: On<Pointer<Click>>,
-    mut music: Single<&mut VolumeNode, With<SamplerPool<MusicPool>>>,
-) {
-    music.volume = decrement_volume(music.volume);
+pub fn sound_fx(handle: Handle<AudioSource>, audio_settings: &AudioSettings) -> impl Bundle {
+    (
+        AudioPlayer::new(handle),
+        SoundFx,
+        PlaybackSettings {
+            volume: Volume::Linear(audio_settings.sound_fx_volume),
+            ..default()
+        },
+    )
 }
 
-pub fn raise_music_volume(
-    _: On<Pointer<Click>>,
-    mut music: Single<&mut VolumeNode, With<SamplerPool<MusicPool>>>,
-) {
-    music.volume = increment_volume(music.volume);
+#[derive(Resource, Reflect)]
+pub struct AudioSettings {
+    pub music_volume: f32,
+    pub sound_fx_volume: f32,
 }
 
-pub fn lower_sfx_volume(
-    _: On<Pointer<Click>>,
-    mut sfx: Single<&mut VolumeNode, With<SoundEffectsBus>>,
-) {
-    sfx.volume = decrement_volume(sfx.volume);
+impl Default for AudioSettings {
+    fn default() -> Self {
+        Self {
+            music_volume: 0.5,
+            sound_fx_volume: 0.5,
+        }
+    }
 }
 
-pub fn raise_sfx_volume(
-    _: On<Pointer<Click>>,
-    mut sfx: Single<&mut VolumeNode, With<SoundEffectsBus>>,
-) {
-    sfx.volume = increment_volume(sfx.volume);
+impl AudioSettings {
+    fn raise_volume(&mut self) {
+        self.music_volume = (self.music_volume + 0.1).clamp(0.0, 1.0);
+    }
+    fn lower_volume(&mut self) {
+        self.music_volume = (self.music_volume - 0.1).clamp(0.0, 1.0);
+    }
+    fn raise_sound_fx_volume(&mut self) {
+        self.sound_fx_volume = (self.sound_fx_volume + 0.1).clamp(0.0, 1.0);
+    }
+    fn lower_sound_fx_volume(&mut self) {
+        self.sound_fx_volume = (self.sound_fx_volume - 0.1).clamp(0.0, 1.0);
+    }
 }
 
-fn increment_volume(volume: Volume) -> Volume {
-    let perceptual = CONVERTER.volume_to_perceptual(volume);
-    let new_perceptual = (perceptual + STEP).min(MAX_VOLUME);
-    CONVERTER.perceptual_to_volume(new_perceptual)
+pub fn lower_music_volume(_: On<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+    audio_settings.lower_volume();
 }
 
-fn decrement_volume(volume: Volume) -> Volume {
-    let perceptual = CONVERTER.volume_to_perceptual(volume);
-    let new_perceptual = (perceptual - STEP).max(MIN_VOLUME);
-    CONVERTER.perceptual_to_volume(new_perceptual)
+pub fn raise_music_volume(_: On<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+    audio_settings.raise_volume();
 }
 
-fn set_default_volume(
-    mut master: Single<&mut VolumeNode, (With<MainBus>, Without<SoundEffectsBus>)>,
-    mut sfx: Single<&mut VolumeNode, (With<SoundEffectsBus>, Without<MainBus>)>,
-) {
-    master.volume = CONVERTER.perceptual_to_volume(0.7);
-    sfx.volume = CONVERTER.perceptual_to_volume(1.2);
+pub fn lower_sfx_volume(_: On<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+    audio_settings.lower_sound_fx_volume();
+}
+
+pub fn raise_sfx_volume(_: On<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+    audio_settings.raise_sound_fx_volume();
 }

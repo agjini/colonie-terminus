@@ -29,8 +29,8 @@ pub fn header(assets: &MenuAssets, text: impl Into<String>) -> impl Bundle {
         Name::new("Header"),
         Text(text.into()),
         TextFont {
-            font: assets.font.handle.clone(),
-            font_size: assets.font_size_base + 10.,
+            font: FontSource::Handle(assets.font.handle.clone()),
+            font_size: FontSize::Px(assets.font_size_base + 10.),
             ..default()
         },
         TextColor(HEADER_TEXT.into()),
@@ -42,8 +42,8 @@ pub fn label(font: Handle<Font>, font_size_base: f32, text: impl Into<String>) -
         Name::new("Label"),
         Text(text.into()),
         TextFont {
-            font,
-            font_size: font_size_base,
+            font: FontSource::Handle(font),
+            font_size: FontSize::Px(font_size_base),
             ..default()
         },
         TextColor(LABEL_TEXT.into()),
@@ -110,8 +110,8 @@ where
 {
     let action = IntoObserverSystem::into_system(action);
     let text_font = TextFont {
-        font: assets.font.handle.clone(),
-        font_size: assets.font_size_base,
+        font: FontSource::Handle(assets.font.handle.clone()),
+        font_size: FontSize::Px(assets.font_size_base),
         ..default()
     };
     (
@@ -153,7 +153,7 @@ pub fn highlight_focused_element(
     mut query: Query<(Entity, &InteractionPalette, &mut BackgroundColor)>,
 ) {
     for (entity, interaction, mut background_color) in query.iter_mut() {
-        if input_focus.0 == Some(entity) && input_focus_visible.0 {
+        if input_focus.get() == Some(entity) && input_focus_visible.0 {
             background_color.0 = interaction.hovered;
         } else {
             background_color.0 = interaction.none;

@@ -1,4 +1,5 @@
 use crate::asset_tracking::LoadResource;
+use crate::audio::AudioSettings;
 use crate::gameplay::animation::Animation;
 use crate::gameplay::enemy::enemy_root;
 use crate::gameplay::loot::loot_root;
@@ -9,16 +10,12 @@ use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
 use crate::{audio::music, screen::Screen};
 use bevy::prelude::*;
-use bevy_seedling::prelude::AudioSample;
 use rand::prelude::StdRng;
 use rand::rngs::ThreadRng;
-use rand::{RngCore, SeedableRng};
+use rand::{Rng, SeedableRng};
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
-
-#[derive(Component, Reflect)]
-pub struct GameplayMusic;
 
 #[derive(Component, Reflect)]
 pub struct TilemapOrigin;
@@ -37,14 +34,17 @@ pub fn plugin(app: &mut App) {
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Clone, Debug)]
 pub struct LevelAssets {
     #[asset]
-    pub music: Shandle<AudioSample>,
+    pub music: Shandle<AudioSource>,
     #[asset]
-    pub game_over: Shandle<AudioSample>,
+    pub game_over: Shandle<AudioSource>,
     #[serde(default = "random_seed")]
     pub seed: u32,
     pub planet_width: u32,
     pub planet_height: u32,
 }
+
+#[derive(Component, Reflect)]
+pub struct GameplayMusic;
 
 fn random_seed() -> u32 {
     ThreadRng::default().next_u32()
@@ -62,6 +62,7 @@ fn spawn_level(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut images: ResMut<Assets<Image>>,
+    audio_settings: Res<AudioSettings>,
 ) {
     info!("Loading level with seed: {}", level_assets.seed);
     camera.translation = Vec3::ZERO;
@@ -81,7 +82,7 @@ fn spawn_level(
             parent.spawn((
                 Name::new("Gameplay Music"),
                 GameplayMusic,
-                music(level_assets.music.handle.clone()),
+                music(level_assets.music.handle.clone(), &audio_settings),
             ));
 
             spawn_player(
@@ -93,7 +94,6 @@ fn spawn_level(
                 &mut animations,
                 &mut texture_atlas_layouts,
             );
-
             parent.spawn(enemy_root());
             parent.spawn(loot_root());
             parent.spawn(bullet_root());

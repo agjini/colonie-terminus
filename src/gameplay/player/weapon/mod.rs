@@ -8,7 +8,7 @@ mod asset;
 mod bullet;
 mod slot;
 
-use crate::audio::sound_effect;
+use crate::audio::{AudioSettings, sound_fx};
 use crate::gameplay::player::weapon::aim_zone::AimZone;
 use crate::gameplay::player::weapon::bullet::FireOrigin;
 pub use aim_zone::aim_zone;
@@ -42,6 +42,7 @@ fn auto_fire(
     slots: Single<&WeaponSlots>,
     aim_zone: Single<&CollidingEntities, With<AimZone>>,
     enemies: Query<&GlobalTransform>,
+    audio_settings: Res<AudioSettings>,
 ) {
     let Some(mut root) = commands.get_entity(*root).ok() else {
         return;
@@ -75,7 +76,7 @@ fn auto_fire(
                 .trigger_sounds
                 .choose(&mut rand::rng())
                 .unwrap();
-            parent.spawn(sound_effect(sound.handle.clone()));
+            parent.spawn(sound_fx(sound.handle.clone(), &audio_settings));
         }
     });
 }

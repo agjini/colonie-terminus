@@ -1,7 +1,5 @@
 use crate::gameplay::player::Player;
-use crate::{
-    AppSystems, PausableSystems, audio::sound_effect, gameplay::movement::MovementController,
-};
+use crate::{AppSystems, PausableSystems, audio::sound_fx, gameplay::movement::MovementController};
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
 use rand::prelude::*;
@@ -9,6 +7,7 @@ use std::time::Duration;
 
 mod asset;
 
+use crate::audio::AudioSettings;
 pub use asset::*;
 
 pub fn plugin(app: &mut App) {
@@ -66,6 +65,7 @@ fn update_animation_atlas(mut query: Query<(&CharacterAnimation, &mut Sprite)>) 
 fn trigger_step_sound_effect(
     mut commands: Commands,
     mut step_query: Query<&CharacterAnimation, With<Player>>,
+    audio_settings: Res<AudioSettings>,
 ) {
     for animation in &mut step_query {
         let Some(steps) = animation.current.frames.steps.as_ref() else {
@@ -75,7 +75,7 @@ fn trigger_step_sound_effect(
         if animation.changed() && steps.frames.contains(&animation.current.frame) {
             let rng = &mut rand::rng();
             let random_step = steps.samples.choose(rng).unwrap().clone();
-            commands.spawn(sound_effect(random_step.handle));
+            commands.spawn(sound_fx(random_step.handle, &audio_settings));
         }
     }
 }

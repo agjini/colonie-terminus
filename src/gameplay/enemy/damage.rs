@@ -1,4 +1,4 @@
-use crate::audio::sound_effect;
+use crate::audio::{AudioSettings, sound_fx};
 use crate::gameplay::animation::CharacterAnimation;
 use crate::gameplay::enemy::asset::{Enemy, EnemyAssets};
 use crate::gameplay::health::Health;
@@ -36,6 +36,7 @@ pub struct EnemyDeathEvent {
 fn check_damage(
     mut commands: Commands,
     enemy_assets: Res<EnemyAssets>,
+    audio_settings: Res<AudioSettings>,
     mut elimination_count: ResMut<EliminationCount>,
     enemies: Query<
         (Entity, &Health, &mut LinearVelocity, &GlobalTransform),
@@ -66,7 +67,7 @@ fn check_damage(
             dead,
         });
         let sound = enemy_assets.hit_sounds.choose(&mut rand::rng()).unwrap();
-        commands.spawn(sound_effect(sound.handle.clone()));
+        commands.spawn(sound_fx(sound.handle.clone(), &audio_settings));
     }
 }
 

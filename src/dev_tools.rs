@@ -3,7 +3,6 @@ use avian2d::prelude::{PhysicsDebugPlugin, PhysicsGizmos};
 use bevy::color::palettes::tailwind::GREEN_500;
 use bevy::dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin, FrameTimeGraphConfig};
 use bevy::text::FontSmoothing;
-use bevy::window::{CursorGrabMode, CursorOptions};
 use bevy::{
     dev_tools::states::log_transitions, input::common_conditions::input_just_pressed, prelude::*,
 };
@@ -23,7 +22,7 @@ pub fn plugin(app: &mut App) {
         FpsOverlayPlugin {
             config: FpsOverlayConfig {
                 text_config: TextFont {
-                    font_size: 32.0,
+                    font_size: FontSize::Px(32.0),
                     font: default(),
                     font_smoothing: FontSmoothing::default(),
                     ..default()
@@ -71,21 +70,14 @@ fn toggle_debug(mut debug_state: ResMut<DebugState>) {
 
 fn apply_debug_state(
     debug_state: Res<DebugState>,
-    mut ui_debug_options: ResMut<UiDebugOptions>,
+    mut ui_debug_options: ResMut<GlobalUiDebugOptions>,
     mut gizmo_config_store: ResMut<GizmoConfigStore>,
     mut overlay: ResMut<FpsOverlayConfig>,
-    mut cursor: Single<&mut CursorOptions>,
 ) {
     if !debug_state.is_changed() {
         return;
     }
 
-    cursor.grab_mode = if debug_state.enabled {
-        CursorGrabMode::Confined
-    } else {
-        CursorGrabMode::None
-    };
-    cursor.visible = debug_state.enabled;
     ui_debug_options.enabled = debug_state.enabled;
     overlay.enabled = debug_state.enabled;
     overlay.frame_time_graph_config.enabled = debug_state.enabled;
