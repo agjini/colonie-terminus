@@ -49,6 +49,7 @@ impl Weapon {
         self.upgrade.speed += bonus_to_add;
     }
 
+    #[allow(dead_code)]
     pub fn inc_lifetime(&mut self, bonus_to_add: f32) {
         self.upgrade.lifetime += bonus_to_add;
     }
