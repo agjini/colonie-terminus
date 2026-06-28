@@ -54,7 +54,7 @@ fn settings_grid(assets: &Res<MenuAssets>) -> impl Bundle {
                     ..default()
                 }
             ),
-            music_volume_widget(&assets),
+            music_volume_widget(assets),
             (
                 widget::label(
                     assets.font.handle.clone(),
@@ -66,7 +66,7 @@ fn settings_grid(assets: &Res<MenuAssets>) -> impl Bundle {
                     ..default()
                 }
             ),
-            sfx_volume_widget(&assets),
+            sfx_volume_widget(assets),
         ],
     )
 }
@@ -79,7 +79,7 @@ fn music_volume_widget(assets: &Res<MenuAssets>) -> impl Bundle {
             ..default()
         },
         children![
-            widget::button_small(&assets, "-", lower_music_volume),
+            widget::button_small(assets, "-", lower_music_volume),
             (
                 Name::new("Current Volume"),
                 Node {
@@ -92,7 +92,7 @@ fn music_volume_widget(assets: &Res<MenuAssets>) -> impl Bundle {
                     MusicVolumeLabel
                 )],
             ),
-            widget::button_small(&assets, "+", raise_music_volume),
+            widget::button_small(assets, "+", raise_music_volume),
         ],
     )
 }
@@ -105,7 +105,7 @@ fn sfx_volume_widget(assets: &Res<MenuAssets>) -> impl Bundle {
             ..default()
         },
         children![
-            widget::button_small(&assets, "-", lower_sfx_volume),
+            widget::button_small(assets, "-", lower_sfx_volume),
             (
                 Name::new("Current Sfx Volume"),
                 Node {
@@ -118,7 +118,7 @@ fn sfx_volume_widget(assets: &Res<MenuAssets>) -> impl Bundle {
                     SfxVolumeLabel
                 )],
             ),
-            widget::button_small(&assets, "+", raise_sfx_volume),
+            widget::button_small(assets, "+", raise_sfx_volume),
         ],
     )
 }

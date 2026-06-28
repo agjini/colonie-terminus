@@ -42,19 +42,19 @@ impl Weapon {
     }
 
     pub fn inc_damage(&mut self, bonus_to_add: f32) {
-        self.upgrade.damage = self.upgrade.damage + bonus_to_add;
+        self.upgrade.damage += bonus_to_add;
     }
 
     pub fn inc_speed(&mut self, bonus_to_add: f32) {
-        self.upgrade.speed = self.upgrade.speed + bonus_to_add;
+        self.upgrade.speed += bonus_to_add;
     }
 
     pub fn inc_lifetime(&mut self, bonus_to_add: f32) {
-        self.upgrade.lifetime = self.upgrade.lifetime + bonus_to_add;
+        self.upgrade.lifetime += bonus_to_add;
     }
 
     pub fn inc_fire_rate(&mut self, bonus_to_add: f32) {
-        self.upgrade.fire_rate = self.upgrade.fire_rate + bonus_to_add;
+        self.upgrade.fire_rate += bonus_to_add;
         self.timer = Timer::from_seconds(self.stats().fire_rate, TimerMode::Repeating);
     }
 }

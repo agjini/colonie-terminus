@@ -33,7 +33,7 @@ pub fn header(assets: &MenuAssets, text: impl Into<String>) -> impl Bundle {
             font_size: FontSize::Px(assets.font_size_base + 10.),
             ..default()
         },
-        TextColor(HEADER_TEXT.into()),
+        TextColor(HEADER_TEXT),
     )
 }
 
@@ -46,7 +46,7 @@ pub fn label(font: Handle<Font>, font_size_base: f32, text: impl Into<String>) -
             font_size: FontSize::Px(font_size_base),
             ..default()
         },
-        TextColor(LABEL_TEXT.into()),
+        TextColor(LABEL_TEXT),
     )
 }
 
@@ -127,18 +127,18 @@ where
             let mut entity = parent.spawn((
                 Name::new(text.clone()),
                 Button,
-                BackgroundColor(BUTTON_BACKGROUND.into()),
+                BackgroundColor(BUTTON_BACKGROUND),
                 InteractionPalette {
-                    none: BUTTON_BACKGROUND.into(),
-                    hovered: BUTTON_HOVERED_BACKGROUND.into(),
-                    pressed: BUTTON_PRESSED_BACKGROUND.into(),
+                    none: BUTTON_BACKGROUND,
+                    hovered: BUTTON_HOVERED_BACKGROUND,
+                    pressed: BUTTON_PRESSED_BACKGROUND,
                 },
                 Focusable,
                 children![(
                     Name::new("Button Text"),
                     Text(text),
                     text_font,
-                    TextColor(BUTTON_TEXT.into()),
+                    TextColor(BUTTON_TEXT),
                 )],
             ));
             entity.insert(button_bundle);

@@ -46,7 +46,7 @@ impl Health {
 
     pub fn inc_max_health(&mut self, amount: f32) {
         self.max = self.max + (self.max * amount);
-        self.current = self.current + (self.max * amount);
+        self.current += self.max * amount;
     }
 }
 

@@ -68,7 +68,7 @@ impl Xp {
     }
 
     pub fn add(&mut self, rhs: f32) -> bool {
-        self.current = self.current + rhs;
+        self.current += rhs;
         self.current >= self.next_level()
     }
 
@@ -76,7 +76,7 @@ impl Xp {
         let diff = self.current - self.next_level();
         if diff >= 0. {
             self.current = diff;
-            self.level = self.level + 1;
+            self.level += 1;
         }
     }
 
