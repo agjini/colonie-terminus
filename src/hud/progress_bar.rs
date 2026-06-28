@@ -17,7 +17,7 @@ pub fn progress_bar(
     position: Vec3,
 ) -> impl Bundle {
     (
-        Name::new(format!("{} Bar", &name.into())),
+        Name::new(format!("{} Bar", name.into())),
         Visibility::default(),
         Transform::from_translation(position),
         children![
