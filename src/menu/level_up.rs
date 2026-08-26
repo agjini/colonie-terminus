@@ -41,7 +41,7 @@ fn damage_up(
     let Some(w) = slots.slots.get_mut(0) else {
         return;
     };
-    w.inc_damage(0.10);
+    w.inc_damage(0.1);
     next.set(Menu::None);
 }
 
@@ -55,7 +55,7 @@ fn inc_attack_speed(
     let Some(w) = slots.slots.get_mut(0) else {
         return;
     };
-    w.inc_speed(0.10);
+    w.inc_speed(0.1);
     next.set(Menu::None);
 }
 
@@ -69,7 +69,7 @@ fn inc_fire_rate(
     let Some(w) = slots.slots.get_mut(0) else {
         return;
     };
-    w.inc_fire_rate(0.50);
+    w.inc_fire_rate(0.1);
     next.set(Menu::None);
 }
 

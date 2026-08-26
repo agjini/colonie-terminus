@@ -1,4 +1,5 @@
 use crate::gameplay::health::Health;
+use crate::gameplay::player::weapon::WeaponSlots;
 use crate::gameplay::player::{Player, Xp};
 use crate::hud::panel::{PanelPosition, panel};
 use crate::screen::Screen;
@@ -6,6 +7,7 @@ use bevy::prelude::*;
 
 const HP_BAR_COLOR: Color = Color::srgb(0.85, 0.1, 0.1);
 const XP_BAR_COLOR: Color = Color::srgb(0.7, 0.1, 0.85);
+const STATS_COLOR: Color = Color::srgb(0.8, 0.8, 0.85);
 const BAR_BG_COLOR: Color = Color::srgba(0.2, 0.2, 0.25, 0.8);
 
 const BORDER_WIDTH: Val = Val::Px(1.);
@@ -15,7 +17,7 @@ const BAR_RADIUS: Val = Val::Px(2.0);
 
 pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay(false)), spawn_player_panel);
-    app.add_systems(Update, (update_hp_bar, update_xp_bar));
+    app.add_systems(Update, (update_hp_bar, update_xp_bar, update_stats));
 }
 
 #[derive(Component)]
@@ -35,7 +37,7 @@ fn spawn_player_panel(mut commands: Commands) {
         panel("Player Status", PanelPosition::TopLeft),
         DespawnOnExit(Screen::Gameplay(false)),
         GlobalZIndex(10),
-        children![hp_row(), xp_row()],
+        children![hp_row(), xp_row(), stats_row()],
     ));
 }
 
@@ -177,4 +179,34 @@ fn update_xp_bar(
     };
     bar.width = Val::Percent(ratio * 100.0);
     text.0 = format!("Lv. {:02}", xp.level);
+}
+
+fn stats_row() -> impl Bundle {
+    (
+        Name::new("Stats debug"),
+        Node {
+            flex_direction: FlexDirection::Column,
+            align_items: AlignItems::FlexStart,
+            row_gap: Val::Px(8.0),
+            ..default()
+        },
+        children![stats_label()],
+    )
+}
+
+#[derive(Component)]
+struct StatsLabel;
+
+fn stats_label() -> impl Bundle {
+    (
+        StatsLabel,
+        Name::new("Stats Label"),
+        Text("".into()),
+        TextFont::from_font_size(14.0),
+        TextColor(STATS_COLOR),
+    )
+}
+
+fn update_stats(mut text: Single<&mut Text, With<StatsLabel>>, weapon_slots: Single<&WeaponSlots>) {
+    text.0 = format!("{}", weapon_slots.slots[0]);
 }

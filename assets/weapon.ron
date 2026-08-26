@@ -8,7 +8,7 @@ WeaponAssets(
             stats: (
                 damage: 15.0,
                 speed: 500.0,
-                fire_rate: 0.3,
+                fire_rate: 0.5,
                 lifetime: 0.9,
             ),
             bullet: "images/bullet/Laser Bullet 10.png",

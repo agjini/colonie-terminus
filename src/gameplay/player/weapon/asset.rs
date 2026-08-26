@@ -29,17 +29,17 @@ pub struct WeaponType {
 pub struct WeaponStats {
     pub damage: f32,
     pub speed: f32,
-    pub fire_rate: f32,
+    pub fire_rate: f32, // fire by second
     pub lifetime: f32,
 }
 
 impl WeaponStats {
-    pub fn upgrade(&self, upgrade: WeaponStats) -> Self {
+    pub fn apply(&self, bonus: WeaponStats) -> Self {
         Self {
-            damage: self.damage + (self.damage * upgrade.damage),
-            speed: self.speed + (self.speed * upgrade.speed),
-            fire_rate: self.fire_rate - (self.fire_rate * upgrade.fire_rate),
-            lifetime: self.lifetime + (self.lifetime * upgrade.lifetime),
+            damage: self.damage + (self.damage * bonus.damage),
+            speed: self.speed + (self.speed * bonus.speed),
+            fire_rate: self.fire_rate + (self.fire_rate * bonus.fire_rate),
+            lifetime: self.lifetime + (self.lifetime * bonus.lifetime),
         }
     }
 }
