@@ -1,4 +1,4 @@
-use bevy::audio::PlaybackMode::Loop;
+use bevy::audio::PlaybackMode::{Despawn, Loop};
 use bevy::audio::Volume;
 use bevy::prelude::*;
 
@@ -41,6 +41,7 @@ pub fn sound_fx(handle: Handle<AudioSource>, audio_settings: &AudioSettings) -> 
         AudioPlayer::new(handle),
         SoundFx,
         PlaybackSettings {
+            mode: Despawn,
             volume: Volume::Linear(audio_settings.sound_fx_volume),
             ..default()
         },
@@ -56,7 +57,7 @@ pub struct AudioSettings {
 impl Default for AudioSettings {
     fn default() -> Self {
         Self {
-            music_volume: 0.5,
+            music_volume: 0.1,
             sound_fx_volume: 0.5,
         }
     }

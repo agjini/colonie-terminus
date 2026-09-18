@@ -69,7 +69,7 @@ fn inc_fire_rate(
     let Some(w) = slots.slots.get_mut(0) else {
         return;
     };
-    w.inc_fire_rate(0.1);
+    w.inc_fire_rate(0.8);
     next.set(Menu::None);
 }
 

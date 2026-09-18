@@ -1,5 +1,6 @@
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::CollidingEntities;
+use bevy::ecs::relationship::RelatedSpawnerCommands;
 use bevy::prelude::*;
 use rand::prelude::IndexedRandom;
 
@@ -11,6 +12,7 @@ mod slot;
 use crate::audio::{AudioSettings, sound_fx};
 use crate::gameplay::player::weapon::aim_zone::AimZone;
 use crate::gameplay::player::weapon::bullet::FireOrigin;
+use crate::gameplay::player::weapon::slot::Weapon;
 pub use aim_zone::aim_zone;
 pub use asset::WeaponAssets;
 pub use bullet::{BulletRoot, bullet_root, fire_origin};
@@ -39,7 +41,7 @@ fn auto_fire(
     mut commands: Commands,
     origin: Single<&GlobalTransform, With<FireOrigin>>,
     root: Single<Entity, With<BulletRoot>>,
-    slots: Single<&WeaponSlots>,
+    mut slots: Single<&mut WeaponSlots>,
     aim_zone: Single<&CollidingEntities, With<AimZone>>,
     enemies: Query<&GlobalTransform>,
     audio_settings: Res<AudioSettings>,
@@ -66,17 +68,29 @@ fn auto_fire(
     let direction = Dir2::new(enemy_pos - origin_pos).unwrap_or(Dir2::X);
 
     root.with_children(|parent| {
-        for weapon in slots.just_finished() {
-            let Some(bullet) = weapon.bullet(origin_pos, direction) else {
-                continue;
-            };
-            parent.spawn(bullet);
-            let sound = weapon
-                .weapon
-                .trigger_sounds
-                .choose(&mut rand::rng())
-                .unwrap();
-            parent.spawn(sound_fx(sound.handle.clone(), &audio_settings));
+        for weapon in slots.slots.iter_mut() {
+            if weapon.trigger() {
+                spawn_bullet(&audio_settings, origin_pos, direction, parent, weapon);
+            }
         }
     });
+}
+
+fn spawn_bullet(
+    audio_settings: &AudioSettings,
+    origin_pos: Vec2,
+    direction: Dir2,
+    parent: &mut RelatedSpawnerCommands<ChildOf>,
+    weapon: &Weapon,
+) {
+    let Some(bullet) = weapon.bullet(origin_pos, direction) else {
+        return;
+    };
+    parent.spawn(bullet);
+    let sound = weapon
+        .weapon
+        .trigger_sounds
+        .choose(&mut rand::rng())
+        .unwrap();
+    parent.spawn(sound_fx(sound.handle.clone(), audio_settings));
 }

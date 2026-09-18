@@ -12,18 +12,14 @@ pub struct WeaponSlots {
 impl WeaponSlots {
     pub fn tick(&mut self, delta: Duration) {
         for weapon in self.slots.iter_mut() {
-            weapon.timer.tick(delta);
+            weapon.cooldown.tick(delta);
         }
-    }
-
-    pub fn just_finished(&self) -> impl Iterator<Item = &Weapon> {
-        self.slots.iter().filter(|slot| slot.timer.just_finished())
     }
 }
 
 #[derive(Debug, Clone, Reflect)]
 pub struct Weapon {
-    pub timer: Timer,
+    cooldown: Timer,
     #[reflect(ignore)]
     pub weapon: WeaponType, // fire_rate = 0.5
     pub bonus: WeaponStats, // bonus = 0, 0.1, 0.2, 0.3
@@ -31,12 +27,21 @@ pub struct Weapon {
 
 impl Weapon {
     pub fn new(weapon: WeaponType) -> Self {
-        let delta = 1.0 / weapon.stats.fire_rate;
         Self {
-            timer: Timer::from_seconds(delta, TimerMode::Repeating),
+            cooldown: Timer::from_seconds(0.0, TimerMode::Once),
             weapon,
             bonus: WeaponStats::default(),
         }
+    }
+
+    pub fn trigger(&mut self) -> bool {
+        let trigger = self.cooldown.is_finished();
+        if trigger {
+            let delta = 1.0 / self.stats().fire_rate;
+            self.cooldown.set_duration(Duration::from_secs_f32(delta));
+            self.cooldown.reset();
+        }
+        trigger
     }
 
     pub fn stats(&self) -> WeaponStats {

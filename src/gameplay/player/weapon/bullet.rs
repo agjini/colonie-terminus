@@ -13,7 +13,7 @@ use ron_asset_manager::Shandle;
 pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        (apply_damage, despawn_bullets)
+        update_bullets
             .in_set(AppSystems::Update)
             .in_set(PausableSystems),
     );
@@ -105,36 +105,27 @@ pub fn bullet(
     )
 }
 
-fn apply_damage(
+fn update_bullets(
     mut commands: Commands,
-    bullets: Query<(Entity, &Damage, &CollidingEntities), With<Bullet>>,
+    time: Res<Time>,
+    bullets: Query<(Entity, &Damage, &CollidingEntities, &mut BulletLifetime), With<Bullet>>,
     mut enemies: Query<(&mut Health, &GlobalTransform), With<Enemy>>,
 ) {
-    for (bullet, damage, colliding_entities) in bullets {
-        if colliding_entities.is_empty() {
-            continue;
-        }
+    for (bullet, damage, colliding_entities, mut lifetime) in bullets {
+        let mut hit = false;
         for e in colliding_entities.iter() {
             let Ok((mut health, t)) = enemies.get_mut(*e) else {
                 continue;
             };
             health.current -= damage.damage;
             spawn_damage_popup(&mut commands, t.translation(), damage.damage);
+            hit = true;
         }
 
-        commands.entity(bullet).despawn();
-    }
-}
+        lifetime.timer.tick(time.delta());
 
-fn despawn_bullets(
-    mut commands: Commands,
-    time: Res<Time>,
-    bullets: Query<(Entity, &mut BulletLifetime)>,
-) {
-    for (entity, mut timer) in bullets {
-        timer.timer.tick(time.delta());
-        if timer.timer.just_finished() {
-            commands.entity(entity).despawn();
+        if hit || lifetime.timer.is_finished() {
+            commands.entity(bullet).despawn();
         }
     }
 }
