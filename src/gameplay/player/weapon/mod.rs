@@ -68,10 +68,8 @@ fn auto_fire(
     let direction = Dir2::new(enemy_pos - origin_pos).unwrap_or(Dir2::X);
 
     root.with_children(|parent| {
-        for weapon in slots.slots.iter_mut() {
-            if weapon.trigger() {
-                spawn_bullet(&audio_settings, origin_pos, direction, parent, weapon);
-            }
+        for weapon in slots.triggered() {
+            spawn_bullet(&audio_settings, origin_pos, direction, parent, weapon);
         }
     });
 }

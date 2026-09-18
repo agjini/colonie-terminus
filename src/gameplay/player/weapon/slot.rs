@@ -15,6 +15,12 @@ impl WeaponSlots {
             weapon.cooldown.tick(delta);
         }
     }
+
+    pub fn triggered(&mut self) -> impl Iterator<Item = &mut Weapon> {
+        self.slots
+            .iter_mut()
+            .filter_map(|weapon| weapon.trigger().then_some(weapon))
+    }
 }
 
 #[derive(Debug, Clone, Reflect)]
