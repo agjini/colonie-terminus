@@ -1,13 +1,13 @@
 Animation(
-    sheet: "images/bishop.png",
-    size: (128, 128),
-    rows: 2,
+    sheet: "images/character-armed-64x64.png",
+    size: (64, 64),
+    rows: 7,
     columns: 8,
     frames:  {
         Idle: (
             row: 0,
-            count: 2,
-            interval: 300,
+            count: 6,
+            interval: 150,
         ),
         Walk: (
             row: 1,
@@ -22,6 +22,40 @@ Animation(
                     "audio/sound_effects/step-3.ogg"
                 ]
             ))
+        ),
+        Run: (
+            row: 2,
+            count: 8,
+            interval: 100,
+            steps: Some((
+                frames: [0, 4],
+                samples: [
+                    "audio/sound_effects/step.ogg",
+                    "audio/sound_effects/step-1.ogg",
+                    "audio/sound_effects/step-2.ogg",
+                    "audio/sound_effects/step-3.ogg"
+                ]
+            ))
+        ),
+        Jump: (
+            row: 3,
+            count: 5,
+            interval: 100
+        ),
+        Roll: (
+            row: 4,
+            count: 6,
+            interval: 100
+        ),
+        Hit: (
+            row: 5,
+            count: 2,
+            interval: 100
+        ),
+        Die: (
+            row: 6,
+            count: 4,
+            interval: 100
         )
     }
 )

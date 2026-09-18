@@ -69,7 +69,7 @@ fn player(
         Health::new(player_assets.max_health),
         GameLayer::Player,
         Anchor(Vec2::new(0., -0.1)),
-        Transform::default(),
+        Transform::from_scale(Vec3::splat(2.)),
         (
             sprite,
             animation,
@@ -80,7 +80,7 @@ fn player(
         ),
         (
             RigidBody::Dynamic,
-            Collider::capsule(12., 70.),
+            Collider::capsule(5., 20.),
             Mass(10.0),
             CenterOfMass::new(0.0, -0.1),
             Sensor,
