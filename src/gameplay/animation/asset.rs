@@ -43,9 +43,11 @@ pub struct AnimationSounds {
 pub enum CharacterAnimationState {
     Idle,
     Walk,
+    Attack,
     Run,
     Jump,
     Roll,
     Hit,
-    Die,
+    Hide,
+    Death,
 }

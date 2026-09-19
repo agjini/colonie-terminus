@@ -69,7 +69,6 @@ fn player(
         Health::new(player_assets.max_health),
         GameLayer::Player,
         Anchor(Vec2::new(0., -0.1)),
-        Transform::from_scale(Vec3::splat(2.)),
         (
             sprite,
             animation,

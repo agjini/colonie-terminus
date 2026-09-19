@@ -5,18 +5,26 @@ EnemyAssets(
     types: [
         (
             name: "Saucisson",
-            sprite: "images/black_ducky.ron",
-            max_speed: 100,
+            sprite: "character/enemy-01-62x33.ron",
+            max_speed: 50,
             max_health: 20,
             damage: 10,
             cooldown: 1.0
         ),
         (
             name: "Rosette",
-            sprite: "images/ducky.ron",
-            max_speed: 200,
+            sprite: "character/enemy-02-20x16.ron",
+            max_speed: 80,
             max_health: 10,
             damage: 20,
+            cooldown: 1.0
+        ),
+        (
+            name: "Loucoume",
+            sprite: "character/enemy-03-32x32.ron",
+            max_speed: 80,
+            max_health: 10,
+            damage: 40,
             cooldown: 1.0
         )
     ]

@@ -49,8 +49,7 @@ pub fn aim_zone(
         GameLayer::AimZone,
         Mesh2d(meshes.add(sector_mesh(half_angle))),
         MeshMaterial2d(materials.add(ColorMaterial::default())),
-        Transform::from_translation(Vec3::new(fire_origin.x, fire_origin.y, 1.0))
-            .with_scale(Vec3::splat(2.0)),
+        Transform::from_translation(Vec3::new(fire_origin.x, fire_origin.y, 1.0)),
         (
             Mass(1.0),
             Collider::convex_hull(vec![

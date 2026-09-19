@@ -1,0 +1,44 @@
+Animation(
+    sheet: "character/enemy-01-62x33.png",
+    orientation: Right,
+    size: (62, 33),
+    rows: 5,
+    columns: 6,
+    padding: Some((1, 1)),
+    frames:  {
+        Idle: (
+            row: 0,
+            count: 4,
+            interval: 100,
+        ),
+        Walk: (
+            row: 1,
+            count: 4,
+            interval: 100,
+            steps: Some((
+                frames: [1, 4],
+                samples: [
+                    "audio/sound_effects/step.ogg",
+                    "audio/sound_effects/step-1.ogg",
+                    "audio/sound_effects/step-2.ogg",
+                    "audio/sound_effects/step-3.ogg"
+                ]
+            ))
+        ),
+        Attack: (
+            row: 2,
+            count: 6,
+            interval: 100
+        ),
+        Hit: (
+            row: 3,
+            count: 1,
+            interval: 100
+        ),
+        Death: (
+            row: 4,
+            count: 4,
+            interval: 100
+        )
+    }
+)

@@ -20,7 +20,7 @@ use crate::screen::Screen;
 use crate::screen::Screen::{Gameplay, Title};
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::Gravity;
-use bevy::camera::Hdr;
+use bevy::camera::{Hdr, ScalingMode};
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::post_process::bloom::Bloom;
@@ -48,7 +48,7 @@ impl Plugin for AppPlugin {
                     primary_window: Window {
                         title: "Colonie Terminus".to_string(),
                         fit_canvas_to_parent: true,
-                        resolution: WindowResolution::new(1024, 768),
+                        resolution: WindowResolution::new(800, 600),
                         mode: WindowMode::BorderlessFullscreen(MonitorSelection::Current),
                         present_mode: PresentMode::AutoNoVsync,
                         ..default()
@@ -104,10 +104,18 @@ enum AppSystems {
 #[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
 struct PausableSystems;
 
+const VIEWPORT_HEIGHT: f32 = 540.0;
+
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((
         Name::new("Camera"),
         Camera2d,
+        Projection::from(OrthographicProjection {
+            scaling_mode: ScalingMode::FixedVertical {
+                viewport_height: VIEWPORT_HEIGHT,
+            },
+            ..OrthographicProjection::default_2d()
+        }),
         Hdr,
         Bloom {
             intensity: 0.3,

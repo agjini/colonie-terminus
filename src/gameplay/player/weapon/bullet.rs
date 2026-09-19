@@ -87,7 +87,7 @@ pub fn bullet(
             cooldown: 0.,
         },
         sprite,
-        Transform::from_scale(Vec2::splat(0.2).extend(1.0))
+        Transform::from_scale(Vec2::splat(0.1).extend(1.0))
             .with_translation(from.extend(0.0))
             .with_rotation(Quat::from_rotation_z(
                 direction.y.atan2(direction.x) - PI / 2.,

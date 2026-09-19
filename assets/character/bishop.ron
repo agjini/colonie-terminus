@@ -1,5 +1,5 @@
 Animation(
-    sheet: "images/character-armed-64x64.png",
+    sheet: "character/character-armed-64x64.png",
     size: (64, 64),
     rows: 7,
     columns: 8,
@@ -52,7 +52,7 @@ Animation(
             count: 2,
             interval: 100
         ),
-        Die: (
+        Death: (
             row: 6,
             count: 4,
             interval: 100

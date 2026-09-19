@@ -1,9 +1,9 @@
 PlayerAssets(
     name: "Bishop",
-    max_speed: 250,
+    max_speed: 100,
     max_health: 100,
     auto_aim_angle: 30,
     pickup_xp: "audio/sound_effects/pickup-2.ogg",
-    sprite: "images/bishop.ron",
+    sprite: "character/bishop.ron",
     fire_origin: (5, 10)
 )

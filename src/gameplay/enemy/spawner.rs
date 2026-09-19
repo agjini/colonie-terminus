@@ -112,7 +112,7 @@ pub fn enemy(
         sprite,
         animation,
         Anchor(Vec2::new(0., -0.3)),
-        Transform::from_xyz(position.x, position.y, 0.0).with_scale(Vec2::splat(2.0).extend(1.0)),
+        Transform::from_xyz(position.x, position.y, 0.0),
         MovementController {
             max_speed: enemy.max_speed,
             ..default()

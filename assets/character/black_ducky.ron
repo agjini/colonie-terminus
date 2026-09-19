@@ -1,5 +1,5 @@
 Animation(
-    sheet: "images/black_ducky.png",
+    sheet: "character/black_ducky.png",
     size: (32, 32),
     rows: 2,
     columns: 6,
