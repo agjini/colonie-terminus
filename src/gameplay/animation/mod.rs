@@ -82,6 +82,8 @@ fn trigger_step_sound_effect(
 
 #[derive(Component)]
 pub struct CharacterAnimation {
+    pub anchor: UVec2,
+    pub hit_box: HitBox,
     frames: HashMap<CharacterAnimationState, AnimationFrames>,
     columns: usize,
     current: CurrentAnimation,
@@ -118,6 +120,8 @@ impl CharacterAnimation {
             .unwrap();
         let current = CurrentAnimation::new(CharacterAnimationState::Idle, frame.clone());
         Self {
+            anchor: animation.anchor,
+            hit_box: animation.hit_box,
             frames: animation.frames.clone(),
             columns: animation.columns as usize,
             current,

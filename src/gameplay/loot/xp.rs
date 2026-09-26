@@ -12,7 +12,7 @@ use bevy::prelude::*;
 use ron_asset_manager::Shandle;
 
 #[derive(Component, Reflect, Default)]
-pub struct XpAmount(pub(crate) f32);
+pub struct XpAmount(pub f32);
 
 pub fn plugin(app: &mut App) {
     app.world_mut().add_observer(spawn_gem);

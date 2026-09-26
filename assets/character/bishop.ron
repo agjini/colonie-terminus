@@ -3,6 +3,8 @@ Animation(
     size: (64, 64),
     rows: 7,
     columns: 8,
+    anchor: (0, 0),
+    hit_box: Circle(2),
     frames:  {
         Idle: (
             row: 0,

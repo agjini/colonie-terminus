@@ -1,3 +1,4 @@
+use avian2d::prelude::Collider;
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
 use ron_asset_manager::prelude::*;
@@ -14,6 +15,9 @@ pub struct Animation {
     pub sheet: Shandle<Image>,
     pub size: UVec2,
     #[serde(default)]
+    pub anchor: UVec2,
+    pub hit_box: HitBox,
+    #[serde(default)]
     pub padding: Option<UVec2>,
     #[serde(default)]
     pub offset: Option<UVec2>,
@@ -21,6 +25,21 @@ pub struct Animation {
     pub columns: u32,
     #[asset]
     pub frames: HashMap<CharacterAnimationState, AnimationFrames>,
+}
+
+#[derive(Deserialize, Debug, Copy, Clone)]
+pub enum HitBox {
+    Circle(f32),
+    Capsule(f32, f32),
+}
+
+impl HitBox {
+    pub fn as_collider(&self) -> Collider {
+        match self {
+            HitBox::Circle(radius) => Collider::circle(*radius),
+            HitBox::Capsule(radius, length) => Collider::capsule(*radius, *length),
+        }
+    }
 }
 
 #[derive(Asset, RonAsset, TypePath, Deserialize, Debug, Clone)]

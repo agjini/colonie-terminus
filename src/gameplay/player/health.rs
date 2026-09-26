@@ -34,15 +34,19 @@ fn update_cooldown(
 
 fn apply_damage(
     mut commands: Commands,
-    player: Single<(&mut Health, &CollidingEntities), With<Player>>,
+    player: Single<(&mut Health, Entity, &CollidingEntities), With<Player>>,
     enemies: Query<&Damage, (With<Enemy>, Without<DamageCooldown>, Without<Hurt>)>,
 ) {
-    let (mut health, colliding_entities) = player.into_inner();
+    let (mut health, player, colliding_entities) = player.into_inner();
     for e in colliding_entities.iter() {
         let Ok(damage) = enemies.get(*e) else {
             continue;
         };
         health.current -= damage.damage;
+        commands.entity(player).insert(Hurt {
+            timer: Timer::from_seconds(0.15, TimerMode::Once),
+            dead: health.current <= 0.,
+        });
         commands.entity(*e).insert(DamageCooldown {
             timer: Timer::from_seconds(damage.cooldown, TimerMode::Once),
         });

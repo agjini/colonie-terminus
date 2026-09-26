@@ -6,7 +6,7 @@ use crate::gameplay::level::{RandomSeed, WorldEntity};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
 use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
-use avian2d::prelude::{Collider, CollisionLayers, DebugRender, LockedAxes, Mass, RigidBody};
+use avian2d::prelude::{CollisionLayers, DebugRender, LockedAxes, Mass, RigidBody};
 use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
@@ -97,6 +97,7 @@ pub fn enemy(
     let (sprite, animation) =
         CharacterAnimation::init(animations, texture_atlas_layouts, &enemy.sprite);
 
+    let collider = animation.hit_box.as_collider();
     (
         Name::new(enemy.name.to_string()),
         WorldEntity,
@@ -120,7 +121,7 @@ pub fn enemy(
         (
             RigidBody::Dynamic,
             Mass(1.0),
-            Collider::circle(7.),
+            collider,
             LockedAxes::ROTATION_LOCKED,
             CollisionLayers::new(
                 GameLayer::Enemy,
