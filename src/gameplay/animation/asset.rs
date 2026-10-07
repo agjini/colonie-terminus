@@ -15,7 +15,7 @@ pub struct Animation {
     pub sheet: Shandle<Image>,
     pub size: UVec2,
     #[serde(default)]
-    pub anchor: UVec2,
+    pub anchor: Vec2,
     pub hit_box: HitBox,
     #[serde(default)]
     pub padding: Option<UVec2>,

@@ -82,7 +82,7 @@ fn trigger_step_sound_effect(
 
 #[derive(Component)]
 pub struct CharacterAnimation {
-    pub anchor: UVec2,
+    pub anchor: Vec2,
     pub hit_box: HitBox,
     frames: HashMap<CharacterAnimationState, AnimationFrames>,
     columns: usize,

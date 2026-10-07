@@ -6,4 +6,4 @@ A space survival survivor-like game built with Bevy (Rust).
 
 # Décisions prises
 
-Voir [Questions/Decisions](docs/decisions.md)
+Voir [TODO](docs/todo.md)

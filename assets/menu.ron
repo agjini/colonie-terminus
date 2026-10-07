@@ -1,7 +1,7 @@
 MenuAssets(
     font:  "fonts/Orbitron-SemiBold.ttf",
     font_size_base: 18.0,
-    music: "audio/music/12. Before the Warp.ogg",
+    music: "audio/music/4-24-2016 - 2.ogg",
     created_by: [
         ("Game design", "Crustace team"),
         ("Dev", "Crustace team"),

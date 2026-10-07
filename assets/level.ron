@@ -1,5 +1,5 @@
 LevelAssets(
-    music: "audio/music/11. Awakening Station.ogg",
+    music: "audio/music/4-1-2016 - 1.ogg",
     game_over: "audio/music/28. Orbital Scan.ogg",
     seed: 3878,
     planet_width: 500, // garder un multiple de chunck size

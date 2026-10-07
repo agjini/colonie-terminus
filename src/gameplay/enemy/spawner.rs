@@ -31,7 +31,7 @@ struct SpawnTimer(Timer);
 
 impl Default for SpawnTimer {
     fn default() -> Self {
-        Self(Timer::from_seconds(1., TimerMode::Repeating))
+        Self(Timer::from_seconds(10., TimerMode::Repeating))
     }
 }
 
@@ -71,11 +71,11 @@ fn spawn_enemies(
     let center = (un + deux) / 2.0;
     let radius = half_size.length() + 50.0;
 
-    root.with_children(|parent| {
+    root.with_children(|p| {
         for enemy_type in enemy_assets.types.iter() {
             let angle = rng.0.random_range(0.0..2.0 * PI);
             let position = center + Vec2::new(angle.cos(), angle.sin()) * radius;
-            parent.spawn(enemy(
+            p.spawn(enemy(
                 position,
                 enemy_type,
                 &mut animations,
@@ -98,6 +98,7 @@ pub fn enemy(
         CharacterAnimation::init(animations, texture_atlas_layouts, &enemy.sprite);
 
     let collider = animation.hit_box.as_collider();
+    let anchor = animation.anchor;
     (
         Name::new(enemy.name.to_string()),
         WorldEntity,
@@ -112,7 +113,7 @@ pub fn enemy(
         ),
         sprite,
         animation,
-        Anchor(Vec2::new(0., -0.3)),
+        Anchor(anchor),
         Transform::from_xyz(position.x, position.y, 0.0),
         MovementController {
             max_speed: enemy.max_speed,
