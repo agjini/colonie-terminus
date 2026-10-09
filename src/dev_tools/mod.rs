@@ -6,8 +6,11 @@ use bevy::text::FontSmoothing;
 use bevy::{
     dev_tools::states::log_transitions, input::common_conditions::input_just_pressed, prelude::*,
 };
-use bevy_inspector_egui::bevy_egui::EguiPlugin;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+
+mod watch;
+
+#[cfg(feature = "dev")]
+pub use watch::watch;
 
 #[derive(Resource, Default)]
 struct DebugState {
@@ -16,13 +19,14 @@ struct DebugState {
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<DebugState>();
+    app.add_plugins(watch::plugin);
 
     app.add_plugins((
         PhysicsDebugPlugin,
         FpsOverlayPlugin {
             config: FpsOverlayConfig {
                 text_config: TextFont {
-                    font_size: FontSize::Px(32.0),
+                    font_size: FontSize::Px(20.0),
                     font: default(),
                     font_smoothing: FontSmoothing::default(),
                     ..default()
@@ -37,8 +41,6 @@ pub fn plugin(app: &mut App) {
                 },
             },
         },
-        EguiPlugin::default(),
-        WorldInspectorPlugin::new().run_if(|debug_state: Res<DebugState>| debug_state.enabled),
     ));
 
     app.insert_gizmo_config(
@@ -80,7 +82,6 @@ fn apply_debug_state(
 
     ui_debug_options.enabled = debug_state.enabled;
     overlay.enabled = debug_state.enabled;
-    overlay.frame_time_graph_config.enabled = debug_state.enabled;
     let (config, _) = gizmo_config_store.config_mut::<PhysicsGizmos>();
     config.enabled = debug_state.enabled;
 }

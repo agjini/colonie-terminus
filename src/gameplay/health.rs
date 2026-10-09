@@ -1,13 +1,20 @@
 use bevy::color::palettes::tailwind::RED_500;
 use bevy::prelude::*;
 
-use crate::hud::{ProgressBar, progress_bar};
+use crate::{
+    gameplay::{enemy::asset::Damage, player::weapon::WeaponSlots},
+    hud::{ProgressBar, progress_bar},
+};
 
 const BAR_LENGTH: f32 = 20.0;
 const BAR_THICKNESS: f32 = 2.0;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Update, update_health_bar);
+
+    #[cfg(feature = "dev")]
+    app.add_plugins(crate::dev_tools::watch::<Health>);
+    app.add_plugins(crate::dev_tools::watch::<Damage>);
 }
 
 #[allow(dead_code)]
