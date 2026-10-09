@@ -1,10 +1,7 @@
 use bevy::color::palettes::tailwind::RED_500;
 use bevy::prelude::*;
 
-use crate::{
-    gameplay::{enemy::asset::Damage, player::weapon::WeaponSlots},
-    hud::{ProgressBar, progress_bar},
-};
+use crate::hud::{ProgressBar, progress_bar};
 
 const BAR_LENGTH: f32 = 20.0;
 const BAR_THICKNESS: f32 = 2.0;
