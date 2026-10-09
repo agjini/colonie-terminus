@@ -40,11 +40,6 @@ fn move_enemies(
 
     let player_pos = player.translation.truncate();
     for (transform, mut mov) in enemies {
-        let diff = player_pos - transform.translation.truncate();
-        mov.direction = if diff.length() > 32.0 {
-            diff.normalize()
-        } else {
-            Vec2::ZERO
-        };
+        mov.direction = (player_pos - transform.translation.truncate()).normalize_or_zero();
     }
 }

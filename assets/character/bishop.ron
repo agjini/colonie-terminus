@@ -4,7 +4,7 @@ Animation(
     rows: 7,
     columns: 8,
     anchor: (0, -0.1),
-    hit_box: Capsule(6, 5),
+    hit_box: Capsule(5, 5),
     frames:  {
         Idle: (
             row: 0,
