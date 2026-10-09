@@ -11,11 +11,10 @@ mod slot;
 
 use crate::audio::{AudioSettings, sound_fx};
 use crate::gameplay::player::weapon::aim_zone::AimZone;
-use crate::gameplay::player::weapon::bullet::FireOrigin;
 use crate::gameplay::player::weapon::slot::Weapon;
 pub use aim_zone::aim_zone;
 pub use asset::WeaponAssets;
-pub use bullet::{BulletRoot, bullet_root, fire_origin};
+pub use bullet::{BulletRoot, FireOrigin, bullet_root, fire_origin};
 pub use slot::{WeaponSlots, weapon_slots};
 
 pub fn plugin(app: &mut App) {

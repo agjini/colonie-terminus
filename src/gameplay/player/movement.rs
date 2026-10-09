@@ -1,8 +1,9 @@
 use crate::gameplay::player::Player;
-use crate::gameplay::player::weapon::WeaponDirection;
+use crate::gameplay::player::weapon::{FireOrigin, WeaponDirection};
 use crate::{AppSystems, PausableSystems, gameplay::movement::MovementController};
 use bevy::input::mouse::AccumulatedMouseMotion;
 use bevy::prelude::*;
+use bevy::window::PrimaryWindow;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(
@@ -60,39 +61,39 @@ fn record_player_directional_input(
 }
 
 const AIM_DEADZONE: f32 = 0.1;
-const MOUSE_SENSITIVITY: f32 = 0.05;
+const AIM_HALF_LIFE: f32 = 0.04;
 
 fn record_weapon_direction(
     gamepads: Query<&Gamepad>,
     mouse_motion: Res<AccumulatedMouseMotion>,
+    window: Single<&Window, With<PrimaryWindow>>,
+    camera: Single<(&Camera, &GlobalTransform)>,
+    fire_origin: Single<&GlobalTransform, With<FireOrigin>>,
     mut weapon_dir: Single<&mut WeaponDirection>,
     time: Res<Time>,
 ) {
-    const AIM_HALF_LIFE: f32 = 0.08;
-    let decay_rate = f32::ln(2.0) / AIM_HALF_LIFE;
-    let (direction, strength) = get_new_direction(gamepads.iter().next(), &mouse_motion);
-    if strength > 0.0
-        && let Some(dir) = Dir2::new(direction).ok()
+    if let Some(stick) = active_right_stick(gamepads.iter().next()) {
+        let decay_rate = f32::ln(2.0) / AIM_HALF_LIFE;
+        let strength = stick.length().min(1.0);
+        if let Ok(dir) = Dir2::new(stick) {
+            weapon_dir
+                .0
+                .smooth_nudge(&dir, decay_rate * strength, time.delta_secs());
+        }
+        return;
+    }
+
+    let (camera, camera_transform) = *camera;
+    if mouse_motion.delta != Vec2::ZERO
+        && let Some(cursor) = window.cursor_position()
+        && let Ok(target) = camera.viewport_to_world_2d(camera_transform, cursor)
+        && let Ok(dir) = Dir2::new(target - fire_origin.translation().truncate())
     {
-        weapon_dir
-            .0
-            .smooth_nudge(&dir, decay_rate * strength, time.delta_secs());
+        weapon_dir.0 = dir;
     }
 }
 
-fn get_new_direction(
-    gamepad: Option<&Gamepad>,
-    mouse_motion: &AccumulatedMouseMotion,
-) -> (Vec2, f32) {
-    if let Some(gamepad) = gamepad
-        && let stick = gamepad.right_stick()
-        && (stick.x.abs() > AIM_DEADZONE || stick.y.abs() > AIM_DEADZONE)
-    {
-        let stick = Vec2::new(stick.x, stick.y);
-        (stick.normalize(), stick.length().min(1.0))
-    } else {
-        let delta = Vec2::new(mouse_motion.delta.x, -mouse_motion.delta.y);
-        let strength = (delta.length() * MOUSE_SENSITIVITY).min(1.0);
-        (delta.normalize_or_zero(), strength)
-    }
+fn active_right_stick(gamepad: Option<&Gamepad>) -> Option<Vec2> {
+    let stick = gamepad?.right_stick();
+    (stick.x.abs() > AIM_DEADZONE || stick.y.abs() > AIM_DEADZONE).then_some(stick)
 }
