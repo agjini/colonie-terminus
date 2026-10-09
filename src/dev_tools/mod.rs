@@ -10,6 +10,7 @@ use bevy::{
 mod watch;
 
 #[cfg(feature = "dev")]
+#[allow(unused)]
 pub use watch::watch;
 
 #[derive(Resource, Default)]

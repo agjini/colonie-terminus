@@ -11,10 +11,6 @@ const BAR_THICKNESS: f32 = 2.0;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Update, update_health_bar);
-
-    #[cfg(feature = "dev")]
-    app.add_plugins(crate::dev_tools::watch::<Health>);
-    app.add_plugins(crate::dev_tools::watch::<Damage>);
 }
 
 #[allow(dead_code)]
