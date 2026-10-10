@@ -19,11 +19,11 @@ pub fn spawn_damage_popup(commands: &mut Commands, position: Vec3, damage: f32) 
         GameLayer::AimZone,
         Text2d::new(damage.to_string()),
         TextFont {
-            font_size: FontSize::Px(20.0),
+            font_size: FontSize::Px(8.0),
             ..default()
         },
         TextColor(Color::srgb(1.0, 1.0, 1.0)),
-        Transform::from_translation(position + Vec3::new(offset_x, 20.0, 1.0)),
+        Transform::from_translation(position + Vec3::new(offset_x, 8.0, 1.0)),
         DamagePopup {
             timer: Timer::from_seconds(1.0, TimerMode::Once),
             velocity: Vec2::new(offset_x * 0.5, 60.0),
