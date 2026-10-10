@@ -2,9 +2,10 @@ use crate::gameplay::health::Health;
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::asset::PlayerAssets;
 use crate::gameplay::player::weapon::{
-    WeaponAssets, WeaponDirection, aim_zone, fire_origin, weapon_slots,
+    FireOrigin, WeaponAssets, WeaponDirection, aim_zone, fire_origin, weapon_slots,
 };
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
+use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::{
     CollidingEntities, CollisionLayers, DebugRender, LinearVelocity, LockedAxes, Mass, RigidBody,
 };
@@ -29,6 +30,24 @@ pub fn plugin(app: &mut App) {
         health::plugin,
         xp::plugin,
     ));
+    app.add_systems(
+        Update,
+        mirror_fire_origin
+            .in_set(AppSystems::Update)
+            .in_set(PausableSystems),
+    );
+}
+
+fn mirror_fire_origin(
+    player: Single<&Sprite, With<Player>>,
+    fire_origin: Single<(&FireOrigin, &mut Transform)>,
+) {
+    let (origin, mut transform) = fire_origin.into_inner();
+    let sign = if player.flip_x { -1.0 } else { 1.0 };
+    let x = origin.0.x * sign;
+    if transform.translation.x != x {
+        transform.translation.x = x;
+    }
 }
 
 pub fn spawn_player(
@@ -43,14 +62,10 @@ pub fn spawn_player(
     commands
         .spawn(player(player_assets, animations, texture_atlas_layouts))
         .with_children(|player| {
-            player.spawn(aim_zone(
-                meshes,
-                materials,
-                player_assets.fire_origin,
-                player_assets.auto_aim_angle,
-            ));
             player.spawn(weapon_slots(weapon_assets));
-            player.spawn(fire_origin(player_assets.fire_origin));
+            player
+                .spawn(fire_origin(player_assets.fire_origin))
+                .with_child(aim_zone(meshes, materials, player_assets.auto_aim_angle));
         });
 }
 

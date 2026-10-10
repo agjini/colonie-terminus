@@ -1,7 +1,9 @@
 use crate::gameplay::player::Player;
+use crate::gameplay::player::weapon::WeaponDirection;
 use crate::{AppSystems, PausableSystems, audio::sound_fx, gameplay::movement::MovementController};
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 use rand::prelude::*;
 use std::time::Duration;
 
@@ -34,12 +36,20 @@ fn update_animation_timer(time: Res<Time>, mut query: Query<&mut CharacterAnimat
 }
 
 fn update_animation_movement(
-    mut player_query: Query<(&MovementController, &mut Sprite, &mut CharacterAnimation)>,
+    mut query: Query<(
+        &MovementController,
+        Option<&WeaponDirection>,
+        &mut Sprite,
+        &mut Anchor,
+        &mut CharacterAnimation,
+    )>,
 ) {
-    for (controller, mut sprite, mut animation) in &mut player_query {
-        let dx = controller.direction.x;
-        if dx != 0.0 {
-            sprite.flip_x = dx < 0.0;
+    for (controller, weapon_direction, mut sprite, mut anchor, mut animation) in &mut query {
+        let facing_x = weapon_direction.map_or(controller.direction.x, |weapon| weapon.0.x);
+        if facing_x != 0.0 {
+            sprite.flip_x = facing_x < 0.0;
+            let sign = if sprite.flip_x { -1.0 } else { 1.0 };
+            anchor.set_if_neq(Anchor(animation.anchor * Vec2::new(sign, 1.0)));
         }
 
         let animation_state = if controller.direction == Vec2::ZERO {
@@ -48,6 +58,7 @@ fn update_animation_movement(
             CharacterAnimationState::Walk
         };
         animation.update_state(animation_state);
+        animation.reversed = controller.direction.x * facing_x < 0.0;
     }
 }
 
@@ -84,6 +95,7 @@ fn trigger_step_sound_effect(
 pub struct CharacterAnimation {
     pub anchor: Vec2,
     pub hit_box: HitBox,
+    pub reversed: bool,
     frames: HashMap<CharacterAnimationState, AnimationFrames>,
     columns: usize,
     current: CurrentAnimation,
@@ -122,6 +134,7 @@ impl CharacterAnimation {
         Self {
             anchor: animation.anchor,
             hit_box: animation.hit_box,
+            reversed: false,
             frames: animation.frames.clone(),
             columns: animation.columns as usize,
             current,
@@ -133,7 +146,9 @@ impl CharacterAnimation {
         if !self.current.timer.is_finished() {
             return;
         }
-        self.current.frame = (self.current.frame + 1) % self.current.frames.count;
+        let count = self.current.frames.count;
+        let step = if self.reversed { count - 1 } else { 1 };
+        self.current.frame = (self.current.frame + step) % count;
     }
 
     pub fn update_state(&mut self, state: CharacterAnimationState) {

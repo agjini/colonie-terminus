@@ -27,7 +27,6 @@ pub struct AimZone;
 pub fn aim_zone(
     meshes: &mut Assets<Mesh>,
     materials: &mut Assets<ColorMaterial>,
-    fire_origin: Vec2,
     angle_degrees: f32,
 ) -> impl Bundle {
     let half_angle = (angle_degrees / 2.0).to_radians();
@@ -49,7 +48,7 @@ pub fn aim_zone(
         GameLayer::AimZone,
         Mesh2d(meshes.add(sector_mesh(half_angle))),
         MeshMaterial2d(materials.add(ColorMaterial::default())),
-        Transform::from_translation(Vec3::new(fire_origin.x, fire_origin.y, 1.0)),
+        Transform::from_xyz(0.0, 0.0, 1.0),
         (
             Mass(1.0),
             Collider::convex_hull(vec![
