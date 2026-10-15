@@ -92,7 +92,7 @@ env:
   # See: <https://github.com/orgs/community/discussions/27059>.
   use_github_cache: false
 
-  build_for_windows: ${{ inputs.build_for_windows || false }}
+  build_for_windows: ${{ inputs.build_for_windows || true }}
   build_for_macos: ${{ inputs.build_for_macos || false }}
   build_for_linux: ${{ inputs.build_for_linux || true }}
   build_for_web: ${{ inputs.build_for_web || true }}
