@@ -20,7 +20,7 @@ use crate::screen::Screen;
 use crate::screen::Screen::{Gameplay, Title};
 use avian2d::PhysicsPlugins;
 use avian2d::prelude::Gravity;
-use bevy::camera::{Hdr, ScalingMode};
+use bevy::camera::Hdr;
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::post_process::bloom::Bloom;
@@ -104,16 +104,14 @@ enum AppSystems {
 #[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
 struct PausableSystems;
 
-const VIEWPORT_HEIGHT: f32 = 540.0;
+const CAMERA_SCALE: f32 = 0.5;
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((
         Name::new("Camera"),
         Camera2d,
         Projection::from(OrthographicProjection {
-            scaling_mode: ScalingMode::FixedVertical {
-                viewport_height: VIEWPORT_HEIGHT,
-            },
+            scale: CAMERA_SCALE,
             ..OrthographicProjection::default_2d()
         }),
         Hdr,
