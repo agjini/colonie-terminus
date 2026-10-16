@@ -56,7 +56,11 @@ fn stop_simulation(
 
 fn hide_cursor(mut cursor: Single<&mut CursorOptions, With<PrimaryWindow>>) {
     cursor.visible = false;
-    cursor.grab_mode = CursorGrabMode::Confined;
+    // On web, Confined falls back to pointer lock, which freezes cursor_position.
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        cursor.grab_mode = CursorGrabMode::Confined;
+    }
 }
 
 fn show_cursor(mut cursor: Single<&mut CursorOptions, With<PrimaryWindow>>) {
