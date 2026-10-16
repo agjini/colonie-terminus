@@ -1,6 +1,20 @@
 LevelAssets(
     musics: {
-        Quiet: ["audio/music/4-1-2016 - 1.ogg"]
+        Quiet: [
+            "audio/music/game/quiet/10-25-2017 - 1.ogg",
+            "audio/music/game/quiet/2-27-2016 - 2.ogg",
+            "audio/music/game/quiet/8-20-2015 - 1.ogg",
+            "audio/music/game/quiet/3-26-2017 - 2.ogg",
+            "audio/music/game/quiet/3-31-2016 - 1.ogg",
+            "audio/music/game/quiet/4-9-2015 - 1.ogg",
+        ],
+        Intense: [
+            "audio/music/game/intense/1-21-2016 - 3.ogg",
+            "audio/music/game/intense/2-22-2015 - 1.ogg",
+            "audio/music/game/intense/10-25-2014 - 1.ogg",
+            "audio/music/game/intense/10-29-2015 - 1.ogg",
+            "audio/music/game/intense/6-9-2015 - 2.ogg",
+        ],
     },
     game_over: "audio/music/28. Orbital Scan.ogg",
     seed: 3878,

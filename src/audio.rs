@@ -2,6 +2,7 @@ use bevy::audio::PlaybackMode::{Despawn, Loop};
 use bevy::audio::Volume;
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
+use rand::prelude::IndexedRandom;
 use ron_asset_manager::Shandle;
 use serde::Deserialize;
 
@@ -90,7 +91,7 @@ pub type Tracks = HashMap<TrackId, Vec<Shandle<AudioSource>>>;
 pub struct Track {
     tracks: Tracks,
     current_track: TrackId,
-    current_music: usize,
+    current_music: Option<usize>,
 }
 
 impl Track {
@@ -98,15 +99,18 @@ impl Track {
         Self {
             tracks,
             current_track: TrackId::Quiet,
-            current_music: 0,
+            current_music: None,
         }
     }
 
     fn next_music(&mut self) -> Option<Handle<AudioSource>> {
         let musics = self.tracks.get(&self.current_track)?;
-        let music = musics.get(self.current_music)?;
-        self.current_music = (self.current_music + 1) % musics.len();
-        Some(music.handle.clone())
+        let candidates: Vec<usize> = (0..musics.len())
+            .filter(|&i| musics.len() == 1 || Some(i) != self.current_music)
+            .collect();
+        let index = *candidates.choose(&mut rand::rng())?;
+        self.current_music = Some(index);
+        Some(musics[index].handle.clone())
     }
 }
 
