@@ -7,6 +7,7 @@ use serde::Deserialize;
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<AudioSettings>();
+    app.init_resource::<MusicLowered>();
     app.add_systems(Update, (apply_volume, play_tracks));
 }
 
@@ -16,14 +17,32 @@ pub struct Music;
 #[derive(Component, Reflect)]
 pub struct SoundFx;
 
-fn apply_volume(audio_settings: Res<AudioSettings>, musics: Query<&mut AudioSink, With<Music>>) {
-    if !audio_settings.is_changed() {
+#[derive(Resource, Default)]
+pub struct MusicLowered(pub bool);
+
+const LOWERED_VOLUME_FACTOR: f32 = 0.3;
+
+fn track_volume(audio_settings: &AudioSettings, lowered: &MusicLowered) -> Volume {
+    let factor = if lowered.0 { LOWERED_VOLUME_FACTOR } else { 1.0 };
+    Volume::Linear(audio_settings.music_volume * factor)
+}
+
+fn apply_volume(
+    audio_settings: Res<AudioSettings>,
+    lowered: Res<MusicLowered>,
+    musics: Query<(&mut AudioSink, Has<Track>), With<Music>>,
+) {
+    if !audio_settings.is_changed() && !lowered.is_changed() {
         return;
     }
 
-    let vol = Volume::Linear(audio_settings.music_volume);
-    for mut music in musics.into_iter() {
-        music.set_volume(vol);
+    for (mut music, is_track) in musics {
+        let volume = if is_track {
+            track_volume(&audio_settings, &lowered)
+        } else {
+            Volume::Linear(audio_settings.music_volume)
+        };
+        music.set_volume(volume);
     }
 }
 
@@ -31,6 +50,7 @@ fn play_tracks(
     mut commands: Commands,
     mut tracks: Query<(Entity, &mut Track), Without<AudioPlayer>>,
     audio_settings: Res<AudioSettings>,
+    lowered: Res<MusicLowered>,
 ) {
     for (entity, mut track) in &mut tracks {
         let Some(source) = track.next_music() else {
@@ -39,7 +59,7 @@ fn play_tracks(
         commands.entity(entity).insert((
             AudioPlayer::new(source),
             PlaybackSettings {
-                volume: Volume::Linear(audio_settings.music_volume),
+                volume: track_volume(&audio_settings, &lowered),
                 ..PlaybackSettings::REMOVE
             },
         ));

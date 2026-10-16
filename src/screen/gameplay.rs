@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use bevy::window::{CursorGrabMode, CursorOptions, PrimaryWindow};
 
 use crate::MetaState;
-use crate::audio::{AudioSettings, music};
+use crate::audio::{AudioSettings, MusicLowered, music};
 use crate::gameplay::level::{GameplayMusic, LevelAssets};
 use crate::menu::Menu;
 use crate::utils::escape_just_pressed;
@@ -27,7 +27,10 @@ pub fn plugin(app: &mut App) {
         OnExit(Menu::None),
         (stop_simulation, show_cursor).run_if(in_state(MetaState::InGame)),
     );
-    app.add_systems(OnEnter(Menu::GameOver), start_game_over_music);
+    app.add_systems(
+        OnEnter(Menu::GameOver),
+        (pause_gameplay_music, start_game_over_music),
+    );
 }
 
 fn enter_pause(mut next: ResMut<NextState<Menu>>) {
@@ -37,20 +40,23 @@ fn enter_pause(mut next: ResMut<NextState<Menu>>) {
 fn start_simulation(
     mut time: ResMut<Time<Physics>>,
     mut music: Query<&mut AudioSink, With<GameplayMusic>>,
+    mut lowered: ResMut<MusicLowered>,
 ) {
     time.unpause();
-    for settings in &mut music {
-        settings.play();
+    lowered.0 = false;
+    for sink in &mut music {
+        sink.play();
     }
 }
 
-fn stop_simulation(
-    mut time: ResMut<Time<Physics>>,
-    mut music: Query<&mut AudioSink, With<GameplayMusic>>,
-) {
+fn stop_simulation(mut time: ResMut<Time<Physics>>, mut lowered: ResMut<MusicLowered>) {
     time.pause();
-    for settings in &mut music {
-        settings.pause();
+    lowered.0 = true;
+}
+
+fn pause_gameplay_music(mut music: Query<&mut AudioSink, With<GameplayMusic>>) {
+    for sink in &mut music {
+        sink.pause();
     }
 }
 
