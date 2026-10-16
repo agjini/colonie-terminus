@@ -1,5 +1,5 @@
 use crate::asset_tracking::LoadResource;
-use crate::audio::AudioSettings;
+use crate::audio::{Tracks, track};
 use crate::gameplay::animation::Animation;
 use crate::gameplay::enemy::enemy_root;
 use crate::gameplay::loot::loot_root;
@@ -8,7 +8,7 @@ use crate::gameplay::player::spawn_player;
 use crate::gameplay::player::weapon::{WeaponAssets, bullet_root};
 use crate::gameplay::tilemap::asset::TilesetAssets;
 use crate::gameplay::tilemap::spawn_tilemap;
-use crate::{audio::music, screen::Screen};
+use crate::screen::Screen;
 use bevy::prelude::*;
 use rand::prelude::StdRng;
 use rand::rngs::ThreadRng;
@@ -34,7 +34,7 @@ pub fn plugin(app: &mut App) {
 #[derive(Resource, Asset, RonAsset, TypePath, Deserialize, Clone, Debug)]
 pub struct LevelAssets {
     #[asset]
-    pub music: Shandle<AudioSource>,
+    pub musics: Tracks,
     #[asset]
     pub game_over: Shandle<AudioSource>,
     #[serde(default = "random_seed")]
@@ -62,7 +62,6 @@ fn spawn_level(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut images: ResMut<Assets<Image>>,
-    audio_settings: Res<AudioSettings>,
 ) {
     info!("Loading level with seed: {}", level_assets.seed);
     camera.translation = Vec3::ZERO;
@@ -82,7 +81,7 @@ fn spawn_level(
             parent.spawn((
                 Name::new("Gameplay Music"),
                 GameplayMusic,
-                music(level_assets.music.handle.clone(), &audio_settings),
+                track(level_assets.musics.clone()),
             ));
 
             spawn_player(

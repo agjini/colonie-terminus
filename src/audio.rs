@@ -1,10 +1,13 @@
 use bevy::audio::PlaybackMode::{Despawn, Loop};
 use bevy::audio::Volume;
+use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
+use ron_asset_manager::Shandle;
+use serde::Deserialize;
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<AudioSettings>();
-    app.add_systems(Update, apply_volume);
+    app.add_systems(Update, (apply_volume, play_tracks));
 }
 
 #[derive(Component, Reflect)]
@@ -24,6 +27,25 @@ fn apply_volume(audio_settings: Res<AudioSettings>, musics: Query<&mut AudioSink
     }
 }
 
+fn play_tracks(
+    mut commands: Commands,
+    mut tracks: Query<(Entity, &mut Track), Without<AudioPlayer>>,
+    audio_settings: Res<AudioSettings>,
+) {
+    for (entity, mut track) in &mut tracks {
+        let Some(source) = track.next_music() else {
+            continue;
+        };
+        commands.entity(entity).insert((
+            AudioPlayer::new(source),
+            PlaybackSettings {
+                volume: Volume::Linear(audio_settings.music_volume),
+                ..PlaybackSettings::REMOVE
+            },
+        ));
+    }
+}
+
 pub fn music(handle: Handle<AudioSource>, audio_settings: &AudioSettings) -> impl Bundle {
     (
         AudioPlayer::new(handle),
@@ -34,6 +56,42 @@ pub fn music(handle: Handle<AudioSource>, audio_settings: &AudioSettings) -> imp
             ..default()
         },
     )
+}
+
+#[derive(Eq, PartialEq, Hash, Copy, Clone, Reflect, Debug, Deserialize)]
+pub enum TrackId {
+    Quiet,
+    Intense,
+}
+
+pub type Tracks = HashMap<TrackId, Vec<Shandle<AudioSource>>>;
+
+#[derive(Component)]
+pub struct Track {
+    tracks: Tracks,
+    current_track: TrackId,
+    current_music: usize,
+}
+
+impl Track {
+    pub fn new(tracks: Tracks) -> Self {
+        Self {
+            tracks,
+            current_track: TrackId::Quiet,
+            current_music: 0,
+        }
+    }
+
+    fn next_music(&mut self) -> Option<Handle<AudioSource>> {
+        let musics = self.tracks.get(&self.current_track)?;
+        let music = musics.get(self.current_music)?;
+        self.current_music = (self.current_music + 1) % musics.len();
+        Some(music.handle.clone())
+    }
+}
+
+pub fn track(tracks: Tracks) -> impl Bundle {
+    (Track::new(tracks), Music)
 }
 
 pub fn sound_fx(handle: Handle<AudioSource>, audio_settings: &AudioSettings) -> impl Bundle {
