@@ -14,6 +14,24 @@ https://skyeash.itch.io/skyetunes
 
 ## Faire arriver les ennemis
 
+plusieurs niveaux de difficulté par parlier de temps :
+
+- Facile, Moyen, Difficile, Très difficile, Infernal, Extreme
+
+une probabilité d'apparition pour chaque enemie qui permet d'avoir de la diversité de l'affichage
+
+Pour mettre de la variété :
+faire des couleurs différentesdes meme ennemis avec des stats différentes
+
+pour apporter des variétés de gameplay : ça peut être aussi une variante avec des caractéristiques speciales (foudre)
+
+- AOE de glace
+- envoie des projectiles auto-guidés
+- plus grosse taille
+- zone de bouclier (ou il faut être dedans pour le toucher)
+- armure
+- un ennemi qui t'aspire ta vie
+
 - progressivement de plus en plus dure
 - avec des vagues d'intensités
 
