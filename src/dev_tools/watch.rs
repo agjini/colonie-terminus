@@ -33,19 +33,19 @@ fn debug_enabled(debug_state: Res<DebugState>) -> bool {
     debug_state.enabled
 }
 
-fn attach_lines<T: Component>(add: On<Add, T>, mut commands: Commands) {
+fn attach_lines<T: Component>(add: On<Add<T>>, mut commands: Commands) {
     commands
         .entity(add.entity)
         .insert_if_new(WatchLines::default());
 }
 
-fn detach_line<T: Component + TypePath>(remove: On<Remove, T>, mut lines: Query<&mut WatchLines>) {
+fn detach_line<T: Component + TypePath>(remove: On<Remove<T>>, mut lines: Query<&mut WatchLines>) {
     if let Ok(mut lines) = lines.get_mut(remove.entity) {
         lines.0.remove(T::short_type_path());
     }
 }
 
-fn spawn_label(add: On<Add, WatchLines>, mut commands: Commands) {
+fn spawn_label(add: On<Add<WatchLines>>, mut commands: Commands) {
     commands.entity(add.entity).with_child((
         WatchLabel,
         Text2d::default(),

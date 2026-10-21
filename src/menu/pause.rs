@@ -30,15 +30,15 @@ fn spawn_pause_menu(assets: Res<MenuAssets>, mut commands: Commands) {
     ));
 }
 
-fn open_settings_menu(_: On<Pointer<Click>>, mut commands: Commands) {
+fn open_settings_menu(_: On<PointerClick>, mut commands: Commands) {
     commands.trigger(Nav::Open(Menu::Settings));
 }
 
-fn close_menu(_: On<Pointer<Click>>, mut next: ResMut<NextState<Menu>>) {
+fn close_menu(_: On<PointerClick>, mut next: ResMut<NextState<Menu>>) {
     next.set(Menu::None);
 }
 
-fn quit_to_title(_: On<Pointer<Click>>, mut next_screen: ResMut<NextState<Screen>>) {
+fn quit_to_title(_: On<PointerClick>, mut next_screen: ResMut<NextState<Screen>>) {
     next_screen.set(Screen::Title(true));
 }
 

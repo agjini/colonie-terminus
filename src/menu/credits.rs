@@ -68,7 +68,7 @@ fn grid(font: Handle<Font>, font_size_base: f32, content: Vec<(String, String)>)
     )
 }
 
-fn go_back_on_click(_: On<Pointer<Click>>, mut commands: Commands) {
+fn go_back_on_click(_: On<PointerClick>, mut commands: Commands) {
     commands.trigger(Nav::Back);
 }
 

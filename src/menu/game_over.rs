@@ -22,7 +22,7 @@ fn spawn_game_over(mut commands: Commands, assets: Res<MenuAssets>) {
 }
 
 fn play_again(
-    _: On<Pointer<Click>>,
+    _: On<PointerClick>,
     mut next_screen: ResMut<NextState<Screen>>,
     mut next: ResMut<NextState<Menu>>,
 ) {
@@ -30,6 +30,6 @@ fn play_again(
     next_screen.set(Screen::Gameplay(true));
 }
 
-fn quit_to_title(_: On<Pointer<Click>>, mut next_screen: ResMut<NextState<Screen>>) {
+fn quit_to_title(_: On<PointerClick>, mut next_screen: ResMut<NextState<Screen>>) {
     next_screen.set(Screen::Title(true));
 }

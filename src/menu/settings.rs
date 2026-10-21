@@ -147,7 +147,7 @@ fn update_sfx_volume_label(
     label.0 = text;
 }
 
-fn go_back_on_click(_: On<Pointer<Click>>, mut commands: Commands) {
+fn go_back_on_click(_: On<PointerClick>, mut commands: Commands) {
     commands.trigger(Nav::Back);
 }
 

@@ -24,7 +24,11 @@ pub struct MusicLowered(pub bool);
 const LOWERED_VOLUME_FACTOR: f32 = 0.3;
 
 fn track_volume(audio_settings: &AudioSettings, lowered: &MusicLowered) -> Volume {
-    let factor = if lowered.0 { LOWERED_VOLUME_FACTOR } else { 1.0 };
+    let factor = if lowered.0 {
+        LOWERED_VOLUME_FACTOR
+    } else {
+        1.0
+    };
     Volume::Linear(audio_settings.music_volume * factor)
 }
 
@@ -160,18 +164,18 @@ impl AudioSettings {
     }
 }
 
-pub fn lower_music_volume(_: On<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+pub fn lower_music_volume(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.lower_volume();
 }
 
-pub fn raise_music_volume(_: On<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+pub fn raise_music_volume(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.raise_volume();
 }
 
-pub fn lower_sfx_volume(_: On<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+pub fn lower_sfx_volume(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.lower_sound_fx_volume();
 }
 
-pub fn raise_sfx_volume(_: On<Pointer<Click>>, mut audio_settings: ResMut<AudioSettings>) {
+pub fn raise_sfx_volume(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.raise_sound_fx_volume();
 }

@@ -4,11 +4,11 @@ use crate::gameplay::layer::GameLayer;
 use crate::gameplay::player::weapon::slot::Weapon;
 use crate::hud::spawn_damage_popup;
 use crate::{AppSystems, PausableSystems};
-use avian2d::math::PI;
 use avian2d::prelude::*;
 use bevy::color::palettes::tailwind::CYAN_500;
 use bevy::prelude::*;
 use ron_asset_manager::Shandle;
+use std::f32::consts::PI;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(

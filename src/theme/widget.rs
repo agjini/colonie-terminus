@@ -2,9 +2,10 @@ use std::borrow::Cow;
 
 use crate::menu::MenuAssets;
 use crate::theme::{interaction::InteractionPalette, navigation::Focusable, palette::*};
-use bevy::input_focus::{InputFocus, InputFocusVisible};
+use bevy::picking::hover::Hovered;
+use bevy::ui_widgets::Button;
 use bevy::{
-    ecs::{spawn::SpawnWith, system::IntoObserverSystem},
+    ecs::{observer::IntoEntityObserver, spawn::SpawnWith},
     prelude::*,
 };
 
@@ -50,11 +51,9 @@ pub fn label(font: Handle<Font>, font_size_base: f32, text: impl Into<String>) -
     )
 }
 
-pub fn button<E, B, M, I>(assets: &MenuAssets, text: impl Into<String>, action: I) -> impl Bundle
+pub fn button<M, I>(assets: &MenuAssets, text: impl Into<String>, action: I) -> impl Bundle
 where
-    E: EntityEvent,
-    B: Bundle,
-    I: IntoObserverSystem<E, B, M>,
+    I: IntoEntityObserver<M> + Sync,
 {
     let text = text.into();
     let width = text.len() as f32 * 12. + 20.;
@@ -73,15 +72,9 @@ where
     )
 }
 
-pub fn button_small<E, B, M, I>(
-    assets: &MenuAssets,
-    text: impl Into<String>,
-    action: I,
-) -> impl Bundle
+pub fn button_small<M, I>(assets: &MenuAssets, text: impl Into<String>, action: I) -> impl Bundle
 where
-    E: EntityEvent,
-    B: Bundle,
-    I: IntoObserverSystem<E, B, M>,
+    I: IntoEntityObserver<M> + Sync,
 {
     button_base(
         assets,
@@ -97,18 +90,15 @@ where
     )
 }
 
-fn button_base<E, B, M, I>(
+fn button_base<M, I>(
     assets: &MenuAssets,
     text: String,
     action: I,
     button_bundle: impl Bundle,
 ) -> impl Bundle
 where
-    E: EntityEvent,
-    B: Bundle,
-    I: IntoObserverSystem<E, B, M>,
+    I: IntoEntityObserver<M> + Sync,
 {
-    let action = IntoObserverSystem::into_system(action);
     let text_font = TextFont {
         font: FontSource::Handle(assets.font.handle.clone()),
         font_size: FontSize::Px(assets.font_size_base),
@@ -127,6 +117,7 @@ where
             let mut entity = parent.spawn((
                 Name::new(text.clone()),
                 Button,
+                Hovered::default(),
                 BackgroundColor(BUTTON_BACKGROUND),
                 InteractionPalette {
                     none: BUTTON_BACKGROUND,
@@ -145,18 +136,4 @@ where
             entity.observe(action);
         })),
     )
-}
-
-pub fn highlight_focused_element(
-    input_focus: Res<InputFocus>,
-    input_focus_visible: Res<InputFocusVisible>,
-    mut query: Query<(Entity, &InteractionPalette, &mut BackgroundColor)>,
-) {
-    for (entity, interaction, mut background_color) in query.iter_mut() {
-        if input_focus.get() == Some(entity) && input_focus_visible.0 {
-            background_color.0 = interaction.hovered;
-        } else {
-            background_color.0 = interaction.none;
-        }
-    }
 }

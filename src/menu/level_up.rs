@@ -32,7 +32,7 @@ fn spawn_level_up_menu(mut commands: Commands, assets: Res<MenuAssets>, xp: Sing
 }
 
 fn damage_up(
-    _: On<Pointer<Click>>,
+    _: On<PointerClick>,
     mut next: ResMut<NextState<Menu>>,
     mut xp: Single<&mut Xp>,
     mut slots: Single<&mut WeaponSlots>,
@@ -46,7 +46,7 @@ fn damage_up(
 }
 
 fn inc_attack_speed(
-    _: On<Pointer<Click>>,
+    _: On<PointerClick>,
     mut next: ResMut<NextState<Menu>>,
     mut xp: Single<&mut Xp>,
     mut slots: Single<&mut WeaponSlots>,
@@ -60,7 +60,7 @@ fn inc_attack_speed(
 }
 
 fn inc_fire_rate(
-    _: On<Pointer<Click>>,
+    _: On<PointerClick>,
     mut next: ResMut<NextState<Menu>>,
     mut xp: Single<&mut Xp>,
     mut slots: Single<&mut WeaponSlots>,
@@ -74,7 +74,7 @@ fn inc_fire_rate(
 }
 
 fn inc_health_max(
-    _: On<Pointer<Click>>,
+    _: On<PointerClick>,
     mut next: ResMut<NextState<Menu>>,
     mut xp: Single<&mut Xp>,
     mut health: Single<&mut Health, With<Player>>,
@@ -84,7 +84,7 @@ fn inc_health_max(
     next.set(Menu::None);
 }
 
-fn skip_menu(_: On<Pointer<Click>>, mut next: ResMut<NextState<Menu>>, mut xp: Single<&mut Xp>) {
+fn skip_menu(_: On<PointerClick>, mut next: ResMut<NextState<Menu>>, mut xp: Single<&mut Xp>) {
     xp.skip();
     next.set(Menu::None);
 }

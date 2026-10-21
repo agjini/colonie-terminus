@@ -1,7 +1,10 @@
 use crate::audio::AudioSettings;
 use crate::{asset_tracking::LoadResource, audio::sound_fx};
-use bevy::input_focus::InputFocus;
+use bevy::input_focus::{InputFocus, InputFocusVisible};
+use bevy::picking::hover::Hovered;
 use bevy::prelude::*;
+use bevy::ui::Pressed;
+use bevy::ui_widgets::Button;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
 use serde::Deserialize;
@@ -21,18 +24,25 @@ pub struct InteractionPalette {
 }
 
 fn apply_interaction_palette(
-    mut palette_query: Query<
-        (&Interaction, &InteractionPalette, &mut BackgroundColor),
-        Changed<Interaction>,
-    >,
+    input_focus: Res<InputFocus>,
+    input_focus_visible: Res<InputFocusVisible>,
+    mut palette_query: Query<(
+        Entity,
+        &Hovered,
+        Has<Pressed>,
+        &InteractionPalette,
+        &mut BackgroundColor,
+    )>,
 ) {
-    for (interaction, palette, mut background) in &mut palette_query {
-        *background = match interaction {
-            Interaction::None => palette.none,
-            Interaction::Hovered => palette.hovered,
-            Interaction::Pressed => palette.pressed,
-        }
-        .into();
+    for (entity, hovered, pressed, palette, mut background) in &mut palette_query {
+        let focused = input_focus_visible.0 && input_focus.get() == Some(entity);
+        background.0 = if pressed {
+            palette.pressed
+        } else if hovered.get() || focused {
+            palette.hovered
+        } else {
+            palette.none
+        };
     }
 }
 
@@ -48,7 +58,7 @@ fn play_on_focus_sound_effect(
     input_focus: Res<InputFocus>,
     mut commands: Commands,
     interaction_assets: Option<Res<InteractionAssets>>,
-    interaction_query: Query<(), With<Interaction>>,
+    interaction_query: Query<(), With<Button>>,
     audio_settings: Res<AudioSettings>,
 ) {
     if !input_focus.is_changed() {
@@ -72,10 +82,10 @@ fn play_on_focus_sound_effect(
 }
 
 fn play_on_click_sound_effect(
-    trigger: On<Pointer<Click>>,
+    trigger: On<PointerClick>,
     mut commands: Commands,
     interaction_assets: Option<Res<InteractionAssets>>,
-    interaction_query: Query<(), With<Interaction>>,
+    interaction_query: Query<(), With<Button>>,
     audio_settings: Res<AudioSettings>,
 ) {
     let Some(interaction_assets) = interaction_assets else {

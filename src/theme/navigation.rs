@@ -1,4 +1,3 @@
-use crate::theme::widget::highlight_focused_element;
 use crate::utils::group_by;
 use bevy::camera::NormalizedRenderTarget;
 use bevy::input_focus::directional_navigation::{
@@ -10,7 +9,9 @@ use bevy::picking::backend::HitData;
 use bevy::picking::pointer::{Location, PointerId};
 use bevy::prelude::*;
 use bevy::ui::UiGlobalTransform;
+use bevy::ui_widgets;
 use std::time::Duration;
+use ui_widgets::Button;
 
 pub fn plugin(app: &mut App) {
     app.add_plugins(DirectionalNavigationPlugin);
@@ -21,7 +22,6 @@ pub fn plugin(app: &mut App) {
         PreUpdate,
         (handle_keyboard_navigation, handle_keyboard_activation).chain(),
     );
-    app.add_systems(Update, highlight_focused_element);
 }
 
 #[derive(Component, Reflect)]
@@ -181,11 +181,11 @@ fn handle_keyboard_activation(
         return;
     }
 
-    let Some(focused_entity) = input_focus.get() else {
+    let Some(entity) = input_focus.get() else {
         return;
     };
 
-    commands.trigger(Pointer::new(
+    let pointer = Pointer::new(
         PointerId::Mouse,
         Location {
             target: NormalizedRenderTarget::None {
@@ -194,18 +194,21 @@ fn handle_keyboard_activation(
             },
             position: Vec2::ZERO,
         },
-        Click {
-            button: PointerButton::Primary,
-            count: 1,
-            hit: HitData {
-                camera: Entity::PLACEHOLDER,
-                depth: 0.0,
-                position: None,
-                normal: None,
-                extra: None,
-            },
-            duration: Duration::from_secs_f32(0.1),
-        },
-        focused_entity,
-    ));
+    );
+
+    let hit = HitData {
+        camera: Entity::PLACEHOLDER,
+        depth: 0.0,
+        position: None,
+        normal: None,
+        extra: None,
+    };
+    commands.trigger(PointerClick {
+        entity,
+        pointer,
+        button: PointerButton::Primary,
+        hit,
+        duration: Duration::from_millis(10),
+        count: 1,
+    });
 }

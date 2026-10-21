@@ -20,6 +20,7 @@ const BASE_HALF_WIDTH: f32 = 1.5;
 const PLAIN_RETICLE_COLOR: [f32; 4] = [3.0, 0.15, 0.1, 0.1];
 const RETICLE_COLOR: [f32; 4] = [1.0, 0.15, 0.1, 0.];
 const ARC_SEGMENTS: u32 = 16;
+const Z_BELOW_PLAYER: f32 = -5.0;
 
 #[derive(Component, Reflect)]
 pub struct AimZone;
@@ -45,13 +46,12 @@ pub fn aim_zone(
     (
         Name::new("AimZone"),
         AimZone,
-        GameLayer::AimZone,
         Mesh2d(meshes.add(sector_mesh(half_angle))),
         MeshMaterial2d(materials.add(ColorMaterial::default())),
-        Transform::from_xyz(0.0, 0.0, 1.0),
+        Transform::from_xyz(0.0, 0.0, Z_BELOW_PLAYER),
         (
             Mass(1.0),
-            Collider::convex_hull(vec![
+            Collider::convex_hull(&[
                 Vec2::new(-BASE_HALF_WIDTH, 0.0),
                 b,
                 c,
@@ -90,7 +90,7 @@ fn sector_mesh(half_angle: f32) -> Mesh {
             angle.cos() * RETICLE_LENGTH,
             0.0,
         ]);
-        colors.push([RETICLE_COLOR[0], RETICLE_COLOR[1], RETICLE_COLOR[2], 0.0]);
+        colors.push(RETICLE_COLOR);
     }
 
     positions.push([BASE_HALF_WIDTH, 0.0, 0.0]);
