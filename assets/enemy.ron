@@ -4,7 +4,7 @@ EnemyAssets(
     ],
     types: [
         (
-            name: "Saucisson",
+            name: "Nhachor",
             sprite: "character/enemy-01-62x33.ron",
             max_speed: 50,
             max_health: 20,
@@ -12,7 +12,7 @@ EnemyAssets(
             cooldown: 1.0
         ),
         (
-            name: "Rosette",
+            name: "Spiky",
             sprite: "character/enemy-02-20x16.ron",
             max_speed: 80,
             max_health: 10,
@@ -20,7 +20,7 @@ EnemyAssets(
             cooldown: 1.0
         ),
         (
-            name: "Loucoume",
+            name: "Bat",
             sprite: "character/enemy-03-32x32.ron",
             max_speed: 80,
             max_health: 10,

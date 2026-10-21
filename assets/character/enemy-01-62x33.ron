@@ -6,7 +6,7 @@ Animation(
     columns: 6,
     padding: Some((1, 1)),
     anchor: (0, 0),
-    hit_box: Circle(2),
+    hit_box: Circle(8),
     frames:  {
         Idle: (
             row: 0,

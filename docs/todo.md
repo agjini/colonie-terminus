@@ -25,12 +25,15 @@ faire des couleurs différentesdes meme ennemis avec des stats différentes
 
 pour apporter des variétés de gameplay : ça peut être aussi une variante avec des caractéristiques speciales (foudre)
 
+(des affixes)
+
 - AOE de glace
 - envoie des projectiles auto-guidés
 - plus grosse taille
 - zone de bouclier (ou il faut être dedans pour le toucher)
 - armure
 - un ennemi qui t'aspire ta vie
+- une trainée de feu
 
 - progressivement de plus en plus dure
 - avec des vagues d'intensités
