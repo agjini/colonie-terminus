@@ -16,7 +16,17 @@ https://skyeash.itch.io/skyetunes
 
 plusieurs niveaux de difficulté par parlier de temps :
 
-- Facile, Moyen, Difficile, Très difficile, Infernal, Extreme
+- Facile, Moyen, Difficile, Très difficile, Infernal, Extreme :
+
+1. Poussière (Dust)
+2. Astéroïde (Asteroid)
+3. Satellite (Satellite)
+4. Lune (Moon)
+5. Planète (Planet)
+6. Supernova (Supernova)
+7. Pulsar (Pulsar)
+8. Trou noir (Black Hole)
+9. Quasar (Quasar)
 
 une probabilité d'apparition pour chaque enemie qui permet d'avoir de la diversité de l'affichage
 
