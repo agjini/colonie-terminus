@@ -97,6 +97,7 @@ pub fn bullet(
             Collider::circle(7.),
             Sensor,
             LinearVelocity::from(direction * speed),
+            SpeculativeCcd::MAX,
             LockedAxes::ROTATION_LOCKED,
             CollisionLayers::new(GameLayer::Bullet, [GameLayer::Enemy]),
             CollidingEntities::default(),
