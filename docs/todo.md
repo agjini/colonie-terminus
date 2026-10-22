@@ -55,7 +55,14 @@ pour apporter des variétés de gameplay : ça peut être aussi une variante ave
 - ils sont linéaires
 - on ne voit pas le niveau des stats augmenter
 
-## Quand le joueur est touché se rendre compte
+## Rajouter du juice
+- Quand le joueur est touché se rendre compte
+- animation de mort
+- effet d'impact sous forme de particules ou de sprites
+- effet de particule quand on tire un projectile
+- effet de sombres et de lumières
+- effet de vent solaire, de poussières
+- pouvoir courir, accélérer, dasher, (rajouter une jauge d'endurance)
 
 ## Arbre de compétence d'armes
 
