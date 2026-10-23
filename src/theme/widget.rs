@@ -1,8 +1,9 @@
 use std::borrow::Cow;
 
 use crate::menu::MenuAssets;
-use crate::theme::{interaction::InteractionPalette, navigation::Focusable, palette::*};
+use crate::theme::{interaction::InteractionPalette, palette::*};
 use bevy::picking::hover::Hovered;
+use bevy::ui::auto_directional_navigation::AutoDirectionalNavigation;
 use bevy::ui_widgets::Button;
 use bevy::{
     ecs::{observer::IntoEntityObserver, spawn::SpawnWith},
@@ -124,7 +125,7 @@ where
                     hovered: BUTTON_HOVERED_BACKGROUND,
                     pressed: BUTTON_PRESSED_BACKGROUND,
                 },
-                Focusable,
+                AutoDirectionalNavigation::default(),
                 children![(
                     Name::new("Button Text"),
                     Text(text),

@@ -4,6 +4,7 @@ use bevy::input_focus::{InputFocus, InputFocusVisible};
 use bevy::picking::hover::Hovered;
 use bevy::prelude::*;
 use bevy::ui::Pressed;
+use bevy::ui_widgets::Activate;
 use bevy::ui_widgets::Button;
 use ron_asset_manager::Shandle;
 use ron_asset_manager::prelude::RonAsset;
@@ -82,7 +83,7 @@ fn play_on_focus_sound_effect(
 }
 
 fn play_on_click_sound_effect(
-    trigger: On<PointerClick>,
+    trigger: On<Activate>,
     mut commands: Commands,
     interaction_assets: Option<Res<InteractionAssets>>,
     interaction_query: Query<(), With<Button>>,

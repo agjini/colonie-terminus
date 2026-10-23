@@ -1,6 +1,7 @@
 use crate::menu::{Menu, MenuAssets, Nav};
 use crate::theme::widget::*;
 use crate::utils::escape_just_pressed;
+use bevy::ui_widgets::Activate;
 use bevy::{ecs::spawn::SpawnIter, prelude::*};
 
 pub fn plugin(app: &mut App) {
@@ -68,7 +69,7 @@ fn grid(font: Handle<Font>, font_size_base: f32, content: Vec<(String, String)>)
     )
 }
 
-fn go_back_on_click(_: On<PointerClick>, mut commands: Commands) {
+fn go_back_on_click(_: On<Activate>, mut commands: Commands) {
     commands.trigger(Nav::Back);
 }
 

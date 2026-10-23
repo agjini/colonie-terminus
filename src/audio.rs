@@ -2,6 +2,7 @@ use bevy::audio::PlaybackMode::{Despawn, Loop};
 use bevy::audio::Volume;
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
+use bevy::ui_widgets::Activate;
 use rand::prelude::IndexedRandom;
 use ron_asset_manager::Shandle;
 use serde::Deserialize;
@@ -164,18 +165,18 @@ impl AudioSettings {
     }
 }
 
-pub fn lower_music_volume(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
+pub fn lower_music_volume(_: On<Activate>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.lower_volume();
 }
 
-pub fn raise_music_volume(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
+pub fn raise_music_volume(_: On<Activate>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.raise_volume();
 }
 
-pub fn lower_sfx_volume(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
+pub fn lower_sfx_volume(_: On<Activate>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.lower_sound_fx_volume();
 }
 
-pub fn raise_sfx_volume(_: On<PointerClick>, mut audio_settings: ResMut<AudioSettings>) {
+pub fn raise_sfx_volume(_: On<Activate>, mut audio_settings: ResMut<AudioSettings>) {
     audio_settings.raise_sound_fx_volume();
 }

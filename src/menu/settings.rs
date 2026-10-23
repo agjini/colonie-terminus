@@ -5,6 +5,7 @@ use crate::menu::{Menu, MenuAssets, Nav};
 use crate::theme::widget;
 use crate::utils::escape_just_pressed;
 use bevy::prelude::*;
+use bevy::ui_widgets::Activate;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Settings), spawn_settings_menu);
@@ -147,7 +148,7 @@ fn update_sfx_volume_label(
     label.0 = text;
 }
 
-fn go_back_on_click(_: On<PointerClick>, mut commands: Commands) {
+fn go_back_on_click(_: On<Activate>, mut commands: Commands) {
     commands.trigger(Nav::Back);
 }
 

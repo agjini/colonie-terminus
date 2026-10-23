@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::ui_widgets::Activate;
 
 use crate::menu::MenuAssets;
 use crate::{menu::Menu, screen::Screen, theme::widget};
@@ -22,7 +23,7 @@ fn spawn_game_over(mut commands: Commands, assets: Res<MenuAssets>) {
 }
 
 fn play_again(
-    _: On<PointerClick>,
+    _: On<Activate>,
     mut next_screen: ResMut<NextState<Screen>>,
     mut next: ResMut<NextState<Menu>>,
 ) {
@@ -30,6 +31,6 @@ fn play_again(
     next_screen.set(Screen::Gameplay(true));
 }
 
-fn quit_to_title(_: On<PointerClick>, mut next_screen: ResMut<NextState<Screen>>) {
+fn quit_to_title(_: On<Activate>, mut next_screen: ResMut<NextState<Screen>>) {
     next_screen.set(Screen::Title(true));
 }

@@ -1,31 +1,21 @@
-use crate::utils::group_by;
-use bevy::camera::NormalizedRenderTarget;
-use bevy::input_focus::directional_navigation::{
-    DirectionalNavigation, DirectionalNavigationMap, DirectionalNavigationPlugin,
-};
+use bevy::input_focus::directional_navigation::DirectionalNavigationPlugin;
 use bevy::input_focus::{FocusCause, InputFocus, InputFocusVisible};
 use bevy::math::CompassOctant;
-use bevy::picking::backend::HitData;
-use bevy::picking::pointer::{Location, PointerId};
 use bevy::prelude::*;
 use bevy::ui::UiGlobalTransform;
-use bevy::ui_widgets;
-use std::time::Duration;
-use ui_widgets::Button;
+use bevy::ui::auto_directional_navigation::{AutoDirectionalNavigation, AutoDirectionalNavigator};
+use bevy::ui_widgets::Activate;
 
 pub fn plugin(app: &mut App) {
     app.add_plugins(DirectionalNavigationPlugin);
     app.insert_resource(InputFocusVisible(true));
     app.insert_resource(StickNavigationCooldown::default());
-    app.add_systems(Update, setup_navigation_for_new_buttons);
+    app.add_systems(Update, focus_first_button);
     app.add_systems(
         PreUpdate,
-        (handle_keyboard_navigation, handle_keyboard_activation).chain(),
+        (handle_directional_input, handle_gamepad_activation).chain(),
     );
 }
-
-#[derive(Component, Reflect)]
-pub struct Focusable;
 
 #[derive(Resource)]
 struct StickNavigationCooldown {
@@ -40,74 +30,37 @@ impl Default for StickNavigationCooldown {
     }
 }
 
-fn setup_navigation_for_new_buttons(
-    new_buttons: Query<Entity, (With<Button>, Changed<UiGlobalTransform>)>,
-    all_buttons: Query<(Entity, &UiGlobalTransform), (With<Focusable>, With<Button>)>,
-    mut nav_map: ResMut<DirectionalNavigationMap>,
+type NavigableButtons<'w, 's> =
+    Query<'w, 's, (Entity, &'static UiGlobalTransform), With<AutoDirectionalNavigation>>;
+
+fn top_left(buttons: &NavigableButtons) -> Option<Entity> {
+    buttons
+        .iter()
+        .min_by_key(|(_, t)| (t.translation.y as i32, t.translation.x as i32))
+        .map(|(entity, _)| entity)
+}
+
+fn focus_first_button(
+    moved: Query<(), (With<AutoDirectionalNavigation>, Changed<UiGlobalTransform>)>,
+    buttons: NavigableButtons,
     mut input_focus: ResMut<InputFocus>,
 ) {
-    if new_buttons.is_empty() || all_buttons.is_empty() {
+    if moved.is_empty() || input_focus.get().is_some_and(|e| buttons.contains(e)) {
         return;
     }
-
-    nav_map.clear();
-
-    let rows = group_by(
-        all_buttons
-            .iter()
-            .map(|(e, t)| (e, t.translation.x, t.translation.y)),
-        |(_, _, y)| *y as i32,
-        |(_, x, _)| *x as i32,
-    );
-
-    if let Some(&(first, _, _)) = rows.first().and_then(|r| r.first()) {
+    if let Some(first) = top_left(&buttons) {
         input_focus.set(first, FocusCause::Navigated);
     }
-
-    for row in &rows {
-        let entities: Vec<Entity> = row.iter().map(|(e, _, _)| *e).collect();
-        nav_map.add_looping_edges(&entities, CompassOctant::East);
-    }
-
-    for window in rows.windows(2) {
-        connect_adjacent_rows(&mut nav_map, &window[0], &window[1]);
-    }
-    if rows.len() >= 2 {
-        connect_adjacent_rows(&mut nav_map, rows.last().unwrap(), rows.first().unwrap());
-    }
 }
 
-fn connect_adjacent_rows(
-    nav_map: &mut DirectionalNavigationMap,
-    upper: &[(Entity, f32, f32)],
-    lower: &[(Entity, f32, f32)],
-) {
-    connect_to_nearest(nav_map, upper, lower, CompassOctant::South);
-    connect_to_nearest(nav_map, lower, upper, CompassOctant::North);
-}
-
-fn connect_to_nearest(
-    nav_map: &mut DirectionalNavigationMap,
-    from: &[(Entity, f32, f32)],
-    to: &[(Entity, f32, f32)],
-    direction: CompassOctant,
-) {
-    for &(entity, x, _) in from {
-        if let Some(&(target, _, _)) = to
-            .iter()
-            .min_by(|(_, ax, _), (_, bx, _)| (ax - x).abs().total_cmp(&(bx - x).abs()))
-        {
-            nav_map.add_edge(entity, target, direction);
-        }
-    }
-}
-
-fn handle_keyboard_navigation(
+fn handle_directional_input(
     keyboard: Res<ButtonInput<KeyCode>>,
     gamepads: Query<&Gamepad>,
     time: Res<Time>,
     mut cooldown: ResMut<StickNavigationCooldown>,
-    mut directional_navigation: DirectionalNavigation,
+    mut navigator: AutoDirectionalNavigator,
+    mut input_focus_visible: ResMut<InputFocusVisible>,
+    buttons: NavigableButtons,
 ) {
     cooldown.timer.tick(time.delta());
 
@@ -154,61 +107,34 @@ fn handle_keyboard_navigation(
         }
     }
 
-    if let Some(direction) = direction {
-        let _ = directional_navigation.navigate(direction);
-        if from_stick {
-            cooldown.timer.reset();
-        }
+    let Some(direction) = direction else {
+        return;
+    };
+
+    input_focus_visible.0 = true;
+    if navigator.input_focus().is_some_and(|e| buttons.contains(e)) {
+        let _ = navigator.navigate(direction);
+    } else if let Some(first) = top_left(&buttons) {
+        navigator
+            .manual_directional_navigation
+            .focus
+            .set(first, FocusCause::Navigated);
+    }
+    if from_stick {
+        cooldown.timer.reset();
     }
 }
 
-fn handle_keyboard_activation(
+fn handle_gamepad_activation(
     mut commands: Commands,
-    keyboard: Res<ButtonInput<KeyCode>>,
     gamepads: Query<&Gamepad>,
     input_focus: Res<InputFocus>,
 ) {
-    let mut should_activate =
-        keyboard.just_pressed(KeyCode::Enter) || keyboard.just_pressed(KeyCode::Space);
-
-    if let Some(gamepad) = gamepads.iter().next()
-        && gamepad.just_pressed(GamepadButton::South)
-    {
-        should_activate = true;
+    let pressed = gamepads
+        .iter()
+        .next()
+        .is_some_and(|gamepad| gamepad.just_pressed(GamepadButton::South));
+    if pressed && let Some(entity) = input_focus.get() {
+        commands.trigger(Activate { entity });
     }
-
-    if !should_activate {
-        return;
-    }
-
-    let Some(entity) = input_focus.get() else {
-        return;
-    };
-
-    let pointer = Pointer::new(
-        PointerId::Mouse,
-        Location {
-            target: NormalizedRenderTarget::None {
-                width: 0,
-                height: 0,
-            },
-            position: Vec2::ZERO,
-        },
-    );
-
-    let hit = HitData {
-        camera: Entity::PLACEHOLDER,
-        depth: 0.0,
-        position: None,
-        normal: None,
-        extra: None,
-    };
-    commands.trigger(PointerClick {
-        entity,
-        pointer,
-        button: PointerButton::Primary,
-        hit,
-        duration: Duration::from_millis(10),
-        count: 1,
-    });
 }
