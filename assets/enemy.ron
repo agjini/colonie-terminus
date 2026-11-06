@@ -1,10 +1,18 @@
 EnemyAssets(
+    rarity_step_secs: 15,
+    spawn_interval_secs: 0.5,
+    max_weight: 15,
+    max_weight_per_sec: 0.8,
+    max_weight_per_step: 20,
     hit_sounds: [
         "audio/sound_effects/hurt-1.ogg"
     ],
     types: [
         (
             name: "Nhachor",
+            rarity: 2,
+            rarity_growth: 1,
+            weight: 2,
             sprite: "character/enemy-01-62x33.ron",
             max_speed: 50,
             max_health: 20,
@@ -13,6 +21,9 @@ EnemyAssets(
         ),
         (
             name: "Spiky",
+            rarity: 5,
+            rarity_growth: 1,
+            weight: 1,
             sprite: "character/enemy-02-20x16.ron",
             max_speed: 80,
             max_health: 10,
@@ -21,6 +32,9 @@ EnemyAssets(
         ),
         (
             name: "Bat",
+            rarity: 4,
+            rarity_growth: 0,
+            weight: 1,
             sprite: "character/enemy-03-32x32.ron",
             max_speed: 80,
             max_health: 10,

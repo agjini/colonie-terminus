@@ -4,6 +4,7 @@ use crate::gameplay::health::Health;
 use crate::gameplay::layer::GameLayer;
 use crate::gameplay::level::{RandomSeed, WorldEntity};
 use crate::gameplay::{animation::CharacterAnimation, movement::MovementController};
+use crate::hud::timer::SurvivalTimer;
 use crate::screen::Screen;
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::{CollisionLayers, DebugRender, LockedAxes, Mass, RigidBody};
@@ -11,9 +12,11 @@ use bevy::color::palettes::tailwind::AMBER_400;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use rand::RngExt;
+use rand::seq::IndexedRandom;
 use std::f32::consts::PI;
 
 pub fn plugin(app: &mut App) {
+    app.add_systems(OnEnter(Screen::Gameplay(false)), init_spawn_timer);
     app.add_systems(
         Update,
         (
@@ -23,16 +26,15 @@ pub fn plugin(app: &mut App) {
             .in_set(PausableSystems)
             .run_if(in_state(Screen::Gameplay(false))),
     );
-    app.insert_resource(SpawnTimer::default());
 }
 
 #[derive(Resource)]
 struct SpawnTimer(Timer);
-
-impl Default for SpawnTimer {
-    fn default() -> Self {
-        Self(Timer::from_seconds(10., TimerMode::Repeating))
-    }
+fn init_spawn_timer(mut commands: Commands, enemy_assets: Res<EnemyAssets>) {
+    commands.insert_resource(SpawnTimer(Timer::from_seconds(
+        enemy_assets.spawn_interval_secs,
+        TimerMode::Repeating,
+    )));
 }
 
 fn update_spawn_timer(time: Res<Time>, mut timer: ResMut<SpawnTimer>) {
@@ -49,8 +51,23 @@ fn spawn_enemies(
     root: Single<Entity, With<EnemyRoot>>,
     camera: Single<(&Camera, &GlobalTransform)>,
     window: Single<&Window>,
+    survival: Res<SurvivalTimer>,
+    enemies: Query<&Enemy>,
 ) {
     if !timer.0.just_finished() {
+        return;
+    }
+    let elapsed = survival.0.elapsed_secs();
+    let step = elapsed as u32 / enemy_assets.rarity_step_secs;
+
+    let Ok(enemy_type) = enemy_assets
+        .types
+        .choose_weighted(&mut rng.0, |t| t.rarity_at(step))
+    else {
+        return;
+    };
+    let used: u32 = enemies.iter().map(|e| e.weight).sum();
+    if used + enemy_type.weight > enemy_assets.max_weight_at(elapsed, step) {
         return;
     }
 
@@ -71,17 +88,15 @@ fn spawn_enemies(
     let center = (un + deux) / 2.0;
     let radius = half_size.length() + 50.0;
 
+    let angle = rng.0.random_range(0.0..2.0 * PI);
+    let position = center + Vec2::new(angle.cos(), angle.sin()) * radius;
     root.with_children(|p| {
-        for enemy_type in enemy_assets.types.iter() {
-            let angle = rng.0.random_range(0.0..2.0 * PI);
-            let position = center + Vec2::new(angle.cos(), angle.sin()) * radius;
-            p.spawn(enemy(
-                position,
-                enemy_type,
-                &mut animations,
-                &mut texture_atlas_layouts,
-            ));
-        }
+        p.spawn(enemy(
+            position,
+            enemy_type,
+            &mut animations,
+            &mut texture_atlas_layouts,
+        ));
     });
 }
 
@@ -103,7 +118,9 @@ pub fn enemy(
         Name::new(enemy.name.to_string()),
         WorldEntity,
         (
-            Enemy,
+            Enemy {
+                weight: enemy.weight,
+            },
             Damage {
                 damage: enemy.damage,
                 cooldown: enemy.cooldown,
