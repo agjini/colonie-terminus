@@ -1,4 +1,6 @@
 mod gameplay;
+#[cfg(not(target_arch = "wasm32"))] // pour tout sauf web, au build on charge keep_awake
+mod keep_awake;
 mod loading;
 mod splash;
 mod title;
@@ -10,6 +12,8 @@ pub fn plugin(app: &mut App) {
 
     app.add_plugins((
         gameplay::plugin,
+        #[cfg(not(target_arch = "wasm32"))]
+        keep_awake::plugin,
         loading::plugin,
         splash::plugin,
         title::plugin,
