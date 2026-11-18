@@ -1,0 +1,56 @@
+name: Feature request
+description: Proposer une amélioration ou une nouvelle mécanique de jeu
+title: "Court résumé clair, ex: Ajouter un dash avec cooldown au joueur"
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      value: |
+        #### Ce qu'on a actuellement
+        ...
+
+        #### Ce qu'il manque
+        ...
+
+        #### Ce qui est optionnel (Level 2+)
+        ...
+
+        #### En quoi ça rend le jeu plus FUN ?
+        ...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposition de solution
+      value: |
+        #### Liste de tâches/actions (par ordre chronologique)
+        - [ ] tâche 1
+        - [ ] tâche 2
+
+        #### Paramètres configurables (fichiers .ron)
+        - paramètre 1
+
+        #### Liste des décisions ou questions
+        - Décision 1
+    validations:
+      required: true
+  - type: textarea
+    id: assets
+    attributes:
+      label: Assets nécessaires
+      description: Formes géométriques ou assets libres uniquement
+      placeholder: Lister les assets (placeholder géométrique, asset libre existant) ou mettre 'N/A'
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Prérequis à vérifier
+      options:
+        - label: J'ai recherché dans les issues open et closed si cette feature existe ?
+        - label: La feature fait partie du scope MVP (voir docs/decisions.md) ?
+        - label: Est-ce que je comprends l'intention via le titre ? (impératif, pas de point final)
+        - label: Propos concis et clair ?
+        - label: Découpage ? Si j'enlève une partie du travail décrit, l'issue devient inutilisable.
+        - label: L'effort estimé est inférieur à 2 semaines ?

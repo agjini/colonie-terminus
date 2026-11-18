@@ -1,0 +1,58 @@
+name: Bug report
+description: Rapporter un bug dans le jeu
+title: "Court résumé clair, ex: Les ennemis traversent les murs après un dash"
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      value: |
+        #### Description
+        Décrivez brièvement le problème rencontré.
+
+        #### Étapes pour reproduire le bug
+        1. Lancer une partie
+        2. Survivre jusqu'à '...'
+        3. Faire '...'
+
+        #### Comportement attendu
+        Ce qui aurait dû se passer (ex: L'ennemi est bloqué par le mur).
+
+        #### Comportement réel
+        Ce qui s'est réellement passé (ex: L'ennemi traverse le mur et reste coincé dedans).
+
+        #### Captures d'écran / Vidéo / Logs
+        Ajoutez une capture, une vidéo ou les logs de la console (panic, warnings Bevy).
+
+        #### Fréquence
+        [ex: Toujours, Parfois (~1 partie sur 3), Une seule fois]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version affectée
+      description: Commit ou branche sur laquelle le bug a été reproduit (`git rev-parse --short HEAD`)
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Plateforme
+      options:
+        - Native (Linux)
+        - Native (Windows)
+        - Native (macOS)
+        - Web
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Prérequis à vérifier
+      options:
+        - label: J'ai recherché dans les issues open et closed si ce bug n'existe pas déjà ?
+        - label: Est-ce que je comprends l'intention via le titre ? (pas de point final)
+        - label: Propos concis et clair ?
+        - label: Découpage ? Est-ce que mon bug concerne un seul problème ?
