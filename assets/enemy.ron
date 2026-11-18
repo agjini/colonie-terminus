@@ -36,7 +36,7 @@ EnemyAssets(
             rarity_growth: 0,
             weight: 1,
             sprite: "character/enemy-03-32x32.ron",
-            max_speed: 80,
+            max_speed: 120,
             max_health: 10,
             damage: 40,
             cooldown: 1.0

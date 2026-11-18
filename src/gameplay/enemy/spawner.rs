@@ -109,8 +109,10 @@ pub fn enemy(
     animations: &mut Assets<Animation>,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Bundle {
-    let (sprite, animation) =
+    let (mut sprite, animation) =
         CharacterAnimation::init(animations, texture_atlas_layouts, &enemy.sprite);
+
+    sprite.color = Color::linear_rgb(0., 1., 0.);
 
     let collider = animation.hit_box.as_collider();
     let anchor = animation.anchor;
