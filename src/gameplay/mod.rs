@@ -20,6 +20,7 @@ pub fn plugin(app: &mut App) {
         movement::plugin,
         player::plugin,
         enemy::plugin,
+        affix::plugin,
         tilemap::plugin,
         health::plugin,
         layer::plugin,
