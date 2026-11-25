@@ -1,3 +1,4 @@
+use crate::gameplay::affix::asset::{AffixAsset, AffixAssets, Affixes};
 use crate::gameplay::animation::Animation;
 use crate::gameplay::enemy::asset::{Damage, Enemy, EnemyAssets, EnemyType};
 use crate::gameplay::health::Health;
@@ -30,6 +31,7 @@ pub fn plugin(app: &mut App) {
 
 #[derive(Resource)]
 struct SpawnTimer(Timer);
+
 fn init_spawn_timer(mut commands: Commands, enemy_assets: Res<EnemyAssets>) {
     commands.insert_resource(SpawnTimer(Timer::from_seconds(
         enemy_assets.spawn_interval_secs,
@@ -46,6 +48,7 @@ fn spawn_enemies(
     timer: Res<SpawnTimer>,
     mut rng: ResMut<RandomSeed>,
     enemy_assets: Res<EnemyAssets>,
+    affix_assets: Res<AffixAssets>,
     mut animations: ResMut<Assets<Animation>>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     root: Single<Entity, With<EnemyRoot>>,
@@ -90,14 +93,22 @@ fn spawn_enemies(
 
     let angle = rng.0.random_range(0.0..2.0 * PI);
     let position = center + Vec2::new(angle.cos(), angle.sin()) * radius;
+
+    let affixes = build_affixes(&affix_assets);
+
     root.with_children(|p| {
         p.spawn(enemy(
             position,
             enemy_type,
+            affixes,
             &mut animations,
             &mut texture_atlas_layouts,
         ));
     });
+}
+
+fn build_affixes(assets: &AffixAssets) -> Vec<AffixAsset> {
+    vec![]
 }
 
 #[derive(Component, Reflect)]
@@ -106,6 +117,7 @@ pub struct EnemyRoot;
 pub fn enemy(
     position: Vec2,
     enemy: &EnemyType,
+    affixes: Vec<AffixAsset>,
     animations: &mut Assets<Animation>,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Bundle {
@@ -118,6 +130,7 @@ pub fn enemy(
     let anchor = animation.anchor;
     (
         Name::new(enemy.name.to_string()),
+        Affixes(affixes),
         WorldEntity,
         (
             Enemy {

@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+pub mod affix;
 mod animation;
 mod enemy;
 pub mod health;
@@ -19,6 +20,7 @@ pub fn plugin(app: &mut App) {
         movement::plugin,
         player::plugin,
         enemy::plugin,
+        affix::plugin,
         tilemap::plugin,
         health::plugin,
         layer::plugin,

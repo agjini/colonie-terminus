@@ -110,7 +110,7 @@ enum AppSystems {
 #[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
 struct PausableSystems;
 
-const CAMERA_SCALE: f32 = 0.5;
+const CAMERA_SCALE: f32 = 0.3;
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((
