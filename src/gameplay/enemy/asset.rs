@@ -48,6 +48,7 @@ pub struct EnemyType {
     pub weight: u32,
     pub damage: f32,
     pub cooldown: f32,
+    pub affix_chance: f32,
     #[asset]
     pub sprite: Shandle<Animation>,
 }

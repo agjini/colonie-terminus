@@ -1,0 +1,23 @@
+AffixAssets([
+    (
+        name: "Giant",
+        weight_multiplier: 2,
+        modifiers: [
+            Scale(3),
+            Health(2),
+            Damage(2),
+            Speed(0.5)
+        ]
+    ),
+    (
+        name: "Lilliput",
+        weight_multiplier: 0.5,
+        modifiers: [
+            Scale(0.5),
+            Health(0.8),
+            Damage(0.8),
+            Speed(1.5)
+        ]
+    ),
+]
+)

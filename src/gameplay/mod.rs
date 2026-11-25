@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+pub mod affix;
 mod animation;
 mod enemy;
 pub mod health;

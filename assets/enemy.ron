@@ -17,7 +17,8 @@ EnemyAssets(
             max_speed: 50,
             max_health: 20,
             damage: 10,
-            cooldown: 1.0
+            cooldown: 1.0,
+            affix_chance: 0.3,
         ),
         (
             name: "Spiky",
@@ -28,7 +29,8 @@ EnemyAssets(
             max_speed: 80,
             max_health: 10,
             damage: 20,
-            cooldown: 1.0
+            cooldown: 1.0,
+            affix_chance: 0.3,
         ),
         (
             name: "Bat",
@@ -39,7 +41,8 @@ EnemyAssets(
             max_speed: 120,
             max_health: 10,
             damage: 40,
-            cooldown: 1.0
+            cooldown: 1.0,
+            affix_chance: 0.3,
         )
     ]
 )

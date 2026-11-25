@@ -1,3 +1,4 @@
+use crate::gameplay::affix::asset::{AffixAssets, Affixes};
 use crate::gameplay::animation::Animation;
 use crate::gameplay::enemy::asset::{Damage, Enemy, EnemyAssets, EnemyType};
 use crate::gameplay::health::Health;
@@ -46,6 +47,7 @@ fn spawn_enemies(
     timer: Res<SpawnTimer>,
     mut rng: ResMut<RandomSeed>,
     enemy_assets: Res<EnemyAssets>,
+    affix_assets: Res<AffixAssets>,
     mut animations: ResMut<Assets<Animation>>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     root: Single<Entity, With<EnemyRoot>>,
@@ -90,10 +92,14 @@ fn spawn_enemies(
 
     let angle = rng.0.random_range(0.0..2.0 * PI);
     let position = center + Vec2::new(angle.cos(), angle.sin()) * radius;
+
+    let affixes = build_affixes(affix_assets);
+
     root.with_children(|p| {
         p.spawn(enemy(
             position,
             enemy_type,
+            affixes,
             &mut animations,
             &mut texture_atlas_layouts,
         ));
@@ -106,6 +112,7 @@ pub struct EnemyRoot;
 pub fn enemy(
     position: Vec2,
     enemy: &EnemyType,
+    affixes: Vec<AffixAssets>,
     animations: &mut Assets<Animation>,
     texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
 ) -> impl Bundle {
@@ -118,6 +125,7 @@ pub fn enemy(
     let anchor = animation.anchor;
     (
         Name::new(enemy.name.to_string()),
+        Affixes(affixes),
         WorldEntity,
         (
             Enemy {
